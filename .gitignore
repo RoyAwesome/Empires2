@@ -1,3 +1,8 @@
+#UE4 Output folders
+Binaries/
+Intermediate/
+Saved/
+
 # Compiled Object files
 *.slo
 *.lo
@@ -26,3 +31,7 @@
 *.exe
 *.out
 *.app
+
+*.suo
+*.opensdf
+*.sdf

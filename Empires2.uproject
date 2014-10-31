@@ -1,0 +1,13 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "4.5",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "Empires2",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
