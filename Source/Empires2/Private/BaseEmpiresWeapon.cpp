@@ -28,7 +28,10 @@ void UBaseEmpiresWeapon::OnFire()
 		if (World != NULL)
 		{
 			// spawn the projectile at the muzzle
-			World->SpawnActor<ABulletProjectile>(ProjectileClass, SpawnLocation, SpawnRotation);
+			ABaseEmpiresProjectile* projectile = World->SpawnActor<ABaseEmpiresProjectile>(ProjectileClass, SpawnLocation, SpawnRotation);
+			projectile->OwningWeapon = this;
+
+			//And look at it go!
 		}
 		else
 		{

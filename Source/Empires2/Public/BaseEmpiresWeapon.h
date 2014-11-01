@@ -8,6 +8,18 @@
 #include "BulletProjectile.h"
 #include "BaseEmpiresWeapon.generated.h"
 
+USTRUCT()
+struct FEmpDamageInfo : public FDamageEvent
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=General)
+	float Damage;
+	
+};
+
+
 /**
  * 
  */
@@ -28,18 +40,21 @@ public:
 
 	/** Projectile class to spawn */
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
-	TSubclassOf<class ABulletProjectile> ProjectileClass;
+	TSubclassOf<class ABaseEmpiresProjectile> ProjectileClass;
 	
 	/** Sound to play each time we fire */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Display)
 	class USoundBase* FireSound;
 
 	/** AnimMontage to play each time we fire */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Display)
 	class UAnimMontage* FireAnimation;
 
 	/** Gun muzzle's offset from the characters location */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Projectile)
 		FVector GunOffset;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category=Projectile)
+	FEmpDamageInfo DamageInfo;
 
 };
