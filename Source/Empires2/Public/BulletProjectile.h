@@ -8,6 +8,15 @@ class ABulletProjectile : public AActor
 {
 	GENERATED_UCLASS_BODY()
 
+protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Projectile)
+	float PhysicsHitScale;
+
+public:
+
+	
+
 	/** Sphere collision component */
 	UPROPERTY(VisibleDefaultsOnly, Category=Projectile)
 	TSubobjectPtr<class USphereComponent> CollisionComp;

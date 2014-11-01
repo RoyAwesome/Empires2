@@ -7,6 +7,8 @@
 ABulletProjectile::ABulletProjectile(const class FPostConstructInitializeProperties& PCIP)
 	: Super(PCIP)
 {
+	PhysicsHitScale = 0.5f;
+
 	// Use a sphere as a simple collision representation
 	CollisionComp = PCIP.CreateDefaultSubobject<USphereComponent>(this, TEXT("SphereComp"));
 	CollisionComp->InitSphereRadius(5.0f);
@@ -31,7 +33,7 @@ void ABulletProjectile::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp
 	// Only add impulse and destroy projectile if we hit a physics
 	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherComp->IsSimulatingPhysics())
 	{
-		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+		OtherComp->AddImpulseAtLocation((GetVelocity() * 100.0f) * PhysicsHitScale, GetActorLocation());
 
 		
 	}
