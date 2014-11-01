@@ -19,6 +19,8 @@ AEmpires2Character::AEmpires2Character(const class FPostConstructInitializePrope
 	BaseTurnRate = 45.f;
 	BaseLookUpRate = 45.f;
 
+	WeaponRelativeOffset = FVector(0, 0, -85.0f);
+
 	// Create a CameraComponent	
 	FirstPersonCameraComponent = PCIP.CreateDefaultSubobject<UCameraComponent>(this, TEXT("FirstPersonCamera"));
 	FirstPersonCameraComponent->AttachParent = CapsuleComponent;
@@ -46,7 +48,8 @@ void AEmpires2Character::BeginPlay()
 		UWorld* const World = GetWorld();
 		Weapon = World->SpawnActor<ABaseEmpiresWeapon>(WeaponClass);
 		Weapon->SetOwner(this);
-		Weapon->AttachRootComponentTo(RootComponent);
+		Weapon->SetActorRelativeLocation(WeaponRelativeOffset);
+		Weapon->AttachRootComponentTo(CapsuleComponent, NAME_None, EAttachLocation::SnapToTarget);
 
 	}
 	Super::BeginPlay();

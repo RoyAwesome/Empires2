@@ -22,9 +22,11 @@ class AEmpires2Character : public ACharacter
 	float BaseLookUpRate;
 
 	/** CurrentWeapon */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Weapon)
 	TSubclassOf<ABaseEmpiresWeapon> WeaponClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Weapon)
+	FVector WeaponRelativeOffset;
 	
 
 protected:

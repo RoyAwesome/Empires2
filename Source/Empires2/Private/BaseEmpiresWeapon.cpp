@@ -32,7 +32,7 @@ void ABaseEmpiresWeapon::OnFire()
 	{
 		const FRotator SpawnRotation = OwningCharacter->GetControlRotation();
 		// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-		const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(GunOffset);
+		const FVector SpawnLocation = OwningCharacter->GetActorLocation() + SpawnRotation.RotateVector(GunOffset);
 
 		UWorld* const World = GetWorld();
 		if (World != NULL)
