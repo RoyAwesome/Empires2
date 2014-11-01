@@ -13,6 +13,13 @@ class EMPIRES2_API UBaseInfantryWeapon : public UBaseEmpiresWeapon
 {
 	GENERATED_UCLASS_BODY()
 
+public:
+	/** AnimMontage to play each time we fire */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Display)
+	class UAnimMontage* DrawWeaponAnimation;
 	
-	
+	/** AnimMontage to play each time we fire */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Display)
+	class UAnimMontage* PutAwayWeaponAnimation;
+
 };

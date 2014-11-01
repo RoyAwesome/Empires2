@@ -49,7 +49,7 @@ void AEmpires2Character::BeginPlay()
 		}
 		//Create a weapon for us
 		UWorld* const World = GetWorld();
-		UBaseEmpiresWeapon* Weap = ConstructObject<UBaseEmpiresWeapon>(WeaponClass);
+		UBaseInfantryWeapon* Weap = ConstructObject<UBaseInfantryWeapon>(WeaponClass);
 		Weap->SetOwner(this);
 
 		DrawWeapon(Weap);
@@ -154,7 +154,7 @@ void AEmpires2Character::LookUpAtRate(float Rate)
 }
 
 
-void AEmpires2Character::DrawWeapon(UBaseEmpiresWeapon* Weapon)
+void AEmpires2Character::DrawWeapon(UBaseInfantryWeapon* Weapon)
 {
 	//If the weapon is null, hide the view model
 	if (Weapon == nullptr)
@@ -177,5 +177,15 @@ void AEmpires2Character::DrawWeapon(UBaseEmpiresWeapon* Weapon)
 	//Set the mesh to be the weapon we have
 	Mesh1P->SetSkeletalMesh(Weapon->ViewModel);
 	Mesh1P->SetAnimation(Weapon->FireAnimation);
+
+	if (Weapon->DrawWeaponAnimation != nullptr)
+	{
+		// Get the animation object for the arms mesh
+		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+		if (AnimInstance != nullptr)
+		{
+			AnimInstance->Montage_Play(Weapon->DrawWeaponAnimation, 1.f);
+		}
+	}
 
 }

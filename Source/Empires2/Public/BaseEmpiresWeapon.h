@@ -23,7 +23,7 @@ public:
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class EMPIRES2_API UBaseEmpiresWeapon : public UObject
 {
 	GENERATED_UCLASS_BODY()

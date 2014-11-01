@@ -1,7 +1,7 @@
 // Copyright 1998-2014 Epic Games, Inc. All Rights Reserved.
 #pragma once
 #include "GameFramework/Character.h"
-#include "BaseEmpiresWeapon.h"
+#include "BaseInfantryWeapon.h"
 #include "Empires2Character.generated.h"
 
 UCLASS(config=Game)
@@ -64,11 +64,11 @@ protected:
 
 	//WEAPONS
 public:
-	void DrawWeapon(UBaseEmpiresWeapon* Weapon);
+	void DrawWeapon(UBaseInfantryWeapon* Weapon);
 
 
 protected:
-	class UBaseEmpiresWeapon* Weapon;
+	class UBaseInfantryWeapon* Weapon;
 
 protected:
 	// APawn interface

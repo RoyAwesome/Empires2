@@ -17,6 +17,7 @@ UBaseEmpiresWeapon::UBaseEmpiresWeapon(const class FPostConstructInitializePrope
 
 void UBaseEmpiresWeapon::OnFire()
 {
+	
 	// try and fire a projectile
 	if (ProjectileClass != NULL)
 	{
