@@ -103,6 +103,7 @@ void AEmpires2Character::OnFire()
 	// try and play a firing animation if specified
 	if (Weapon->FireAnimation != nullptr)
 	{
+		
 		// Get the animation object for the arms mesh
 		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
 		if (AnimInstance != nullptr)
@@ -175,5 +176,6 @@ void AEmpires2Character::DrawWeapon(UBaseEmpiresWeapon* Weapon)
 
 	//Set the mesh to be the weapon we have
 	Mesh1P->SetSkeletalMesh(Weapon->ViewModel);
+	Mesh1P->SetAnimation(Weapon->FireAnimation);
 
 }
