@@ -5,3 +5,6 @@
 
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, Empires2, "Empires2" );
  
+DEFINE_LOG_CATEGORY(EmpiresGameplay);
+
+DEFINE_LOG_CATEGORY(EmpiresNetwork);

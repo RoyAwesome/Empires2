@@ -23,11 +23,15 @@ class AEmpires2Character : public ACharacter
 
 	/** CurrentWeapon */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Weapon)
-	TSubclassOf<ABaseEmpiresWeapon> WeaponClass;
+		TSubclassOf<UBaseEmpiresWeapon> WeaponClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Weapon)
 	FVector WeaponRelativeOffset;
 	
+
+	/** Pawn mesh: 1st person view (arms; seen only by self) */
+	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+		TSubobjectPtr<class USkeletalMeshComponent> Mesh1P;
 
 protected:
 
@@ -58,7 +62,13 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
-	class ABaseEmpiresWeapon* Weapon;
+	//WEAPONS
+public:
+	void DrawWeapon(UBaseEmpiresWeapon* Weapon);
+
+
+protected:
+	class UBaseEmpiresWeapon* Weapon;
 
 protected:
 	// APawn interface

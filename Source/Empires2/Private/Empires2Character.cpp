@@ -27,11 +27,14 @@ AEmpires2Character::AEmpires2Character(const class FPostConstructInitializePrope
 	FirstPersonCameraComponent->RelativeLocation = FVector(0, 0, 64.f); // Position the camera
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
+	// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
+	Mesh1P = PCIP.CreateDefaultSubobject<USkeletalMeshComponent>(this, TEXT("CharacterMesh1P"));
+	Mesh1P->SetOnlyOwnerSee(true);			// only the owning player will see this mesh
+	Mesh1P->AttachParent = FirstPersonCameraComponent;
+	Mesh1P->RelativeLocation = FVector(0.f, 0.f, -150.f);
+	Mesh1P->bCastDynamicShadow = false;
+	Mesh1P->CastShadow = false;
 
-	// Note: The ProjectileClass and the skeletal mesh/anim blueprints for Mesh1P are set in the
-	// derived blueprint asset named MyCharacter (to avoid direct content references in C++)
-
-	
 }
 
 
@@ -46,10 +49,10 @@ void AEmpires2Character::BeginPlay()
 		}
 		//Create a weapon for us
 		UWorld* const World = GetWorld();
-		Weapon = World->SpawnActor<ABaseEmpiresWeapon>(WeaponClass);
-		Weapon->SetOwner(this);
-		Weapon->SetActorRelativeLocation(WeaponRelativeOffset);
-		Weapon->AttachRootComponentTo(CapsuleComponent, NAME_None, EAttachLocation::SnapToTarget);
+		UBaseEmpiresWeapon* Weap = ConstructObject<UBaseEmpiresWeapon>(WeaponClass);
+		Weap->SetOwner(this);
+
+		DrawWeapon(Weap);
 
 	}
 	Super::BeginPlay();
@@ -91,6 +94,23 @@ void AEmpires2Character::OnFire()
 	
 	Weapon->OnFire();
 
+	// try and play the sound if specified
+	if (Weapon->FireSound != nullptr)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, Weapon->FireSound, GetActorLocation());
+	}
+
+	// try and play a firing animation if specified
+	if (Weapon->FireAnimation != nullptr)
+	{
+		// Get the animation object for the arms mesh
+		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+		if (AnimInstance != nullptr)
+		{
+			AnimInstance->Montage_Play(Weapon->FireAnimation, 1.f);
+		}
+	}
+
 }
 
 void AEmpires2Character::TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location)
@@ -130,4 +150,30 @@ void AEmpires2Character::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+}
+
+
+void AEmpires2Character::DrawWeapon(UBaseEmpiresWeapon* Weapon)
+{
+	//If the weapon is null, hide the view model
+	if (Weapon == nullptr)
+	{
+		this->Weapon = nullptr;
+		Mesh1P->SetHiddenInGame(true);
+		return;
+	}
+	
+	
+	Mesh1P->SetHiddenInGame(false);
+	
+	
+	//TODO: Put away the weapon we have
+
+
+	//Equip the weapon
+	this->Weapon = Weapon;
+
+	//Set the mesh to be the weapon we have
+	Mesh1P->SetSkeletalMesh(Weapon->ViewModel);
+
 }

@@ -12,7 +12,7 @@
  * 
  */
 UCLASS()
-class EMPIRES2_API ABaseEmpiresWeapon : public AActor
+class EMPIRES2_API UBaseEmpiresWeapon : public UObject
 {
 	GENERATED_UCLASS_BODY()
 
@@ -23,10 +23,8 @@ public:
 
 	AEmpires2Character* OwningCharacter;
 
-	/** Pawn mesh: 1st person view (arms; seen only by self) */
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	TSubobjectPtr<class USkeletalMeshComponent> Mesh1P;
-
+	UPROPERTY(EditDefaultsOnly, Category = Display)
+	USkeletalMesh* ViewModel;
 
 	/** Projectile class to spawn */
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)

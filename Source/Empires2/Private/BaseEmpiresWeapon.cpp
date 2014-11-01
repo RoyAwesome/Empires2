@@ -5,27 +5,17 @@
 #include "BaseEmpiresWeapon.h"
 
 
-ABaseEmpiresWeapon::ABaseEmpiresWeapon(const class FPostConstructInitializeProperties& PCIP)
+UBaseEmpiresWeapon::UBaseEmpiresWeapon(const class FPostConstructInitializeProperties& PCIP)
 	: Super(PCIP)
 {
-	TSubobjectPtr<USceneComponent> scene = PCIP.CreateDefaultSubobject<USceneComponent>(this, TEXT("SceneComponent"));
-	RootComponent = scene;
-
+	
 	GunOffset = FVector(100.0f, 30.0f, 10.0f);
-
-	// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
-	Mesh1P = PCIP.CreateDefaultSubobject<USkeletalMeshComponent>(this, TEXT("CharacterMesh1P"));
-	Mesh1P->SetOnlyOwnerSee(true);			// only the owning player will see this mesh
-	Mesh1P->AttachParent = RootComponent;
-	Mesh1P->RelativeLocation = FVector(0.f, 0.f, -150.f);
-	Mesh1P->bCastDynamicShadow = false;
-	Mesh1P->CastShadow = false;
 
 
 }
 
 
-void ABaseEmpiresWeapon::OnFire()
+void UBaseEmpiresWeapon::OnFire()
 {
 	// try and fire a projectile
 	if (ProjectileClass != NULL)
@@ -34,35 +24,26 @@ void ABaseEmpiresWeapon::OnFire()
 		// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
 		const FVector SpawnLocation = OwningCharacter->GetActorLocation() + SpawnRotation.RotateVector(GunOffset);
 
-		UWorld* const World = GetWorld();
+		UWorld* const World = OwningCharacter->GetWorld();
 		if (World != NULL)
 		{
 			// spawn the projectile at the muzzle
 			World->SpawnActor<ABulletProjectile>(ProjectileClass, SpawnLocation, SpawnRotation);
 		}
-	}
-
-	// try and play the sound if specified
-	if (FireSound != NULL)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-	}
-
-	// try and play a firing animation if specified
-	if (FireAnimation != NULL)
-	{
-		// Get the animation object for the arms mesh
-		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-		if (AnimInstance != NULL)
+		else
 		{
-			AnimInstance->Montage_Play(FireAnimation, 1.f);
+			SCREENLOG(TEXT("Cannot fire weapon, World is Null"));
 		}
 	}
+	else
+	{
+		SCREENLOG(TEXT("Cannot fire weapon, Projectile is Null"));
+	}
+
+	
 }
 
-void ABaseEmpiresWeapon::SetOwner(class AEmpires2Character* Owner)
+void UBaseEmpiresWeapon::SetOwner(class AEmpires2Character* Owner)
 {
-	OwningCharacter = Owner;
-	Super::SetOwner(Owner);
-	this->AttachRootComponentToActor(Owner, NAME_None, EAttachLocation::SnapToTarget);
+	OwningCharacter = Owner;	
 }
