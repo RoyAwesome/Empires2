@@ -21,6 +21,8 @@ Design
 ---------
 
 * Hook up the Starter Animation Pack and prototype character model to the Empires Character
+* Create a Main Menu level [with UMG](https://docs.unrealengine.com/latest/INT/Engine/UMG/UserGuide/index.html)
+* Create a simple HUD with UMG
 
 
 Art
