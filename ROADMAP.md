@@ -1,8 +1,7 @@
 Roadmap
 ==========
 
-
-A simple roadmap that is split into 3 parts, Code, Design, and Art
+If you feel that you can take one of these items, Clone the repo, add it, then submit it as a pull request.  
 
 
 
