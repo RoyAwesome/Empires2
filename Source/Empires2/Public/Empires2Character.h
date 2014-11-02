@@ -1,8 +1,10 @@
 // Copyright 1998-2014 Epic Games, Inc. All Rights Reserved.
 #pragma once
 #include "GameFramework/Character.h"
-#include "BaseInfantryWeapon.h"
 #include "Empires2Character.generated.h"
+
+
+
 
 UCLASS(config=Game)
 class AEmpires2Character : public ACharacter
@@ -23,7 +25,7 @@ class AEmpires2Character : public ACharacter
 
 	/** CurrentWeapon */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Weapon)
-		TSubclassOf<UBaseEmpiresWeapon> WeaponClass;
+		TSubclassOf<class UBaseInfantryWeapon> WeaponClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Weapon)
 	FVector WeaponRelativeOffset;
@@ -31,7 +33,7 @@ class AEmpires2Character : public ACharacter
 
 	/** Pawn mesh: 1st person view (arms; seen only by self) */
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-		TSubobjectPtr<class USkeletalMeshComponent> Mesh1P;
+	TSubobjectPtr<class USkeletalMeshComponent> Mesh1P;
 
 protected:
 
@@ -68,7 +70,10 @@ public:
 
 
 protected:
-	class UBaseInfantryWeapon* Weapon;
+	
+	UBaseInfantryWeapon* Weapon;
+
+	
 
 protected:
 	// APawn interface

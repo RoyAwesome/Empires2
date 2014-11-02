@@ -3,6 +3,8 @@
 #include "Empires2.h"
 #include "Empires2Character.h"
 #include "BulletProjectile.h"
+#include "BaseInfantryWeapon.h"
+#include "EmpiresPlayerState.h"
 #include "Animation/AnimInstance.h"
 
 
@@ -40,6 +42,22 @@ AEmpires2Character::AEmpires2Character(const class FPostConstructInitializePrope
 
 void AEmpires2Character::BeginPlay()
 {
+	/*AEmpiresPlayerState* playerState = Cast<AEmpiresPlayerState>(this->GetController()->PlayerState);
+
+	if (playerState)
+	{
+		for (int32 i = 0; i < playerState->Inventory.Weapons.Num(); i++)
+		{
+			SCREENLOG(TEXT("Found %s in weapons"), playerState->Inventory.Weapons[i]->GetName());
+		}
+	}
+	else
+	{
+		SCREENLOG(TEXT("Player State was null"));
+	}*/
+	
+
+
 	if (Weapon == nullptr)
 	{
 		if (!WeaponClass)

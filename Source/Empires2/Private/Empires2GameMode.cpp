@@ -4,6 +4,7 @@
 #include "Empires2GameMode.h"
 #include "Empires2HUD.h"
 #include "Empires2Character.h"
+#include "EmpiresPlayerState.h"
 
 AEmpires2GameMode::AEmpires2GameMode(const class FPostConstructInitializeProperties& PCIP)
 	: Super(PCIP)
@@ -14,4 +15,6 @@ AEmpires2GameMode::AEmpires2GameMode(const class FPostConstructInitializePropert
 
 	// use our custom HUD class
 	HUDClass = AEmpires2HUD::StaticClass();
+
+	this->PlayerStateClass = AEmpiresPlayerState::StaticClass();
 }
