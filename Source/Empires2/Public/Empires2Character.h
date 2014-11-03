@@ -2,6 +2,7 @@
 #pragma once
 #include "GameFramework/Character.h"
 #include "InfantryInventory.h"
+#include "EmpiresPlayerState.h"
 #include "Empires2Character.generated.h"
 
 
@@ -23,10 +24,6 @@ class AEmpires2Character : public ACharacter
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
-
-	/** CurrentWeapon */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Weapon)
-		TSubclassOf<class UBaseInfantryWeapon> WeaponClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Weapon)
 	FVector WeaponRelativeOffset;
@@ -65,15 +62,25 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
+	class AEmpiresPlayerState* GetEmpiresPlayerState()
+	{
+		return Cast<AEmpiresPlayerState>(this->GetController()->PlayerState);
+	}
+
 	//WEAPONS
 public:
 	void DrawWeapon(UBaseInfantryWeapon* Weapon);
 
+	void SwitchToWeapon(EInfantryInventorySlots::Type Weapon);
+
+
+	/* Weapon Input Events*/
+	void SelectNextWeapon();
+	void SelectPreviousWeapon();
+	void SelectLastWeapon();
 
 protected:
-	
-	UBaseInfantryWeapon* Weapon;
-
+		
 	EInfantryInventorySlots::Type SelectedWeapon;
 
 	EInfantryInventorySlots::Type LastSelectedWeapon;

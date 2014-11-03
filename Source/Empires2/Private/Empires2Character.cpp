@@ -5,6 +5,7 @@
 #include "BulletProjectile.h"
 #include "BaseInfantryWeapon.h"
 #include "EmpiresPlayerState.h"
+#include "InfantryInventory.h"
 #include "Animation/AnimInstance.h"
 
 
@@ -54,7 +55,7 @@ void AEmpires2Character::BeginPlay()
 			playerState->Inventory.ConstructedWeapons.Add(Weap);
 		}
 
-		DrawWeapon(playerState->Inventory.ConstructedWeapons[EInfantryInventorySlots::Slot_Primary]);
+		SwitchToWeapon(EInfantryInventorySlots::Slot_Primary);
 	}
 	else
 	{
@@ -79,6 +80,11 @@ void AEmpires2Character::SetupPlayerInputComponent(class UInputComponent* InputC
 	InputComponent->BindAction("Fire", IE_Pressed, this, &AEmpires2Character::OnFire);
 	InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &AEmpires2Character::TouchStarted);
 
+	//Weapon Selection
+	InputComponent->BindAction("NextWeapon", IE_Pressed, this, &AEmpires2Character::SelectNextWeapon);
+	InputComponent->BindAction("PreviousWeapon", IE_Pressed, this, &AEmpires2Character::SelectPreviousWeapon);
+	InputComponent->BindAction("LastWeapon", IE_Pressed, this, &AEmpires2Character::SelectLastWeapon);
+
 	InputComponent->BindAxis("MoveForward", this, &AEmpires2Character::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &AEmpires2Character::MoveRight);
 
@@ -93,6 +99,11 @@ void AEmpires2Character::SetupPlayerInputComponent(class UInputComponent* InputC
 
 void AEmpires2Character::OnFire()
 {
+	AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
+	check(playerState);
+
+	UBaseInfantryWeapon* Weapon = playerState->Inventory.ConstructedWeapons[this->SelectedWeapon];
+
 	if (Weapon == nullptr)
 	{
 		return;
@@ -165,33 +176,17 @@ void AEmpires2Character::DrawWeapon(UBaseInfantryWeapon* Weapon)
 	// Get the animation object for the arms mesh
 	UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
 
-	//Put Away our weapon
-	if (this->Weapon)
-	{
-		
-		if (Weapon->PutAwayWeaponAnimation)
-		{
-			if (AnimInstance != nullptr)
-			{
-				AnimInstance->Montage_Play(Weapon->PutAwayWeaponAnimation, 1.f);
-			}
-		}
-	}
-
 	//If the weapon is null, hide the view model
 	if (Weapon == nullptr)
 	{	
-		this->Weapon = nullptr;
 		Mesh1P->SetHiddenInGame(true);
 		return;
 	}
-	else
+	else //If it's not
 	{
 		Mesh1P->SetHiddenInGame(false);
 	}	
-
-	//Equip the weapon
-	this->Weapon = Weapon;
+	
 
 	//Set the mesh to be the weapon we have
 	Mesh1P->SetSkeletalMesh(Weapon->ViewModel);
@@ -207,4 +202,63 @@ void AEmpires2Character::DrawWeapon(UBaseInfantryWeapon* Weapon)
 		}
 	}
 
+}
+
+void AEmpires2Character::SwitchToWeapon(EInfantryInventorySlots::Type Weapon)
+{
+	AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
+	check(playerState);
+
+	if (playerState->Inventory.ConstructedWeapons.Num() <= Weapon) return; //Trying to select an out of bounds weapon	
+	if (!playerState->Inventory.ConstructedWeapons[Weapon])
+	{
+		this->LastSelectedWeapon = this->SelectedWeapon;
+		this->SelectedWeapon = EInfantryInventorySlots::Slot_None;
+		DrawWeapon(nullptr); //Trying to get a null weapon
+		return;
+	}
+	if (!playerState->Inventory.ConstructedWeapons[Weapon]->GetClass()->IsChildOf(UBaseInfantryWeapon::StaticClass())) return; //Not an infantry weapon
+
+
+	this->LastSelectedWeapon = this->SelectedWeapon;
+	UBaseInfantryWeapon* Weap = playerState->Inventory.ConstructedWeapons[Weapon];
+	DrawWeapon(Weap);
+	this->SelectedWeapon = Weapon;
+
+}
+
+void AEmpires2Character::SelectNextWeapon()
+{
+	AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
+	check(playerState);
+	
+	//Increment the slot
+	int32 Slot = this->SelectedWeapon + 1;
+	//If the slot is greater than the number of weapons, reset it
+	if (playerState->Inventory.ConstructedWeapons.Num() <= Slot)
+	{
+		Slot = EInfantryInventorySlots::Slot_Sidearm;
+	}
+	SCREENLOG(TEXT("Switching to weapon %d"), Slot);
+	SwitchToWeapon((EInfantryInventorySlots::Type)Slot);
+
+}
+void AEmpires2Character::SelectPreviousWeapon()
+{
+	AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
+	check(playerState);
+
+	//Increment the slot
+	int32 Slot = this->SelectedWeapon - 1;
+	//If the number is less than 0, set it to the max weapon
+	if (Slot < 0)
+	{
+		Slot = playerState->Inventory.ConstructedWeapons.Num() - 1;
+	}
+	SCREENLOG(TEXT("Switching to weapon %d"), Slot);
+	SwitchToWeapon((EInfantryInventorySlots::Type)Slot);
+}
+void AEmpires2Character::SelectLastWeapon()
+{
+	SwitchToWeapon(this->LastSelectedWeapon);
 }

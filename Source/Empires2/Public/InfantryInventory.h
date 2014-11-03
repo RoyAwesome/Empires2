@@ -17,7 +17,8 @@ namespace EInfantryInventorySlots
 		Slot_Skill1 = 4,
 		Slot_Skill2 = 5,
 		Slot_Skill3 = 6,
-		Slot_Skill4 = 7
+		Slot_Skill4 = 7,
+		Slot_None = 8,
 	};
 }
 
