@@ -30,17 +30,7 @@ struct EMPIRES2_API FInfantryInventory
 	GENERATED_USTRUCT_BODY()
 
 public:
-	/*
-	FInfantryInventory()
-	{
-	//Add two guns in here	
-		static ConstructorHelpers::FClassFinder<UBaseInfantryWeapon> RifleClassFinder(TEXT("/Game/Blueprints/BE_Rifle"));
-		Weapons.Insert(RifleClassFinder.Class, EInfantryInventorySlots::Slot_Primary);
-		
-		static ConstructorHelpers::FClassFinder<UBaseInfantryWeapon> PistolClassFinder(TEXT("/Game/Blueprints/BE_Pistol"));
-		Weapons.Insert(PistolClassFinder.Class, EInfantryInventorySlots::Slot_Sidearm);
-	}*/
-	
+
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = General)
 	TArray<TSubclassOf<UBaseInfantryWeapon>> Weapons;
