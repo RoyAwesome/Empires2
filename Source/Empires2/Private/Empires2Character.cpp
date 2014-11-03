@@ -42,37 +42,25 @@ AEmpires2Character::AEmpires2Character(const class FPostConstructInitializePrope
 
 void AEmpires2Character::BeginPlay()
 {
-	/*AEmpiresPlayerState* playerState = Cast<AEmpiresPlayerState>(this->GetController()->PlayerState);
+	AEmpiresPlayerState* playerState = Cast<AEmpiresPlayerState>(this->GetController()->PlayerState);
 
 	if (playerState)
 	{
+
 		for (int32 i = 0; i < playerState->Inventory.Weapons.Num(); i++)
 		{
-			SCREENLOG(TEXT("Found %s in weapons"), playerState->Inventory.Weapons[i]->GetName());
+			UBaseInfantryWeapon* Weap = ConstructObject<UBaseInfantryWeapon>(playerState->Inventory.Weapons[i]);
+			Weap->SetOwner(this);
+			playerState->Inventory.ConstructedWeapons.Add(Weap);
 		}
+
+		DrawWeapon(playerState->Inventory.ConstructedWeapons[EInfantryInventorySlots::Slot_Primary]);
 	}
 	else
 	{
 		SCREENLOG(TEXT("Player State was null"));
-	}*/
-	
-
-
-	if (Weapon == nullptr)
-	{
-		if (!WeaponClass)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("No WeaponClass Set!"))
-				return;
-		}
-		//Create a weapon for us
-		UWorld* const World = GetWorld();
-		UBaseInfantryWeapon* Weap = ConstructObject<UBaseInfantryWeapon>(WeaponClass);
-		Weap->SetOwner(this);
-
-		DrawWeapon(Weap);
-
 	}
+		
 	Super::BeginPlay();
 }
 
@@ -87,13 +75,13 @@ void AEmpires2Character::SetupPlayerInputComponent(class UInputComponent* InputC
 
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-	
+
 	InputComponent->BindAction("Fire", IE_Pressed, this, &AEmpires2Character::OnFire);
 	InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &AEmpires2Character::TouchStarted);
 
 	InputComponent->BindAxis("MoveForward", this, &AEmpires2Character::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &AEmpires2Character::MoveRight);
-	
+
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
@@ -109,7 +97,7 @@ void AEmpires2Character::OnFire()
 	{
 		return;
 	}
-	
+
 	Weapon->OnFire();
 
 	// try and play the sound if specified
@@ -121,7 +109,7 @@ void AEmpires2Character::OnFire()
 	// try and play a firing animation if specified
 	if (Weapon->FireAnimation != nullptr)
 	{
-		
+
 		// Get the animation object for the arms mesh
 		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
 		if (AnimInstance != nullptr)
@@ -174,20 +162,33 @@ void AEmpires2Character::LookUpAtRate(float Rate)
 
 void AEmpires2Character::DrawWeapon(UBaseInfantryWeapon* Weapon)
 {
+	// Get the animation object for the arms mesh
+	UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+
+	//Put Away our weapon
+	if (this->Weapon)
+	{
+		
+		if (Weapon->PutAwayWeaponAnimation)
+		{
+			if (AnimInstance != nullptr)
+			{
+				AnimInstance->Montage_Play(Weapon->PutAwayWeaponAnimation, 1.f);
+			}
+		}
+	}
+
 	//If the weapon is null, hide the view model
 	if (Weapon == nullptr)
-	{
+	{	
 		this->Weapon = nullptr;
 		Mesh1P->SetHiddenInGame(true);
 		return;
 	}
-	
-	
-	Mesh1P->SetHiddenInGame(false);
-	
-	
-	//TODO: Put away the weapon we have
-
+	else
+	{
+		Mesh1P->SetHiddenInGame(false);
+	}	
 
 	//Equip the weapon
 	this->Weapon = Weapon;

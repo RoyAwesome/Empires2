@@ -18,5 +18,6 @@ class EMPIRES2_API AEmpiresPlayerState : public APlayerState
 public:
 	
 	//The inventory we want
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Infantry)
 	FInfantryInventory Inventory;
 };

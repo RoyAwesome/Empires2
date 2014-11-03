@@ -1,6 +1,7 @@
 // Copyright 1998-2014 Epic Games, Inc. All Rights Reserved.
 #pragma once
 #include "GameFramework/Character.h"
+#include "InfantryInventory.h"
 #include "Empires2Character.generated.h"
 
 
@@ -73,7 +74,9 @@ protected:
 	
 	UBaseInfantryWeapon* Weapon;
 
-	
+	EInfantryInventorySlots::Type SelectedWeapon;
+
+	EInfantryInventorySlots::Type LastSelectedWeapon;
 
 protected:
 	// APawn interface
