@@ -13,14 +13,23 @@ UBaseFiremode::UBaseFiremode(const class FPostConstructInitializeProperties& PCI
 
 
 void UBaseFiremode::BeginFire()
-{
+{	
+	BeginFireTime = GetWorld()->GetTimeSeconds();
+	bFiring = true;
 
 }
 void UBaseFiremode::EndFire()
 {
+	bFiring = false;
+}
+
+void UBaseFiremode::HandleFire()
+{
 
 }
+
 void UBaseFiremode::SetWeapon(UBaseEmpiresWeapon* Weapon)
 {
 	this->Weapon = Weapon;
 }
+

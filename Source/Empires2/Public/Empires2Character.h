@@ -69,10 +69,15 @@ protected:
 
 	//WEAPONS
 public:
-	void DrawWeapon(UBaseInfantryWeapon* Weapon);
+	//Firing the weapon
+	void BeginFire();
+	void EndFire();
 
+	/* Switching Weapons */
+	void DrawWeapon(UBaseInfantryWeapon* Weapon);
 	void SwitchToWeapon(EInfantryInventorySlots::Type Weapon);
 
+	UBaseInfantryWeapon* GetActiveWeapon();
 
 	/* Weapon Input Events*/
 	void SelectNextWeapon();
@@ -82,7 +87,6 @@ public:
 protected:
 		
 	EInfantryInventorySlots::Type SelectedWeapon;
-
 	EInfantryInventorySlots::Type LastSelectedWeapon;
 
 protected:

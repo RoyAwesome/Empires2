@@ -14,14 +14,25 @@ class EMPIRES2_API UBaseFiremode : public UObject
 {
 	GENERATED_UCLASS_BODY()
 
+   //General Usage
 public:
+		virtual void SetWeapon(class UBaseEmpiresWeapon* Weapon);
 
-	
-	UFUNCTION(/*Reliable, Server, WithValidation*/)
+
+protected:
+
+	UBaseEmpiresWeapon* Weapon;
+
+
+	//FIRE CONTROL
+public:
+		
 	virtual void BeginFire();	
-
-	UFUNCTION(/*Reliable, Server, WithValidation*/)
+	
 	virtual void EndFire();
+
+	virtual void HandleFire();
+
 	
 	//TODO: Implement Blueprint Hooks so designers can create their own firemodes
 	/*
@@ -32,9 +43,13 @@ public:
 	void BP_EndFire();
 	*/
 
+	bool IsFiring()
+	{
+		return bFiring;
+	}
+protected:
+	float BeginFireTime;
 
-	virtual void SetWeapon(class UBaseEmpiresWeapon* Weapon);
-
-	UBaseEmpiresWeapon* Weapon;
+	bool bFiring;
 
 };

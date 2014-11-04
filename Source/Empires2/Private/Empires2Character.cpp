@@ -73,8 +73,10 @@ void AEmpires2Character::SetupPlayerInputComponent(class UInputComponent* InputC
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
-	InputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this, &AEmpires2Character::OnFire);
-	InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &AEmpires2Character::TouchStarted);
+
+	InputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this, &AEmpires2Character::BeginFire);
+	InputComponent->BindAction("Fire", EInputEvent::IE_Released, this, &AEmpires2Character::EndFire);
+
 
 	//Weapon Selection
 	InputComponent->BindAction("NextWeapon", IE_Pressed, this, &AEmpires2Character::SelectNextWeapon);
@@ -93,38 +95,41 @@ void AEmpires2Character::SetupPlayerInputComponent(class UInputComponent* InputC
 	InputComponent->BindAxis("LookUpRate", this, &AEmpires2Character::LookUpAtRate);
 }
 
-void AEmpires2Character::OnFire()
+
+UBaseInfantryWeapon* AEmpires2Character::GetActiveWeapon()
 {
 	AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
 	check(playerState);
+	return playerState->Inventory.ConstructedWeapons[this->SelectedWeapon];
+}
 
-	UBaseInfantryWeapon* Weapon = playerState->Inventory.ConstructedWeapons[this->SelectedWeapon];
+void AEmpires2Character::BeginFire()
+{
+	UBaseInfantryWeapon* Weapon = GetActiveWeapon();
+	if (Weapon == nullptr) return; //No weapon? Don't bother firing
+
+	Weapon->BeginFire();
+
+}
+void AEmpires2Character::EndFire()
+{
+	UBaseInfantryWeapon* Weapon = GetActiveWeapon();
+	check(Weapon); //If the weapon goes null while we are firing... uh, crash
+
+	Weapon->EndFire();
+}
+
+void AEmpires2Character::OnFire()
+{
+	UBaseInfantryWeapon* Weapon = GetActiveWeapon();
 
 	if (Weapon == nullptr)
 	{
 		return;
 	}
 
-	Weapon->OnFire();
-
-	// try and play the sound if specified
-	if (Weapon->FireSound != nullptr)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, Weapon->FireSound, GetActorLocation());
-	}
-
-	// try and play a firing animation if specified
-	if (Weapon->FireAnimation != nullptr)
-	{
-
-		// Get the animation object for the arms mesh
-		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-		if (AnimInstance != nullptr)
-		{
-			AnimInstance->Montage_Play(Weapon->FireAnimation, 1.f);
-		}
-	}
-
+	Weapon->FireShot();
+		
 }
 
 void AEmpires2Character::TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location)

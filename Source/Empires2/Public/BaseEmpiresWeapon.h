@@ -124,18 +124,23 @@ public:
 
 	//Shooting
 public:
+	virtual bool CanFire();
+
+	void BeginFire();
+
+	void EndFire();
+
+
 	/*Called when the weapon is to fire a single bullet/projectile*/
-	void FireWeapon();
-
-
-	void OnFire(); //TODO: Remove this function
-
-	/** Projectile class to spawn */
-	UPROPERTY(EditDefaultsOnly, Category = Projectile)
-		TSubclassOf<class ABaseEmpiresProjectile> ProjectileClass;	//TODO: Remove This, Let firemode Decide	
+	void FireShot();
+	
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Projectile)
-		FEmpDamageInfo DamageInfo; //TODO: Remove this, Let Firemode Decide
+		FEmpDamageInfo DamageInfo; //TODO: Remove this, Let Ammo Pool Decide
+
+
+
+
 
 
 	//Firemodes
@@ -167,6 +172,11 @@ public:
 	UBaseFiremode* GetActiveFiremode()
 	{
 		return Firemodes[ActiveFiremode];
+	}
+
+	FAmmoPool GetCurrentAmmoPool()
+	{
+		return AmmoPools[FiremodeData[ActiveFiremode].AmmoPoolIndex];
 	}
 
 protected:
