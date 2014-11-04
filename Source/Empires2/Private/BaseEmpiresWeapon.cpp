@@ -10,7 +10,7 @@
 UBaseEmpiresWeapon::UBaseEmpiresWeapon(const class FPostConstructInitializeProperties& PCIP)
 	: Super(PCIP)
 {
-	
+
 	GunOffset = FVector(100.0f, 30.0f, 10.0f);
 	ActiveFiremode = 0;
 
@@ -31,7 +31,7 @@ void UBaseEmpiresWeapon::PostInitProperties()
 			continue;
 		}
 		UBaseFiremode* firemode = ConstructObject<UBaseFiremode>(FiremodeClasses[i]);
-		
+
 		firemode->SetWeapon(this);
 		Firemodes.Add(firemode);
 	}
@@ -48,6 +48,29 @@ void UBaseEmpiresWeapon::SetOwner(class AEmpires2Character* Owner)
 	OwningCharacter = Owner;
 }
 
+void UBaseEmpiresWeapon::PlaySound(USoundBase* Sound)
+{
+	// try and play the sound if specified
+	if (Sound != nullptr)
+	{
+		UGameplayStatics::PlaySoundAtLocation(OwningCharacter, Sound, OwningCharacter->GetActorLocation());
+	}
+}
+
+void UBaseEmpiresWeapon::PlayAnimation(UAnimMontage* Animation)
+{
+	// try and play a animation
+	if (Animation != nullptr)
+	{
+		// Get the animation object for the arms mesh
+		UAnimInstance* AnimInstance = OwningCharacter->Mesh1P->GetAnimInstance();
+		if (AnimInstance != nullptr)
+		{
+			AnimInstance->Montage_Play(Animation, 1.f);
+		}
+	}
+}
+
 /////////////////////FIRE CONTROL
 
 bool UBaseEmpiresWeapon::CanFire()
@@ -55,7 +78,7 @@ bool UBaseEmpiresWeapon::CanFire()
 	UBaseFiremode* firemode = GetActiveFiremode();
 	if (firemode == nullptr) return false; //No active firemode
 	//TODO: Check if the firemode is capable of firing
-	
+
 	return true;
 }
 
@@ -81,7 +104,7 @@ void UBaseEmpiresWeapon::FireShot()
 
 	//Get the current firemode's projectile
 	FAmmoPool ammoPool = GetCurrentAmmoPool();
-	
+
 	if (ammoPool.ProjectileClass == nullptr)
 	{
 		SCREENLOG(TEXT("Unable to fire Weapon %s, firemode %d because projectile is null!"), GetName(), ActiveFiremode);
@@ -102,23 +125,10 @@ void UBaseEmpiresWeapon::FireShot()
 		//And look at it go!
 	}
 
-	// try and play the sound if specified
-	if (FireSound != nullptr)
-	{
-		UGameplayStatics::PlaySoundAtLocation(OwningCharacter, FireSound, OwningCharacter->GetActorLocation());
-	}
+	PlaySound(FireSound);
 
-	// try and play a firing animation if specified
-	if (FireAnimation != nullptr)
-	{
+	PlayAnimation(FireAnimation);
 
-		// Get the animation object for the arms mesh
-		UAnimInstance* AnimInstance = OwningCharacter->Mesh1P->GetAnimInstance();
-		if (AnimInstance != nullptr)
-		{
-			AnimInstance->Montage_Play(FireAnimation, 1.f);
-		}
-	}
 }
 
 ///////////////////////////////////// FIREMODES
@@ -128,6 +138,9 @@ void UBaseEmpiresWeapon::NextFiremode()
 	if (GetActiveFiremode()->IsFiring()) return; //Don't change modes if we are shooting
 	if (Firemodes.Num() == 1) return; //Don't change firemode if we only have one firemode
 
+	//Play the animation and sound for changing the firemode.
+	PlaySound(ChangeFiremodeSound);
+	PlayAnimation(ChangeFiremodeAnimation);
 
 	ActiveFiremode++;
 	if (ActiveFiremode >= Firemodes.Num())

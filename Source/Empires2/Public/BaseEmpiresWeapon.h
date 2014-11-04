@@ -113,6 +113,18 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Display)
 		USkeletalMesh* ViewModel;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Display)
+	USoundBase* ChangeFiremodeSound;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Display)
+	class UAnimMontage* ChangeFiremodeAnimation;
+
+	///////////////// HELPERS
+public:
+	void PlaySound(USoundBase* Sound);
+
+	void PlayAnimation(UAnimMontage* Animation);
+
 
 public:
 	class AEmpires2Character* OwningCharacter;
