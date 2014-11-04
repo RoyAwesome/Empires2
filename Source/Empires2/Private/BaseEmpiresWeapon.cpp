@@ -35,7 +35,7 @@ void UBaseEmpiresWeapon::PostInitProperties()
 	}
 }
 
-UWorld* UBaseEmpiresWeapon::GetWorld()
+UWorld* UBaseEmpiresWeapon::GetWorld() const
 {
 	check(OwningCharacter);
 	return OwningCharacter->GetWorld();

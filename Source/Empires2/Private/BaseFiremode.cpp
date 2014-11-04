@@ -11,7 +11,7 @@ UBaseFiremode::UBaseFiremode(const class FPostConstructInitializeProperties& PCI
 
 }
 
-UWorld* UBaseFiremode::GetWorld()
+UWorld* UBaseFiremode::GetWorld() const
 {
 	check(Weapon);
 	return Weapon->GetWorld();

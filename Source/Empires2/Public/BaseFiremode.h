@@ -18,7 +18,7 @@ class EMPIRES2_API UBaseFiremode : public UObject
 public:
 		virtual void SetWeapon(class UBaseEmpiresWeapon* Weapon);
 
-		virtual UWorld* GetWorld();
+		virtual UWorld* GetWorld() const override;
 protected:
 
 	UBaseEmpiresWeapon* Weapon;
@@ -27,11 +27,19 @@ protected:
 	//FIRE CONTROL
 public:
 		
+	/* Start the firing sequence. */
 	virtual void BeginFire();	
 	
+	/* End the firing sequence */
 	virtual void EndFire();
 
+	//Actually Fire the bullet
 	virtual void HandleFire();
+
+	virtual bool CanFire()
+	{
+		return true;
+	}
 
 	
 	//TODO: Implement Blueprint Hooks so designers can create their own firemodes

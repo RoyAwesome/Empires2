@@ -98,7 +98,7 @@ public:
 
 	virtual void PostInitProperties() override;
 
-	virtual UWorld* GetWorld();
+	virtual UWorld* GetWorld() const override;
 
 	//Display Properties
 public:
