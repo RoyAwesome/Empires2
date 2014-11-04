@@ -44,24 +44,20 @@ AEmpires2Character::AEmpires2Character(const class FPostConstructInitializePrope
 void AEmpires2Character::BeginPlay()
 {
 	AEmpiresPlayerState* playerState = Cast<AEmpiresPlayerState>(this->GetController()->PlayerState);
+	check(playerState);
 
-	if (playerState)
+
+
+	for (int32 i = 0; i < playerState->Inventory.Weapons.Num(); i++)
 	{
-
-		for (int32 i = 0; i < playerState->Inventory.Weapons.Num(); i++)
-		{
-			UBaseInfantryWeapon* Weap = ConstructObject<UBaseInfantryWeapon>(playerState->Inventory.Weapons[i]);
-			Weap->SetOwner(this);
-			playerState->Inventory.ConstructedWeapons.Add(Weap);
-		}
-
-		SwitchToWeapon(EInfantryInventorySlots::Slot_Primary);
+		UBaseInfantryWeapon* Weap = ConstructObject<UBaseInfantryWeapon>(playerState->Inventory.Weapons[i]);
+		Weap->SetOwner(this);
+		playerState->Inventory.ConstructedWeapons.Add(Weap);
 	}
-	else
-	{
-		SCREENLOG(TEXT("Player State was null"));
-	}
-		
+
+	SwitchToWeapon(EInfantryInventorySlots::Slot_Primary);
+
+
 	Super::BeginPlay();
 }
 
@@ -77,7 +73,7 @@ void AEmpires2Character::SetupPlayerInputComponent(class UInputComponent* InputC
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
-	InputComponent->BindAction("Fire", IE_Pressed, this, &AEmpires2Character::OnFire);
+	InputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this, &AEmpires2Character::OnFire);
 	InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &AEmpires2Character::TouchStarted);
 
 	//Weapon Selection
@@ -178,15 +174,15 @@ void AEmpires2Character::DrawWeapon(UBaseInfantryWeapon* Weapon)
 
 	//If the weapon is null, hide the view model
 	if (Weapon == nullptr)
-	{	
+	{
 		Mesh1P->SetHiddenInGame(true);
 		return;
 	}
 	else //If it's not
 	{
 		Mesh1P->SetHiddenInGame(false);
-	}	
-	
+	}
+
 
 	//Set the mesh to be the weapon we have
 	Mesh1P->SetSkeletalMesh(Weapon->ViewModel);
@@ -231,7 +227,7 @@ void AEmpires2Character::SelectNextWeapon()
 {
 	AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
 	check(playerState);
-	
+
 	//Increment the slot
 	int32 Slot = this->SelectedWeapon + 1;
 	//If the slot is greater than the number of weapons, reset it

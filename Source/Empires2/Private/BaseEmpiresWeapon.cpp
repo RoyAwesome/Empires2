@@ -2,6 +2,7 @@
 
 #include "Empires2.h"
 #include "Empires2Character.h"
+#include "BaseEmpiresProjectile.h"
 #include "BaseEmpiresWeapon.h"
 
 
@@ -11,6 +12,14 @@ UBaseEmpiresWeapon::UBaseEmpiresWeapon(const class FPostConstructInitializePrope
 	
 	GunOffset = FVector(100.0f, 30.0f, 10.0f);
 
+
+}
+
+void UBaseEmpiresWeapon::PostInitProperties()
+{
+	//Construct the firemodes
+
+	Super::PostInitProperties();
 
 }
 
