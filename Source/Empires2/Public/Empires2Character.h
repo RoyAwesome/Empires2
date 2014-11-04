@@ -77,6 +77,7 @@ public:
 	void SelectPreviousWeapon();
 	void SelectLastWeapon();
 
+	void ChangeFiremode();
 protected:
 		
 	EInfantryInventorySlots::Type SelectedWeapon;

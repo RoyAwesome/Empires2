@@ -16,6 +16,8 @@ UBaseEmpiresWeapon::UBaseEmpiresWeapon(const class FPostConstructInitializePrope
 
 }
 
+//////////////////////GENERAL
+
 void UBaseEmpiresWeapon::PostInitProperties()
 {
 	Super::PostInitProperties();
@@ -41,6 +43,12 @@ UWorld* UBaseEmpiresWeapon::GetWorld() const
 	return OwningCharacter->GetWorld();
 }
 
+void UBaseEmpiresWeapon::SetOwner(class AEmpires2Character* Owner)
+{
+	OwningCharacter = Owner;
+}
+
+/////////////////////FIRE CONTROL
 
 bool UBaseEmpiresWeapon::CanFire()
 {
@@ -113,7 +121,17 @@ void UBaseEmpiresWeapon::FireShot()
 	}
 }
 
-void UBaseEmpiresWeapon::SetOwner(class AEmpires2Character* Owner)
+///////////////////////////////////// FIREMODES
+
+void UBaseEmpiresWeapon::NextFiremode()
 {
-	OwningCharacter = Owner;	
+	if (GetActiveFiremode()->IsFiring()) return; //Don't change modes if we are shooting
+	if (Firemodes.Num() == 1) return; //Don't change firemode if we only have one firemode
+
+
+	ActiveFiremode++;
+	if (ActiveFiremode >= Firemodes.Num())
+	{
+		ActiveFiremode = 0;
+	}
 }

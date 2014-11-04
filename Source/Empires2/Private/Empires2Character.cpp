@@ -82,7 +82,10 @@ void AEmpires2Character::SetupPlayerInputComponent(class UInputComponent* InputC
 	InputComponent->BindAction("NextWeapon", IE_Pressed, this, &AEmpires2Character::SelectNextWeapon);
 	InputComponent->BindAction("PreviousWeapon", IE_Pressed, this, &AEmpires2Character::SelectPreviousWeapon);
 	InputComponent->BindAction("LastWeapon", IE_Pressed, this, &AEmpires2Character::SelectLastWeapon);
+	InputComponent->BindAction("ChangeFiremode", EInputEvent::IE_Pressed, this, &AEmpires2Character::ChangeFiremode);
 
+
+	//Movement
 	InputComponent->BindAxis("MoveForward", this, &AEmpires2Character::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &AEmpires2Character::MoveRight);
 
@@ -96,31 +99,7 @@ void AEmpires2Character::SetupPlayerInputComponent(class UInputComponent* InputC
 }
 
 
-UBaseInfantryWeapon* AEmpires2Character::GetActiveWeapon()
-{
-	AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
-	check(playerState);
-	return playerState->Inventory.ConstructedWeapons[this->SelectedWeapon];
-}
-
-void AEmpires2Character::BeginFire()
-{
-	UBaseInfantryWeapon* Weapon = GetActiveWeapon();
-	if (Weapon == nullptr) return; //No weapon? Don't bother firing
-
-	Weapon->BeginFire();
-
-}
-void AEmpires2Character::EndFire()
-{
-	UBaseInfantryWeapon* Weapon = GetActiveWeapon();
-	check(Weapon); //If the weapon goes null while we are firing... uh, crash
-
-	SCREENLOG(TEXT("Fire Released"));
-
-	Weapon->EndFire();
-}
-
+////////////////////////////////// MOVEMENT
 void AEmpires2Character::MoveForward(float Value)
 {
 	if (Value != 0.0f)
@@ -151,6 +130,34 @@ void AEmpires2Character::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
+//////////////////////////////////////FIRE CONTROL
+
+void AEmpires2Character::BeginFire()
+{
+	UBaseInfantryWeapon* Weapon = GetActiveWeapon();
+	if (Weapon == nullptr) return; //No weapon? Don't bother firing
+
+	Weapon->BeginFire();
+
+}
+void AEmpires2Character::EndFire()
+{
+	UBaseInfantryWeapon* Weapon = GetActiveWeapon();
+	check(Weapon); //If the weapon goes null while we are firing... uh, crash
+
+	SCREENLOG(TEXT("Fire Released"));
+
+	Weapon->EndFire();
+}
+
+////////////////////////////////////////////WEAPONS
+
+UBaseInfantryWeapon* AEmpires2Character::GetActiveWeapon()
+{
+	AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
+	check(playerState);
+	return playerState->Inventory.ConstructedWeapons[this->SelectedWeapon];
+}
 
 void AEmpires2Character::DrawWeapon(UBaseInfantryWeapon* Weapon)
 {
@@ -242,4 +249,12 @@ void AEmpires2Character::SelectPreviousWeapon()
 void AEmpires2Character::SelectLastWeapon()
 {
 	SwitchToWeapon(this->LastSelectedWeapon);
+}
+
+void AEmpires2Character::ChangeFiremode()
+{
+	UBaseInfantryWeapon* Weapon = GetActiveWeapon();
+	if (Weapon == nullptr) return; //No weapon? Don't bother chaning firemode
+
+	Weapon->NextFiremode();
 }

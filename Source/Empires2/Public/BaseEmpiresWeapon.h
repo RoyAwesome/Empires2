@@ -180,9 +180,11 @@ public:
 		return AmmoPools[FiremodeData[ActiveFiremode].AmmoPoolIndex];
 	}
 
+	void NextFiremode();
+
 protected:
 	TArray<UBaseFiremode*> Firemodes;
 
-	uint32 ActiveFiremode;
+	int32 ActiveFiremode;
 
 };
