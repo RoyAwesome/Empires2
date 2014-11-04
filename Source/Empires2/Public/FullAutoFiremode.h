@@ -3,21 +3,21 @@
 #pragma once
 
 #include "BaseFiremode.h"
-#include "SingleShotFiremode.generated.h"
+#include "FullAutoFiremode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class EMPIRES2_API USingleShotFiremode : public UBaseFiremode
+class EMPIRES2_API UFullAutoFiremode : public UBaseFiremode
 {
 	GENERATED_UCLASS_BODY()
 
-		//FIRE CONTROL
 public:
 
 	virtual void BeginFire() override;
 
 	virtual void HandleFire() override;
+
 	
 };

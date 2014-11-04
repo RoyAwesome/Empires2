@@ -33,11 +33,15 @@ ABaseEmpiresProjectile::ABaseEmpiresProjectile(const class FPostConstructInitial
 
 void ABaseEmpiresProjectile::OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	check(OwningWeapon);
+	if (OwningWeapon->OwningCharacter == nullptr) return;
+
 	//TODO: Apply Damage
 	if (OtherActor && OtherActor->bCanBeDamaged)
 	{
 		//TODO: Design this out and figure out how damage should work
 		FDamageEvent Damage;
+
 		OtherActor->TakeDamage(OwningWeapon->DamageInfo.Damage, Damage, OwningWeapon->OwningCharacter->GetController(), OwningWeapon->OwningCharacter);
 	}
 

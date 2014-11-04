@@ -36,14 +36,7 @@ class AEmpires2Character : public ACharacter
 protected:
 
 	void BeginPlay() override;
-
-
-	/** Handler for a touch input beginning. */
-	void TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location);
-
-	/** Fires a projectile. */
-	void OnFire();
-
+		
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
 

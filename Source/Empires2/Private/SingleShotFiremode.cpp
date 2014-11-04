@@ -12,6 +12,8 @@ USingleShotFiremode::USingleShotFiremode(const class FPostConstructInitializePro
 
 void USingleShotFiremode::BeginFire()
 {
+	Super::BeginFire();
+
 	//Start a timer based off the first shot time
 	float FirstShotTime = Weapon->GetActiveFiremodeData().FirstShotFireDelay;
 	if (FirstShotTime != 0)
@@ -22,13 +24,10 @@ void USingleShotFiremode::BeginFire()
 	{
 		HandleFire();
 	}
-
+	
 }
 
-void USingleShotFiremode::EndFire()
-{
 
-}
 
 void USingleShotFiremode::HandleFire()
 {

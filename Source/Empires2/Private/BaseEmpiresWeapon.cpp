@@ -29,9 +29,16 @@ void UBaseEmpiresWeapon::PostInitProperties()
 			continue;
 		}
 		UBaseFiremode* firemode = ConstructObject<UBaseFiremode>(FiremodeClasses[i]);
+		
 		firemode->SetWeapon(this);
 		Firemodes.Add(firemode);
 	}
+}
+
+UWorld* UBaseEmpiresWeapon::GetWorld()
+{
+	check(OwningCharacter);
+	return OwningCharacter->GetWorld();
 }
 
 
@@ -77,7 +84,7 @@ void UBaseEmpiresWeapon::FireShot()
 	// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
 	const FVector SpawnLocation = OwningCharacter->GetActorLocation() + SpawnRotation.RotateVector(GunOffset);
 
-	UWorld* const World = OwningCharacter->GetWorld();
+	UWorld* const World = GetWorld();
 	if (World != NULL)
 	{
 		// spawn the projectile at the muzzle

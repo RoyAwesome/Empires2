@@ -11,10 +11,15 @@ UBaseFiremode::UBaseFiremode(const class FPostConstructInitializeProperties& PCI
 
 }
 
+UWorld* UBaseFiremode::GetWorld()
+{
+	check(Weapon);
+	return Weapon->GetWorld();
+}
 
 void UBaseFiremode::BeginFire()
 {	
-	BeginFireTime = GetWorld()->GetTimeSeconds();
+	BeginFireTime =  GetWorld()->GetTimeSeconds();
 	bFiring = true;
 
 }

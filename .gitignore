@@ -36,3 +36,4 @@ Saved/
 *.opensdf
 *.sdf
 Build/
+DerivedDataCache/

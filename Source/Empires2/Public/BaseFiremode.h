@@ -18,7 +18,7 @@ class EMPIRES2_API UBaseFiremode : public UObject
 public:
 		virtual void SetWeapon(class UBaseEmpiresWeapon* Weapon);
 
-
+		virtual UWorld* GetWorld();
 protected:
 
 	UBaseEmpiresWeapon* Weapon;

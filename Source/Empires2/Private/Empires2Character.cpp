@@ -116,29 +116,9 @@ void AEmpires2Character::EndFire()
 	UBaseInfantryWeapon* Weapon = GetActiveWeapon();
 	check(Weapon); //If the weapon goes null while we are firing... uh, crash
 
+	SCREENLOG(TEXT("Fire Released"));
+
 	Weapon->EndFire();
-}
-
-void AEmpires2Character::OnFire()
-{
-	UBaseInfantryWeapon* Weapon = GetActiveWeapon();
-
-	if (Weapon == nullptr)
-	{
-		return;
-	}
-
-	Weapon->FireShot();
-		
-}
-
-void AEmpires2Character::TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location)
-{
-	// only fire for first finger down
-	if (FingerIndex == 0)
-	{
-		OnFire();
-	}
 }
 
 void AEmpires2Character::MoveForward(float Value)

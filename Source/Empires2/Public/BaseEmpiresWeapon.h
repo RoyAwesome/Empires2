@@ -93,11 +93,12 @@ UCLASS(Blueprintable)
 class EMPIRES2_API UBaseEmpiresWeapon : public UObject
 {
 	GENERATED_UCLASS_BODY()
-
+		//GENERAL
 public:
-	//Events
+
 	virtual void PostInitProperties() override;
 
+	virtual UWorld* GetWorld();
 
 	//Display Properties
 public:
