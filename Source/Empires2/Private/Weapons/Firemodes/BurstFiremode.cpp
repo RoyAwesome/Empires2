@@ -30,11 +30,13 @@ void UBurstFiremode::BeginFire()
 
 void UBurstFiremode::HandleFire()
 {
+	if (!IsFiring()) return; //If we aren't firing anymore, don't fire a shot
+
 	BurstsRemaining--;
 
 	Weapon->FireShot();
 	
-	if (IsFiring() && BurstsRemaining > 0)
+	if (BurstsRemaining > 0)
 	{
 		//get the time until the next shot
 		float FireTime = (1.0f / Weapon->GetActiveFiremodeData().RoundsPerMinute) * 60.0f;

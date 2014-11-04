@@ -8,7 +8,7 @@
 /**
  * 
  */
-UCLASS(Blueprintable)
+UCLASS(Blueprintable, Abstract)
 class EMPIRES2_API UBurstFiremode : public UBaseFiremode
 {
 	GENERATED_UCLASS_BODY()

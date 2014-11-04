@@ -23,14 +23,14 @@ void UBaseEmpiresWeapon::PostInitProperties()
 	Super::PostInitProperties();
 
 	//Construct the firemodes
-	for (int32 i = 0; i < FiremodeClasses.Num(); i++)
+	for (int32 i = 0; i < FiremodeData.Num(); i++)
 	{
-		if (FiremodeClasses[i] == nullptr)
+		if (FiremodeData[i].FiremodeClass == nullptr)
 		{
 			SCREENLOG(TEXT("[%s] Error constructing firemode %d, Firemode is null"), GetName(), i);
 			continue;
 		}
-		UBaseFiremode* firemode = ConstructObject<UBaseFiremode>(FiremodeClasses[i]);
+		UBaseFiremode* firemode = ConstructObject<UBaseFiremode>(FiremodeData[i].FiremodeClass);
 
 		firemode->SetWeapon(this);
 		Firemodes.Add(firemode);
@@ -107,7 +107,7 @@ void UBaseEmpiresWeapon::FireShot()
 
 	if (ammoPool.ProjectileClass == nullptr)
 	{
-		SCREENLOG(TEXT("Unable to fire Weapon %s, firemode %d because projectile is null!"), GetName(), ActiveFiremode);
+		UE_LOG(EmpiresGameplay, Display, TEXT("Unable to fire Weapon %s, firemode %d because projectile is null!"), GetName(), ActiveFiremode);
 		return;
 	}
 

@@ -38,8 +38,8 @@ public:
 		float FirstShotFireDelay;
 	UPROPERTY(EditDefaultsOnly, Category = Behavior)
 		int32 RoundsPerShot;
-	
-
+	UPROPERTY(EditDefaultsOnly, Category = Behavior)
+		TSubclassOf<class UBaseFiremode> FiremodeClass;
 
 	//Damage
 	UPROPERTY(EditDefaultsOnly, Category = Damage)
@@ -169,12 +169,7 @@ public:
 	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Firemodes)
 	TArray<FAmmoPool> AmmoPools;
-
-	/*
-		Firemodes.  They control how the gun fires
-	*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Firemodes)
-		TArray<TSubclassOf<class UBaseFiremode> > FiremodeClasses;
+		
 
 	FWeaponData GetActiveFiremodeData()
 	{

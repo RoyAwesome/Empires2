@@ -28,19 +28,16 @@ void UFullAutoFiremode::BeginFire()
 	}
 }
 
-void UFullAutoFiremode::HandleFire() 
+void UFullAutoFiremode::HandleFire()
 {
+	if (!IsFiring()) return; //If we aren't firing anymore, don't fire a shot
+
 	Weapon->FireShot();
 
-	if (IsFiring())
-	{
-		//get the time until the next shot
-		float FireTime = (1.0f / Weapon->GetActiveFiremodeData().RoundsPerMinute) * 60.0f;
 
-		GetWorld()->GetTimerManager().SetTimer(this, &UFullAutoFiremode::HandleFire, FireTime, false);
-	}
-	else
-	{
-		SCREENLOG(TEXT("Stopped Firing"));
-	}
+	//get the time until the next shot
+	float FireTime = (1.0f / Weapon->GetActiveFiremodeData().RoundsPerMinute) * 60.0f;
+
+	GetWorld()->GetTimerManager().SetTimer(this, &UFullAutoFiremode::HandleFire, FireTime, false);
+
 }

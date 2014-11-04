@@ -145,8 +145,6 @@ void AEmpires2Character::EndFire()
 	UBaseInfantryWeapon* Weapon = GetActiveWeapon();
 	check(Weapon); //If the weapon goes null while we are firing... uh, crash
 
-	SCREENLOG(TEXT("Fire Released"));
-
 	Weapon->EndFire();
 }
 
@@ -227,7 +225,6 @@ void AEmpires2Character::SelectNextWeapon()
 	{
 		Slot = EInfantryInventorySlots::Slot_Sidearm;
 	}
-	SCREENLOG(TEXT("Switching to weapon %d"), Slot);
 	SwitchToWeapon((EInfantryInventorySlots::Type)Slot);
 
 }
@@ -243,7 +240,6 @@ void AEmpires2Character::SelectPreviousWeapon()
 	{
 		Slot = playerState->Inventory.ConstructedWeapons.Num() - 1;
 	}
-	SCREENLOG(TEXT("Switching to weapon %d"), Slot);
 	SwitchToWeapon((EInfantryInventorySlots::Type)Slot);
 }
 void AEmpires2Character::SelectLastWeapon()
