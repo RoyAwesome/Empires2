@@ -29,7 +29,7 @@ public:
 
 	//Ammo Info
 	UPROPERTY(EditDefaultsOnly, Category = Ammo)
-		int32 AmmoConsumedPerShot;	
+		int32 AmmoConsumedPerShot;
 
 	//FireBehavior
 	UPROPERTY(EditDefaultsOnly, Category = Behavior)
@@ -73,20 +73,20 @@ struct FAmmoPool
 	GENERATED_USTRUCT_BODY()
 public:
 	UPROPERTY(EditDefaultsOnly, Category = General)
-	int32 MaxAmmo;
+		int32 MaxAmmo;
 	UPROPERTY(EditDefaultsOnly, Category = General)
-	int32 ClipSize;
+		int32 ClipSize;
 	UPROPERTY(EditDefaultsOnly, Category = General)
-	float ReloadTime;
-	
+		float ReloadTime;
+
 	UPROPERTY(EditDefaultsOnly, Category = Ammo)
 		TSubclassOf<class ABaseEmpiresProjectile> ProjectileClass;
 
 
-	UPROPERTY(BlueprintReadWrite, Category=Ammo)
-	int32 CurrentAmmo;
 	UPROPERTY(BlueprintReadWrite, Category = Ammo)
-	int32 AmmoInClip;
+		int32 CurrentAmmo;
+	UPROPERTY(BlueprintReadWrite, Category = Ammo)
+		int32 AmmoInClip;
 
 	FAmmoPool()
 	{
@@ -104,10 +104,10 @@ struct FWeaponAnimationSet
 {
 	GENERATED_USTRUCT_BODY()
 public:
-	
+
 	/** AnimMontage to play each time we fire */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Display)
-	class UAnimMontage* FireAnimation;	
+	class UAnimMontage* FireAnimation;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Display)
 		UAnimMontage* ChangeFiremodeAnimation;
@@ -121,9 +121,138 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Sound)
 		USoundBase* ChangeFiremodeSound;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Sound)
 		USoundBase* ReloadSound;
+};
+
+
+
+
+USTRUCT()
+struct FWeaponRecoilData
+{
+	GENERATED_USTRUCT_BODY()
+public:
+
+	//RECOIL
+
+	/*
+		Vertical Recoil
+		How much the gun kicks up when firing in Degrees
+		*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
+		float VerticalRecoilMin;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
+		float VerticalRecoilMax;
+
+	/*
+		Horizontal Recoil.
+		How much the gun kicks left or right in degrees.
+		Multipled by the Left or Right recoil bias.
+		*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
+		float HorizontalRecoilMin;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
+		float HorizontalRecoilMax;
+
+	/*
+		Possible to kick left or right.
+		*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
+		bool RightRecoils;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
+		bool LeftRecoils;
+
+	/*
+		Multiplies agains the horizontal recoil max/min to scale down the different directional recoil
+		*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
+		float RightRecoilBias;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
+		float LeftRecoilBias;
+
+	/*
+		How much the first shot recoils over consecutive shots
+		*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
+		float FirstShotRecoilMultiplier;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
+		float StandingRecoilMultiplier;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
+		float CrouchingRecoilMultiplier;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
+		float ProneRecoilMultiplier;
+
+
+	//CONE OF FIRE
+	/*
+		How fast do you move while ADSing
+		*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = MoveSpeed)
+		float ADSMoveSpeedMultiplier;
+
+	/*
+		Default cone of fire while standing and firing from the hip
+		*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
+		float StandHipMove;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
+		float StandHipStill;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
+		float StandADSMove;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
+		float StandADSStill;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
+		float CrouchHipMove;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
+		float CrouchHipStill;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
+		float CrouchADSMove;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
+		float CrouchADSStill;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
+		float ProneHipMove;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
+		float ProneHipStill;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
+		float ProneADSMove;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
+		float ProneADSStill;
+
+	/*
+		How much the cone of fire blooms when firing from these positions.  Multiplies by the related category above
+		*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
+		float StandingHipBloom;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
+		float CrouchingHipBloom;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
+		float ProneHipBloom;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
+		float StandingADSBloom;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
+		float CrouchingADSBloom;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
+		float ProneADSBloom;
+
+	/*
+		How large can the cone of fire get
+		*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
+		float MaxStand;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
+		float MaxCrouch;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
+		float MaxProne;
+
 };
 
 /**
@@ -142,11 +271,11 @@ public:
 
 	//Display Properties
 public:
-	
+
 	UPROPERTY(EditDefaultsOnly, Category = Display)
 		USkeletalMesh* ViewModel;
 
-	
+
 
 	///////////////// HELPERS
 public:
@@ -155,7 +284,7 @@ public:
 	virtual void PlayAnimation(UAnimMontage* Animation);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Display)
-	TArray<FWeaponAnimationSet> AnimationSets;
+		TArray<FWeaponAnimationSet> AnimationSets;
 
 	virtual FWeaponAnimationSet GetActiveWeaponAnimationSet()
 	{
@@ -192,7 +321,7 @@ public:
 
 	/*Called when the weapon is to fire a single bullet/projectile*/
 	virtual void FireShot();
-	
+
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Projectile)
 		FEmpDamageInfo DamageInfo; //TODO: Remove this, Let Ammo Pool Decide
@@ -206,16 +335,16 @@ public:
 public:
 	/*
 		Fire Data for the indivdual Firemode.
-	*/
+		*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Firemodes)
 		TArray<FWeaponData> FiremodeData;
 
 	/*
 		Number of ammo pools.  Each firemode references an ammo pool.  Useful for different firemodes that fire different projectile types
-	*/
+		*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Firemodes)
-	TArray<FAmmoPool> AmmoPools;
-		
+		TArray<FAmmoPool> AmmoPools;
+
 	UFUNCTION(BlueprintCallable, Category = Firemode)
 		virtual FWeaponData GetActiveFiremodeData();
 
@@ -238,9 +367,9 @@ protected:
 	int32 ActiveFiremode;
 
 
-		//Ammo
+	//Ammo
 public:
-	virtual void ConsumeAmmo(int32 HowMuch = 1, int32 FromAmmoPool = CurrentAmmopool );
+	virtual void ConsumeAmmo(int32 HowMuch = 1, int32 FromAmmoPool = CurrentAmmopool);
 
 	//UFUNCTION(BlueprintCallable, Category = Firemode) //TODO: Figure out how to do default params with UFUNCTIONS
 	virtual int32 GetAmmoInClip(int32 FromAmmoPool = CurrentAmmopool);
@@ -258,7 +387,9 @@ protected:
 	FAmmoPool GetAmmoPool(int32 FromAmmoPool = CurrentAmmopool);
 
 	bool bReloading;
-		
 
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Firemodes)
+		TArray<FWeaponRecoilData> RecoilData;
 
 };
