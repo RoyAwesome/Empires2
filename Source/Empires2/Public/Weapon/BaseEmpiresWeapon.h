@@ -138,118 +138,195 @@ public:
 	//RECOIL
 
 	/*
-		Vertical Recoil
-		How much the gun kicks up when firing in Degrees
-		*/
+		How much the gun kicks up in degrees max.  
+		Actual recoil value will be between Min and Max Inclusive
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
 		float VerticalRecoilMin;
+	/* 
+		How much the gun kicks up in degrees min.  
+		Actual recoil value will be between Min and Max Inclusive
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
 		float VerticalRecoilMax;
 
-	/*
-		Horizontal Recoil.
-		How much the gun kicks left or right in degrees.
+	/*		
+		How much the gun kicks left or right in degrees max.
 		Multipled by the Left or Right recoil bias.
-		*/
+		Actual recoil value will be between Min and Max Inclusive
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
 		float HorizontalRecoilMin;
+	/*
+	How much the gun kicks left or right in degrees min.
+	Multipled by the Left or Right recoil bias.
+	Actual recoil value will be between Min and Max Inclusive
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
 		float HorizontalRecoilMax;
 
+	
 	/*
-		Possible to kick left or right.
-		*/
+	Indicates whether it is possible to recoil to the right
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
 		bool RightRecoils;
+	/*
+	Indicates whether it is possible to recoil to the left
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
 		bool LeftRecoils;
 
 	/*
-		Multiplies agains the horizontal recoil max/min to scale down the different directional recoil
-		*/
+	Scales the recoil in the Right direction
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
 		float RightRecoilBias;
+	/*
+	Scales the recoil in the Left direction
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
 		float LeftRecoilBias;
 
 	/*
-		How much the first shot recoils over consecutive shots
-		*/
+		How much more the first shot recoils over consecutive shots.
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
 		float FirstShotRecoilMultiplier;
 
+	/*
+	Scales all recoils when standing
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
 		float StandingRecoilMultiplier;
+	/*
+	Scales all recoils when crouching
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
 		float CrouchingRecoilMultiplier;
+	/*
+	Scales all recoils when prone
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
 		float ProneRecoilMultiplier;
 
 
 	//CONE OF FIRE
 	/*
-		How fast do you move while ADSing
-		*/
+	How fast do you move when Aiming Down Sights, scaled from normal player movement
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = MoveSpeed)
 		float ADSMoveSpeedMultiplier;
 
 	/*
-		Default cone of fire while standing and firing from the hip
-		*/
+	Default cone of fire when moving and firing from the hip
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float StandHipMove;
+	/*
+	Default cone of fire when standing and firing from the hip
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float StandHipStill;
 
+	/*
+	Default cone of fire when standing and moving while aiming down sights
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float StandADSMove;
+	/*
+	Default cone of fire when standing while aiming down sights
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float StandADSStill;
-
+	/*
+	Default cone of fire when crouching and moving
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float CrouchHipMove;
+	/*
+	Default cone of fire when crouching
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float CrouchHipStill;
-
+	/*
+	Default cone of fire when crouching and moving while aiming down sights
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float CrouchADSMove;
+	/*
+	Default cone of fire when crouching while aiming down sights
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float CrouchADSStill;
 
+	/*
+	Default cone of fire when prone and moving
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float ProneHipMove;
+	/*
+	Default cone of fire when prone
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float ProneHipStill;
 
+	/*
+	Default cone of fire when prone and moving while aiming down sights
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float ProneADSMove;
+	/*
+	Default cone of fire when prone while aiming down sights
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float ProneADSStill;
 
 	/*
-		How much the cone of fire blooms when firing from these positions.  Multiplies by the related category above
-		*/
+	How much the cone of fire blooms when standing per shot. 	
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float StandingHipBloom;
+	/*
+	How much the cone of fire blooms when crouching per shot.
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float CrouchingHipBloom;
+	/*
+	How much the cone of fire blooms when prone per shot.
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float ProneHipBloom;
 
+	/*
+	How much the cone of fire blooms when standing and aiming down sights per shot.
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float StandingADSBloom;
+	/*
+	How much the cone of fire blooms when crouching and aiming down sights per shot.
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float CrouchingADSBloom;
+	/*
+	How much the cone of fire blooms when prone and aiming down sights per shot.
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float ProneADSBloom;
 
 	/*
-		How large can the cone of fire get
-		*/
+	How large can the cone of fire get while standing
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float MaxStand;
+	/*
+	How large can the cone of fire get while crouching
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float MaxCrouch;
+	/*
+	How large can the cone of fire get while prone
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float MaxProne;
 
