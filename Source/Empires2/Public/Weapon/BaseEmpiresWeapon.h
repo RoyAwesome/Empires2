@@ -253,6 +253,59 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float MaxProne;
 
+	
+	FWeaponRecoilData()
+	{
+		VerticalRecoilMin = .1f;
+		VerticalRecoilMax = .15f;
+
+		HorizontalRecoilMin = 0.25;
+		HorizontalRecoilMin = 0.275;
+
+		RightRecoils = true;
+		LeftRecoils = false;
+
+		RightRecoilBias = 1;
+		LeftRecoilBias = 0;
+
+		FirstShotRecoilMultiplier = 3;
+
+		StandingRecoilMultiplier = 1;
+		CrouchingRecoilMultiplier = .85f;
+		ProneRecoilMultiplier = .70;
+
+		ADSMoveSpeedMultiplier = .5f;
+
+		StandHipMove = 2.25f;
+		StandHipStill = 1.5f;
+
+		StandADSMove = 0.35f;
+		StandADSStill = 0.1f;
+
+		CrouchHipMove = 1.75f;
+		CrouchHipStill = 1.125f;
+
+		CrouchADSMove = 0.2;
+		CrouchADSStill = 0.1;
+
+		ProneHipMove = 1.25f;
+		ProneHipStill = .9f;
+
+		ProneADSMove = 0.1f;
+		ProneADSStill = 0.065f;
+
+		StandingHipBloom = .1f;
+		CrouchingHipBloom = .1f;
+		ProneHipBloom = .1f;
+
+		StandingADSBloom = 0.05f;
+		CrouchingADSBloom = 0.05f;
+		ProneADSBloom = 0.05f;
+
+		MaxStand = 5 * StandHipStill;
+		MaxCrouch = 5 * CrouchHipStill;
+		MaxProne = 5 * ProneHipStill;
+	}
 };
 
 /**
