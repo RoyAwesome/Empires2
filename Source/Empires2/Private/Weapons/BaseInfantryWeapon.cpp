@@ -10,4 +10,9 @@ UBaseInfantryWeapon::UBaseInfantryWeapon(const class FPostConstructInitializePro
 
 }
 
+void UBaseInfantryWeapon::Equip()
+{
+	Super::Equip();
 
+	PlayAnimation(DrawWeaponAnimation);
+}

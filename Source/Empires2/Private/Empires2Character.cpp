@@ -173,20 +173,7 @@ void AEmpires2Character::DrawWeapon(UBaseInfantryWeapon* Weapon)
 		Mesh1P->SetHiddenInGame(false);
 	}
 
-
-	//Set the mesh to be the weapon we have
-	Mesh1P->SetSkeletalMesh(Weapon->ViewModel);
-	Mesh1P->SetAnimation(Weapon->FireAnimation);
-
-	if (Weapon->DrawWeaponAnimation != nullptr)
-	{
-		// Get the animation object for the arms mesh
-		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-		if (AnimInstance != nullptr)
-		{
-			AnimInstance->Montage_Play(Weapon->DrawWeaponAnimation, 1.f);
-		}
-	}
+	Weapon->Equip();
 
 }
 

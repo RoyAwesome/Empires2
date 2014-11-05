@@ -22,4 +22,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Display)
 	class UAnimMontage* PutAwayWeaponAnimation;
 
+	virtual void Equip() override;
+
 };

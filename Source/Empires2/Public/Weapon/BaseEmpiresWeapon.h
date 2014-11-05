@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "BaseEmpiresWeapon.generated.h"
 
+const int32 CurrentAmmopool = -1;
+const int32 CurrentFiremode = -1;
+
 USTRUCT()
 struct FEmpDamageInfo : public FDamageEvent
 {
@@ -26,10 +29,7 @@ public:
 
 	//Ammo Info
 	UPROPERTY(EditDefaultsOnly, Category = Ammo)
-		int32 AmmoConsumedPerShot;
-	
-	UPROPERTY(EditDefaultsOnly, Category = Ammo)
-		int32 AmmoPoolIndex;
+		int32 AmmoConsumedPerShot;	
 
 	//FireBehavior
 	UPROPERTY(EditDefaultsOnly, Category = Behavior)
@@ -40,6 +40,13 @@ public:
 		int32 RoundsPerShot;
 	UPROPERTY(EditDefaultsOnly, Category = Behavior)
 		TSubclassOf<class UBaseFiremode> FiremodeClass;
+
+	//Indexes
+	UPROPERTY(EditDefaultsOnly, Category = DataReferences)
+		int32 AmmoPoolIndex;
+	UPROPERTY(EditDefaultsOnly, Category = DataReferences)
+		int32 AnimationSetIndex;
+
 
 	//Damage
 	UPROPERTY(EditDefaultsOnly, Category = Damage)
@@ -73,7 +80,6 @@ public:
 		TSubclassOf<class ABaseEmpiresProjectile> ProjectileClass;
 
 	int32 CurrentAmmo;
-
 	int32 AmmoInClip;
 
 	FAmmoPool()
@@ -86,8 +92,33 @@ public:
 	}
 
 };
+
+USTRUCT()
+struct FWeaponAnimationSet
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	/** Sound to play each time we fire */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Display)
+	class USoundBase* FireSound;
+
+	/** AnimMontage to play each time we fire */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Display)
+	class UAnimMontage* FireAnimation;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Display)
+		USoundBase* ChangeFiremodeSound;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Display)
+		UAnimMontage* ChangeFiremodeAnimation;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Display)
+		UAnimMontage* ReloadAnimation;
+	
+};
+
 /**
- *
+ * Base Weapon
  */
 UCLASS(Blueprintable)
 class EMPIRES2_API UBaseEmpiresWeapon : public UObject
@@ -102,50 +133,56 @@ public:
 
 	//Display Properties
 public:
-	/** Sound to play each time we fire */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Display)
-	class USoundBase* FireSound;
-
-	/** AnimMontage to play each time we fire */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Display)
-	class UAnimMontage* FireAnimation;
-
+	
 	UPROPERTY(EditDefaultsOnly, Category = Display)
 		USkeletalMesh* ViewModel;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Display)
-	USoundBase* ChangeFiremodeSound;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Display)
-	class UAnimMontage* ChangeFiremodeAnimation;
+	
 
 	///////////////// HELPERS
 public:
-	void PlaySound(USoundBase* Sound);
+	virtual void PlaySound(USoundBase* Sound);
 
-	void PlayAnimation(UAnimMontage* Animation);
+	virtual void PlayAnimation(UAnimMontage* Animation);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Display)
+	TArray<FWeaponAnimationSet> AnimationSets;
+
+	virtual FWeaponAnimationSet GetActiveWeaponAnimationSet()
+	{
+		int32 idx = GetActiveFiremodeData().AnimationSetIndex;
+		check(idx >= 0 && idx < AnimationSets.Num());
+		return AnimationSets[idx];
+	}
 
 
 public:
 	class AEmpires2Character* OwningCharacter;
 
-	void SetOwner(AEmpires2Character* Owner);
+	virtual void SetOwner(AEmpires2Character* Owner);
 
 	/** Gun muzzle's offset from the characters location */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Weapon)
 		FVector GunOffset;
 
+	//EQUIPPING
+public:
+	virtual void Equip();
+	virtual void Unequip();
+
+
+
 	//Shooting
 public:
 	virtual bool CanFire();
 
-	void BeginFire();
+	virtual void BeginFire();
 
-	void EndFire();
+	virtual void EndFire();
 
 
 	/*Called when the weapon is to fire a single bullet/projectile*/
-	void FireShot();
+	virtual void FireShot();
 	
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Projectile)
@@ -171,27 +208,49 @@ public:
 	TArray<FAmmoPool> AmmoPools;
 		
 
-	FWeaponData GetActiveFiremodeData()
+	virtual FWeaponData GetActiveFiremodeData()
 	{
 		
 		return FiremodeData[ActiveFiremode];
 	}
 
-	UBaseFiremode* GetActiveFiremode()
+	virtual UBaseFiremode* GetActiveFiremode()
 	{
 		return Firemodes[ActiveFiremode];
 	}
 
-	FAmmoPool GetCurrentAmmoPool()
+	virtual FAmmoPool GetCurrentAmmoPool()
 	{
 		return AmmoPools[FiremodeData[ActiveFiremode].AmmoPoolIndex];
 	}
 
 	void NextFiremode();
 
+	virtual UBaseFiremode* GetFiremode(int32 Firemode);
+
+	virtual FWeaponData GetFiremodeData(int32 Firemode);
+
+
 protected:
 	TArray<UBaseFiremode*> Firemodes;
 
 	int32 ActiveFiremode;
+
+
+		//Ammo
+public:
+	virtual void ConsumeAmmo(int32 HowMuch = 1, int32 FromAmmoPool = CurrentAmmopool );
+
+	virtual int32 GetAmmoInClip(int32 FromAmmoPool = CurrentAmmopool);
+
+	virtual int32 GetTotalAmmo(int32 FromAmmoPool = CurrentAmmopool);
+
+	virtual void AddAmmo(int32 Ammount, int32 ToAmmoPool = CurrentAmmopool);
+
+	virtual void Reload(int32 AmmoPool = CurrentAmmopool);
+
+protected:
+		FAmmoPool GetAmmoPool(int32 FromAmmoPool);
+
 
 };

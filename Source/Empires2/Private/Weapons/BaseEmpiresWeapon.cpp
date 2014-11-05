@@ -71,6 +71,26 @@ void UBaseEmpiresWeapon::PlayAnimation(UAnimMontage* Animation)
 	}
 }
 
+
+
+
+
+//////////////////////////EQUIPPING
+void UBaseEmpiresWeapon::Equip()
+{
+	check(OwningCharacter);
+
+	//Set the mesh to be the weapon we have
+	OwningCharacter->Mesh1P->SetSkeletalMesh(ViewModel);
+	OwningCharacter->Mesh1P->SetAnimation(GetActiveWeaponAnimationSet().FireAnimation);
+}
+void UBaseEmpiresWeapon::Unequip()
+{
+
+}
+
+
+
 /////////////////////FIRE CONTROL
 
 bool UBaseEmpiresWeapon::CanFire()
@@ -107,7 +127,7 @@ void UBaseEmpiresWeapon::FireShot()
 
 	if (ammoPool.ProjectileClass == nullptr)
 	{
-		UE_LOG(EmpiresGameplay, Display, TEXT("Unable to fire Weapon %s, firemode %d because projectile is null!"), GetName(), ActiveFiremode);
+		//UE_LOG(EmpiresGameplay, Display, TEXT("Unable to fire Weapon %s, firemode %d because projectile is null!"), GetName(), ActiveFiremode);
 		return;
 	}
 
@@ -125,9 +145,18 @@ void UBaseEmpiresWeapon::FireShot()
 		//And look at it go!
 	}
 
-	PlaySound(FireSound);
+	PlaySound(GetActiveWeaponAnimationSet().FireSound);
+	PlayAnimation(GetActiveWeaponAnimationSet().FireAnimation);
 
-	PlayAnimation(FireAnimation);
+	
+	ConsumeAmmo(GetActiveFiremodeData().AmmoConsumedPerShot);
+
+	//If we are out of ammo, stop firing and reload
+	if (GetAmmoInClip() <= 0)
+	{
+		EndFire();
+		//Reload();
+	}
 
 }
 
@@ -139,12 +168,88 @@ void UBaseEmpiresWeapon::NextFiremode()
 	if (Firemodes.Num() == 1) return; //Don't change firemode if we only have one firemode
 
 	//Play the animation and sound for changing the firemode.
-	PlaySound(ChangeFiremodeSound);
-	PlayAnimation(ChangeFiremodeAnimation);
+	PlaySound(GetActiveWeaponAnimationSet().ChangeFiremodeSound);
+	PlayAnimation(GetActiveWeaponAnimationSet().ChangeFiremodeAnimation);
 
 	ActiveFiremode++;
 	if (ActiveFiremode >= Firemodes.Num())
 	{
 		ActiveFiremode = 0;
 	}
+}
+
+UBaseFiremode* UBaseEmpiresWeapon::GetFiremode(int32 Firemode)
+{
+	if (Firemode == CurrentFiremode)
+	{
+		return GetActiveFiremode();
+	}
+	else
+	{
+		check(Firemode >= 0 && Firemode < Firemodes.Num());
+		return Firemodes[Firemode];
+	}
+}
+
+FWeaponData UBaseEmpiresWeapon::GetFiremodeData(int32 Firemode)
+{
+	if (Firemode == CurrentFiremode)
+	{
+		return GetActiveFiremodeData();
+	}
+	else
+	{
+		check(Firemode >= 0 && Firemode < FiremodeData.Num());
+		return FiremodeData[Firemode];
+	}
+}
+
+////////////////////////////////// AMMO
+
+FAmmoPool UBaseEmpiresWeapon::GetAmmoPool(int32 FromAmmoPool)
+{
+	if (FromAmmoPool == CurrentAmmopool)
+	{
+		return GetCurrentAmmoPool();
+	}
+	else
+	{
+		check(FromAmmoPool >= 0 && FromAmmoPool < AmmoPools.Num());
+		return AmmoPools[FromAmmoPool];
+	}
+}
+
+void UBaseEmpiresWeapon::ConsumeAmmo(int32 HowMuch, int32 FromAmmoPool)
+{
+	FAmmoPool AmmoPool = GetAmmoPool(FromAmmoPool);
+
+	AmmoPool.AmmoInClip -= HowMuch;
+	AmmoPool.CurrentAmmo -= HowMuch;
+}
+
+int32 UBaseEmpiresWeapon::GetAmmoInClip(int32 FromAmmoPool)
+{
+	FAmmoPool AmmoPool = GetAmmoPool(FromAmmoPool);
+	return AmmoPool.AmmoInClip;
+}
+
+int32 UBaseEmpiresWeapon::GetTotalAmmo(int32 FromAmmoPool)
+{
+	FAmmoPool AmmoPool = GetAmmoPool(FromAmmoPool);
+	return AmmoPool.CurrentAmmo;
+}
+
+void UBaseEmpiresWeapon::AddAmmo(int32 Ammount, int32 ToAmmoPool)
+{
+	FAmmoPool AmmoPool = GetAmmoPool(ToAmmoPool);
+	AmmoPool.CurrentAmmo += Ammount;
+	if (AmmoPool.CurrentAmmo > AmmoPool.MaxAmmo)
+	{
+		AmmoPool.CurrentAmmo = AmmoPool.MaxAmmo;
+	}
+}
+
+void UBaseEmpiresWeapon::Reload(int32 AmmoPool)
+{
+
 }
