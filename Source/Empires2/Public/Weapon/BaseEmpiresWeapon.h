@@ -76,10 +76,16 @@ public:
 	int32 MaxAmmo;
 	UPROPERTY(EditDefaultsOnly, Category = General)
 	int32 ClipSize;
+	UPROPERTY(EditDefaultsOnly, Category = General)
+	float ReloadTime;
+	
 	UPROPERTY(EditDefaultsOnly, Category = Ammo)
 		TSubclassOf<class ABaseEmpiresProjectile> ProjectileClass;
 
+
+	UPROPERTY(BlueprintReadWrite, Category=Ammo)
 	int32 CurrentAmmo;
+	UPROPERTY(BlueprintReadWrite, Category = Ammo)
 	int32 AmmoInClip;
 
 	FAmmoPool()
@@ -98,23 +104,26 @@ struct FWeaponAnimationSet
 {
 	GENERATED_USTRUCT_BODY()
 public:
-	/** Sound to play each time we fire */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Display)
-	class USoundBase* FireSound;
-
+	
 	/** AnimMontage to play each time we fire */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Display)
-	class UAnimMontage* FireAnimation;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Display)
-		USoundBase* ChangeFiremodeSound;
+	class UAnimMontage* FireAnimation;	
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Display)
 		UAnimMontage* ChangeFiremodeAnimation;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Display)
 		UAnimMontage* ReloadAnimation;
+
+	/** Sound to play each time we fire */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Sound)
+	class USoundBase* FireSound;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Sound)
+		USoundBase* ChangeFiremodeSound;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Sound)
+		USoundBase* ReloadSound;
 };
 
 /**
@@ -207,22 +216,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Firemodes)
 	TArray<FAmmoPool> AmmoPools;
 		
+	UFUNCTION(BlueprintCallable, Category = Firemode)
+		virtual FWeaponData GetActiveFiremodeData();
 
-	virtual FWeaponData GetActiveFiremodeData()
-	{
-		
-		return FiremodeData[ActiveFiremode];
-	}
+	UFUNCTION(BlueprintCallable, Category = Firemode)
+		virtual UBaseFiremode* GetActiveFiremode();
 
-	virtual UBaseFiremode* GetActiveFiremode()
-	{
-		return Firemodes[ActiveFiremode];
-	}
-
-	virtual FAmmoPool GetCurrentAmmoPool()
-	{
-		return AmmoPools[FiremodeData[ActiveFiremode].AmmoPoolIndex];
-	}
+	UFUNCTION(BlueprintCallable, Category = Firemode)
+		virtual FAmmoPool GetCurrentAmmoPool();
 
 	void NextFiremode();
 
@@ -241,16 +242,23 @@ protected:
 public:
 	virtual void ConsumeAmmo(int32 HowMuch = 1, int32 FromAmmoPool = CurrentAmmopool );
 
+	//UFUNCTION(BlueprintCallable, Category = Firemode) //TODO: Figure out how to do default params with UFUNCTIONS
 	virtual int32 GetAmmoInClip(int32 FromAmmoPool = CurrentAmmopool);
 
+	//UFUNCTION(BlueprintCallable, Category = Firemode)
 	virtual int32 GetTotalAmmo(int32 FromAmmoPool = CurrentAmmopool);
 
 	virtual void AddAmmo(int32 Ammount, int32 ToAmmoPool = CurrentAmmopool);
 
-	virtual void Reload(int32 AmmoPool = CurrentAmmopool);
+	virtual void Reload();
+
+	virtual void DoReload();
 
 protected:
-		FAmmoPool GetAmmoPool(int32 FromAmmoPool);
+	FAmmoPool GetAmmoPool(int32 FromAmmoPool = CurrentAmmopool);
+
+	bool bReloading;
+		
 
 
 };

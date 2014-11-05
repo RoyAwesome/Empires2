@@ -11,7 +11,7 @@
 DECLARE_LOG_CATEGORY_EXTERN(EmpiresGameplay, Display, All);
 DECLARE_LOG_CATEGORY_EXTERN(EmpiresNetwork, Log, All);
 
-#define SCREENLOG(text, ...) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White, FString::Printf__VA(text, ##__VA_ARGS__))
+#define SCREENLOG(text, ...) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White, FString::Printf__VA(TEXT("[%s:%d] %s"), TEXT(__FUNCTION__), __LINE__, *FString::Printf__VA(text, ##__VA_ARGS__)))
 
 
 #endif

@@ -83,6 +83,7 @@ void AEmpires2Character::SetupPlayerInputComponent(class UInputComponent* InputC
 	InputComponent->BindAction("PreviousWeapon", IE_Pressed, this, &AEmpires2Character::SelectPreviousWeapon);
 	InputComponent->BindAction("LastWeapon", IE_Pressed, this, &AEmpires2Character::SelectLastWeapon);
 	InputComponent->BindAction("ChangeFiremode", EInputEvent::IE_Pressed, this, &AEmpires2Character::ChangeFiremode);
+	InputComponent->BindAction("Reload", EInputEvent::IE_Pressed, this, &AEmpires2Character::ReloadWeapon);
 
 
 	//Movement
@@ -237,7 +238,15 @@ void AEmpires2Character::SelectLastWeapon()
 void AEmpires2Character::ChangeFiremode()
 {
 	UBaseInfantryWeapon* Weapon = GetActiveWeapon();
-	if (Weapon == nullptr) return; //No weapon? Don't bother chaning firemode
+	if (Weapon == nullptr) return; //No weapon? Don't bother changing firemode
 
 	Weapon->NextFiremode();
+}
+
+void AEmpires2Character::ReloadWeapon()
+{
+	UBaseInfantryWeapon* Weapon = GetActiveWeapon();
+	if (Weapon == nullptr) return; //No weapon? Don't bother reloading
+
+	Weapon->Reload();
 }

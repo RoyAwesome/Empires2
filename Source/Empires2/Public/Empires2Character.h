@@ -70,14 +70,17 @@ public:
 	void DrawWeapon(UBaseInfantryWeapon* Weapon);
 	void SwitchToWeapon(EInfantryInventorySlots::Type Weapon);
 
+	UFUNCTION(BlueprintCallable, Category = Weapon)
 	UBaseInfantryWeapon* GetActiveWeapon();
 
-	/* Weapon Input Events*/
+	/* Weapon Input Events */
 	void SelectNextWeapon();
 	void SelectPreviousWeapon();
 	void SelectLastWeapon();
-
 	void ChangeFiremode();
+	void ReloadWeapon();
+	/* End Weapon Input Events */
+
 protected:
 		
 	EInfantryInventorySlots::Type SelectedWeapon;

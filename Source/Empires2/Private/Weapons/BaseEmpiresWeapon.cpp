@@ -13,7 +13,7 @@ UBaseEmpiresWeapon::UBaseEmpiresWeapon(const class FPostConstructInitializePrope
 
 	GunOffset = FVector(100.0f, 30.0f, 10.0f);
 	ActiveFiremode = 0;
-
+	bReloading = false;
 }
 
 //////////////////////GENERAL
@@ -97,13 +97,24 @@ bool UBaseEmpiresWeapon::CanFire()
 {
 	UBaseFiremode* firemode = GetActiveFiremode();
 	if (firemode == nullptr) return false; //No active firemode
+	if (bReloading) return false; //Can't fire when we are reloading
+	if (GetCurrentAmmoPool().AmmoInClip <= 0) return false; //If we have no ammo, we can't fire
+	
 	//TODO: Check if the firemode is capable of firing
+
 
 	return true;
 }
 
 void UBaseEmpiresWeapon::BeginFire()
 {
+	if (!CanFire()) return; //Don't Fire if we can't fire
+	if (GetCurrentAmmoPool().AmmoInClip <= 0) //If we are out of ammo, attempt to reload
+	{
+		Reload();
+		return;
+	}
+
 	UBaseFiremode* firemode = GetActiveFiremode();
 	check(firemode);
 	firemode->BeginFire();
@@ -155,12 +166,30 @@ void UBaseEmpiresWeapon::FireShot()
 	if (GetAmmoInClip() <= 0)
 	{
 		EndFire();
-		//Reload();
+		Reload();
 	}
 
 }
 
 ///////////////////////////////////// FIREMODES
+FWeaponData UBaseEmpiresWeapon::GetActiveFiremodeData()
+{
+
+	return FiremodeData[ActiveFiremode];
+}
+
+
+UBaseFiremode* UBaseEmpiresWeapon::GetActiveFiremode()
+{
+	return Firemodes[ActiveFiremode];
+}
+
+
+FAmmoPool UBaseEmpiresWeapon::GetCurrentAmmoPool()
+{
+	return AmmoPools[FiremodeData[ActiveFiremode].AmmoPoolIndex];
+}
+
 
 void UBaseEmpiresWeapon::NextFiremode()
 {
@@ -221,10 +250,9 @@ FAmmoPool UBaseEmpiresWeapon::GetAmmoPool(int32 FromAmmoPool)
 
 void UBaseEmpiresWeapon::ConsumeAmmo(int32 HowMuch, int32 FromAmmoPool)
 {
-	FAmmoPool AmmoPool = GetAmmoPool(FromAmmoPool);
+	int32 AmmoPoolidx = FromAmmoPool == CurrentAmmopool ? GetActiveFiremodeData().AmmoPoolIndex : FromAmmoPool;
 
-	AmmoPool.AmmoInClip -= HowMuch;
-	AmmoPool.CurrentAmmo -= HowMuch;
+	AmmoPools[AmmoPoolidx].AmmoInClip -= HowMuch;
 }
 
 int32 UBaseEmpiresWeapon::GetAmmoInClip(int32 FromAmmoPool)
@@ -249,7 +277,48 @@ void UBaseEmpiresWeapon::AddAmmo(int32 Ammount, int32 ToAmmoPool)
 	}
 }
 
-void UBaseEmpiresWeapon::Reload(int32 AmmoPool)
+void UBaseEmpiresWeapon::Reload()
 {
+	if (GetTotalAmmo() <= 0) return; //We don't have any ammo to reload
 
+	SCREENLOG(TEXT("Starting Reload"));
+
+	//Get the current reload animation
+	UAnimMontage* ReloadAnim = GetActiveWeaponAnimationSet().ReloadAnimation;
+	float ReloadTime = GetAmmoPool().ReloadTime;
+
+	if (ReloadAnim == nullptr)
+	{
+		PlayAnimation(ReloadAnim);
+	}
+
+	GetWorld()->GetTimerManager().SetTimer(this, &UBaseEmpiresWeapon::DoReload, ReloadTime, false);
+
+	bReloading = true;
+}
+
+void UBaseEmpiresWeapon::DoReload()
+{
+	SCREENLOG(TEXT("Ending Reload"));
+
+	int Idx = GetActiveFiremodeData().AmmoPoolIndex;
+
+
+	if (AmmoPools[Idx].CurrentAmmo < AmmoPools[Idx].ClipSize) //We don't have enough ammo to fill out a full clip
+	{
+		AmmoPools[Idx].AmmoInClip = AmmoPools[Idx].CurrentAmmo; //So set the ammo to whatever is left
+		AmmoPools[Idx].CurrentAmmo = 0;
+	}
+	else //Otherwise, max out our clip
+	{
+		//Figure out how many bullets we need
+		int32 bulletsNeeded = AmmoPools[Idx].ClipSize - AmmoPools[Idx].AmmoInClip;
+
+		//Max out the clip size
+		AmmoPools[Idx].AmmoInClip = AmmoPools[Idx].ClipSize;
+		//And take the diff from the pool
+		AmmoPools[Idx].CurrentAmmo -= bulletsNeeded;
+	}
+	bReloading = false;
+	
 }
