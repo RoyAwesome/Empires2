@@ -179,6 +179,7 @@ void UBaseEmpiresWeapon::FireShot()
 
 	
 	ConsumeAmmo(GetActiveFiremodeData().AmmoConsumedPerShot);
+	ShotsFired++;
 
 	//Recoil the shot
 

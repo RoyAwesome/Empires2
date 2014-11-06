@@ -137,10 +137,10 @@ void AEmpires2Character::LookUpAtRate(float Rate)
 
 void AEmpires2Character::BeginFire()
 {
-	UBaseInfantryWeapon* Weapon = GetActiveWeapon();
-	if (Weapon == nullptr) return; //No weapon? Don't bother firing
+	UBaseInfantryWeapon* Weap = GetActiveWeapon();
+	if (Weap == nullptr) return; //No weapon? Don't bother firing
 
-	Weapon->BeginFire();
+	Weap->BeginFire();
 
 }
 void AEmpires2Character::EndFire()
