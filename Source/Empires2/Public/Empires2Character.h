@@ -33,7 +33,16 @@ class AEmpires2Character : public ACharacter
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 	TSubobjectPtr<class USkeletalMeshComponent> Mesh1P;
 
+public:
+	bool IsMoving()
+	{
+		return bIsMoving;
+	}
+
+
+
 protected:
+
 
 	void BeginPlay() override;
 		
@@ -54,6 +63,8 @@ protected:
 	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
 	 */
 	void LookUpAtRate(float Rate);
+
+	bool bIsMoving;
 
 	class AEmpiresPlayerState* GetEmpiresPlayerState()
 	{

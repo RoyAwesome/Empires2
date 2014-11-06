@@ -108,6 +108,7 @@ void AEmpires2Character::MoveForward(float Value)
 		// add movement in that direction
 		AddMovementInput(GetActorForwardVector(), Value);
 	}
+	
 }
 
 void AEmpires2Character::MoveRight(float Value)
@@ -117,6 +118,7 @@ void AEmpires2Character::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(GetActorRightVector(), Value);
 	}
+	
 }
 
 void AEmpires2Character::TurnAtRate(float Rate)

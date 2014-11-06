@@ -119,6 +119,9 @@ void UBaseEmpiresWeapon::BeginFire()
 	check(firemode);
 	firemode->BeginFire();
 
+	bIsFiring = true;
+	ShotsFired = 0;
+
 }
 
 void UBaseEmpiresWeapon::EndFire()
@@ -126,6 +129,8 @@ void UBaseEmpiresWeapon::EndFire()
 	UBaseFiremode* firemode = GetActiveFiremode();
 	check(firemode);
 	firemode->EndFire();
+
+	bIsFiring = false;
 }
 
 
@@ -142,11 +147,24 @@ void UBaseEmpiresWeapon::FireShot()
 		return;
 	}
 
+	
+
+
+
 	const FRotator SpawnRotation = OwningCharacter->GetControlRotation();
 	// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
 	const FVector SpawnLocation = OwningCharacter->GetActorLocation() + SpawnRotation.RotateVector(GunOffset);
 
+	FVector AimDirection = GetFireDirection();
+
+	DrawDebugLine(GetWorld(), SpawnLocation, SpawnLocation + (AimDirection * 1000), FColor::Blue, true, -1.0f, 0, 1);
+	FVector CofDirection = AdjustByCof(AimDirection);
+	DrawDebugLine(GetWorld(), SpawnLocation, SpawnLocation + (CofDirection * 1000), FColor::Red, true, -1.0f, 0, 1);
+
+
 	UWorld* const World = GetWorld();
+
+
 	if (World != NULL)
 	{
 		// spawn the projectile at the muzzle
@@ -162,6 +180,10 @@ void UBaseEmpiresWeapon::FireShot()
 	
 	ConsumeAmmo(GetActiveFiremodeData().AmmoConsumedPerShot);
 
+	//Recoil the shot
+
+
+
 	//If we are out of ammo, stop firing and reload
 	if (GetAmmoInClip() <= 0)
 	{
@@ -169,6 +191,14 @@ void UBaseEmpiresWeapon::FireShot()
 		Reload();
 	}
 
+}
+
+FVector UBaseEmpiresWeapon::GetFireDirection()
+{
+	FVector Vec;
+	FRotator Rot;
+	OwningCharacter->GetController()->GetPlayerViewPoint(Vec, Rot);
+	return Rot.Vector();
 }
 
 ///////////////////////////////////// FIREMODES
@@ -321,4 +351,57 @@ void UBaseEmpiresWeapon::DoReload()
 	}
 	bReloading = false;
 	
+}
+
+FVector UBaseEmpiresWeapon::AdjustByCof(FVector Aim)
+{
+	//Get the current cone of fire
+
+	FWeaponRecoilData recoilData = GetCurrentRecoilData();
+
+	/* CONE OF FIRE CALC
+	BaseCof is the default cone of fire for the first shot.
+	BloomModifier is how much the cone of fire blooms per shot.
+	MaxCoF is the maximum value that the cone can get to.
+
+	Cone Angle is calculated as:
+
+	ActualCoF = BaseCof	+ (BloomModifier * NumberOfShots)
+
+	Cone of Fire will always be BaseCoF < ActualCoF < MaxCoF
+	*/
+
+	float BaseCof = 0;
+	float BloomModifier = 0;
+	float MaxCof = recoilData.MaxStand;
+
+
+	//TODO: Get movementstate
+	//TODO: Get Standing/Crouching/Prone
+	//TODO: Get ADS or Hip
+	if (OwningCharacter->IsMoving())
+	{
+		BaseCof = recoilData.StandHipMove;
+		BloomModifier = recoilData.StandingHipBloom;
+	}
+	else
+	{
+		BaseCof = recoilData.StandHipStill;
+	}
+
+
+	//Add cof bloom
+	float AdjustedBloom = FMath::Min((BaseCof + (BloomModifier * ShotsFired)), MaxCof);
+
+
+	return FMath::VRandCone(Aim, FMath::DegreesToRadians(AdjustedBloom / 2));
+
+}
+float UBaseEmpiresWeapon::RollVerticalRecoil()
+{
+	return 0;
+}
+float UBaseEmpiresWeapon::RollHorizontalRecoil()
+{
+	return 0;
 }

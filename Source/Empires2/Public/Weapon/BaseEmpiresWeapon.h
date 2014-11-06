@@ -46,6 +46,8 @@ public:
 		int32 AmmoPoolIndex;
 	UPROPERTY(EditDefaultsOnly, Category = DataReferences)
 		int32 AnimationSetIndex;
+	UPROPERTY(EditDefaultsOnly, Category = DataReferences)
+	int32 RecoilDataIndex;
 
 
 	//Damage
@@ -125,9 +127,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Sound)
 		USoundBase* ReloadSound;
 };
-
-
-
 
 USTRUCT()
 struct FWeaponRecoilData
@@ -456,8 +455,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Projectile)
 		FEmpDamageInfo DamageInfo; //TODO: Remove this, Let Ammo Pool Decide
 
+	FVector GetFireDirection();
 
-
+protected:
+	bool bIsFiring;
+	int32 ShotsFired;
 
 
 
@@ -521,5 +523,16 @@ protected:
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Firemodes)
 		TArray<FWeaponRecoilData> RecoilData;
+
+	FWeaponRecoilData GetCurrentRecoilData()
+	{
+		return RecoilData[GetActiveFiremodeData().RecoilDataIndex];
+	}
+protected:
+	float CurrentCoF;
+
+	FVector AdjustByCof(FVector Aim);
+	float RollVerticalRecoil();
+	float RollHorizontalRecoil();
 
 };
