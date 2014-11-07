@@ -161,6 +161,7 @@ void UBaseEmpiresWeapon::FireShot()
 	FVector CofDirection = AdjustByCof(AimDirection);
 	DrawDebugLine(GetWorld(), SpawnLocation, SpawnLocation + (CofDirection * 1000), FColor::Red, true, -1.0f, 0, 1);
 
+	FRotator ConeAdjustedAngle = CofDirection.Rotation();
 
 	UWorld* const World = GetWorld();
 
@@ -168,7 +169,7 @@ void UBaseEmpiresWeapon::FireShot()
 	if (World != NULL)
 	{
 		// spawn the projectile at the muzzle
-		ABaseEmpiresProjectile* projectile = World->SpawnActor<ABaseEmpiresProjectile>(ammoPool.ProjectileClass, SpawnLocation, SpawnRotation);
+		ABaseEmpiresProjectile* projectile = World->SpawnActor<ABaseEmpiresProjectile>(ammoPool.ProjectileClass, SpawnLocation, ConeAdjustedAngle);
 		projectile->OwningWeapon = this;
 
 		//And look at it go!
@@ -182,7 +183,8 @@ void UBaseEmpiresWeapon::FireShot()
 	ShotsFired++;
 
 	//Recoil the shot
-
+	OwningCharacter->AddControllerPitchInput(-RollVerticalRecoil());
+	OwningCharacter->AddControllerYawInput(RollHorizontalRecoil());
 
 
 	//If we are out of ammo, stop firing and reload
@@ -400,9 +402,69 @@ FVector UBaseEmpiresWeapon::AdjustByCof(FVector Aim)
 }
 float UBaseEmpiresWeapon::RollVerticalRecoil()
 {
-	return 0;
+
+	FWeaponRecoilData recoilData = GetCurrentRecoilData();
+	
+	float minRecoil = recoilData.VerticalRecoilMin;
+	float maxRecoil = recoilData.VerticalRecoilMax;
+
+
+	float recoilVal = FMath::FRandRange(minRecoil, maxRecoil);
+
+	float recoilMultiplier = 1;
+	
+	//TODO: Get stance
+	recoilMultiplier = recoilData.StandingRecoilMultiplier;
+
+	if (ShotsFired == 0) recoilMultiplier += recoilData.FirstShotRecoilMultiplier;
+
+	return recoilVal * recoilMultiplier;
 }
 float UBaseEmpiresWeapon::RollHorizontalRecoil()
 {
-	return 0;
+	
+
+	FWeaponRecoilData recoilData = GetCurrentRecoilData();
+	//If Left and right recoil are both false, we don't horizontal recoil
+	if (!recoilData.LeftRecoils && !recoilData.RightRecoils) return 0;
+
+
+	float minRecoil = recoilData.HorizontalRecoilMin;
+	float maxRecoil = recoilData.HorizontalRecoilMax;
+	bool recoilRight = true;
+
+
+	//Figure out if we are recoiling right or left
+	if (recoilData.LeftRecoils && recoilData.RightRecoils) //If they are both true, pick a random recoil direction
+	{
+		recoilRight = (FMath::Rand() % 2) == 0;
+	}
+	else if (recoilData.LeftRecoils && !recoilData.RightRecoils) //If left is true and right is false, always recoil left
+	{
+		recoilRight = false;
+	}
+	//By default we recoil right
+
+	float recoilVal = FMath::FRandRange(minRecoil, maxRecoil);
+
+	//Scale the recoil direction by the biases
+	if (recoilRight)
+	{
+		recoilVal *= recoilData.RightRecoilBias;
+	}
+	else
+	{
+		recoilVal *= recoilData.LeftRecoilBias;
+		recoilVal = -recoilVal; //Invert the recoil direction
+	}
+
+
+	float recoilMultiplier = 1;
+
+	//TODO: Get stance
+	recoilMultiplier = recoilData.StandingRecoilMultiplier;
+
+	if (ShotsFired == 0) recoilMultiplier += recoilData.FirstShotRecoilMultiplier;
+
+	return recoilVal * recoilMultiplier;
 }
