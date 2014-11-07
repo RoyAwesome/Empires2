@@ -50,7 +50,9 @@ void AEmpires2Character::BeginPlay()
 
 	for (int32 i = 0; i < playerState->Inventory.Weapons.Num(); i++)
 	{
-		UBaseInfantryWeapon* Weap = ConstructObject<UBaseInfantryWeapon>(playerState->Inventory.Weapons[i]);
+		ABaseInfantryWeapon* Weap = GetWorld()->SpawnActor<ABaseInfantryWeapon>(playerState->Inventory.Weapons[i]);
+		Weap->AttachRootComponentToActor(this);
+		
 		Weap->SetOwner(this);
 		playerState->Inventory.ConstructedWeapons.Add(Weap);
 	}
@@ -137,7 +139,7 @@ void AEmpires2Character::LookUpAtRate(float Rate)
 
 void AEmpires2Character::BeginFire()
 {
-	UBaseInfantryWeapon* Weap = GetActiveWeapon();
+	ABaseInfantryWeapon* Weap = GetActiveWeapon();
 	if (Weap == nullptr) return; //No weapon? Don't bother firing
 
 	Weap->BeginFire();
@@ -145,7 +147,7 @@ void AEmpires2Character::BeginFire()
 }
 void AEmpires2Character::EndFire()
 {
-	UBaseInfantryWeapon* Weapon = GetActiveWeapon();
+	ABaseInfantryWeapon* Weapon = GetActiveWeapon();
 	check(Weapon); //If the weapon goes null while we are firing... uh, crash
 
 	Weapon->EndFire();
@@ -153,14 +155,14 @@ void AEmpires2Character::EndFire()
 
 ////////////////////////////////////////////WEAPONS
 
-UBaseInfantryWeapon* AEmpires2Character::GetActiveWeapon()
+ABaseInfantryWeapon* AEmpires2Character::GetActiveWeapon()
 {
 	AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
 	check(playerState);
 	return playerState->Inventory.ConstructedWeapons[this->SelectedWeapon];
 }
 
-void AEmpires2Character::DrawWeapon(UBaseInfantryWeapon* Weapon)
+void AEmpires2Character::DrawWeapon(ABaseInfantryWeapon* Weapon)
 {
 	// Get the animation object for the arms mesh
 	UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
@@ -193,11 +195,11 @@ void AEmpires2Character::SwitchToWeapon(EInfantryInventorySlots::Type Weapon)
 		DrawWeapon(nullptr); //Trying to get a null weapon
 		return;
 	}
-	if (!playerState->Inventory.ConstructedWeapons[Weapon]->GetClass()->IsChildOf(UBaseInfantryWeapon::StaticClass())) return; //Not an infantry weapon
+	if (!playerState->Inventory.ConstructedWeapons[Weapon]->GetClass()->IsChildOf(ABaseInfantryWeapon::StaticClass())) return; //Not an infantry weapon
 
 
 	this->LastSelectedWeapon = this->SelectedWeapon;
-	UBaseInfantryWeapon* Weap = playerState->Inventory.ConstructedWeapons[Weapon];
+	ABaseInfantryWeapon* Weap = playerState->Inventory.ConstructedWeapons[Weapon];
 	DrawWeapon(Weap);
 	this->SelectedWeapon = Weapon;
 
@@ -239,7 +241,7 @@ void AEmpires2Character::SelectLastWeapon()
 
 void AEmpires2Character::ChangeFiremode()
 {
-	UBaseInfantryWeapon* Weapon = GetActiveWeapon();
+	ABaseInfantryWeapon* Weapon = GetActiveWeapon();
 	if (Weapon == nullptr) return; //No weapon? Don't bother changing firemode
 
 	Weapon->NextFiremode();
@@ -247,7 +249,7 @@ void AEmpires2Character::ChangeFiremode()
 
 void AEmpires2Character::ReloadWeapon()
 {
-	UBaseInfantryWeapon* Weapon = GetActiveWeapon();
+	ABaseInfantryWeapon* Weapon = GetActiveWeapon();
 	if (Weapon == nullptr) return; //No weapon? Don't bother reloading
 
 	Weapon->Reload();

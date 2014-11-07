@@ -4,13 +4,13 @@
 #include "BaseInfantryWeapon.h"
 
 
-UBaseInfantryWeapon::UBaseInfantryWeapon(const class FPostConstructInitializeProperties& PCIP)
+ABaseInfantryWeapon::ABaseInfantryWeapon(const class FPostConstructInitializeProperties& PCIP)
 	: Super(PCIP)
 {
 
 }
 
-void UBaseInfantryWeapon::Equip()
+void ABaseInfantryWeapon::Equip()
 {
 	Super::Equip();
 

@@ -16,12 +16,12 @@ class EMPIRES2_API UBaseFiremode : public UObject
 
    //General Usage
 public:
-		virtual void SetWeapon(class UBaseEmpiresWeapon* Weapon);
+		virtual void SetWeapon(class ABaseEmpiresWeapon* Weapon);
 
 		virtual UWorld* GetWorld() const override;
 protected:
 
-	UBaseEmpiresWeapon* Weapon;
+	ABaseEmpiresWeapon* Weapon;
 
 
 	//FIRE CONTROL

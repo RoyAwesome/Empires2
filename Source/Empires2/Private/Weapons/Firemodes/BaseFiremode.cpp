@@ -33,7 +33,7 @@ void UBaseFiremode::HandleFire()
 
 }
 
-void UBaseFiremode::SetWeapon(UBaseEmpiresWeapon* Weapon)
+void UBaseFiremode::SetWeapon(ABaseEmpiresWeapon* Weapon)
 {
 	this->Weapon = Weapon;
 }

@@ -34,9 +34,9 @@ public:
 
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = General)
-	TArray<TSubclassOf<UBaseInfantryWeapon>> Weapons;
+	TArray<TSubclassOf<ABaseInfantryWeapon>> Weapons;
 	
-	TArray<UBaseInfantryWeapon*> ConstructedWeapons;
+	TArray<ABaseInfantryWeapon*> ConstructedWeapons;
 
 	//TODO: Abilities, Skills, etc
 	

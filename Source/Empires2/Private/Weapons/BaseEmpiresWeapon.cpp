@@ -7,7 +7,7 @@
 #include "BaseEmpiresWeapon.h"
 
 
-UBaseEmpiresWeapon::UBaseEmpiresWeapon(const class FPostConstructInitializeProperties& PCIP)
+ABaseEmpiresWeapon::ABaseEmpiresWeapon(const class FPostConstructInitializeProperties& PCIP)
 	: Super(PCIP)
 {
 
@@ -18,7 +18,7 @@ UBaseEmpiresWeapon::UBaseEmpiresWeapon(const class FPostConstructInitializePrope
 
 //////////////////////GENERAL
 
-void UBaseEmpiresWeapon::PostInitProperties()
+void ABaseEmpiresWeapon::PostInitProperties()
 {
 	Super::PostInitProperties();
 
@@ -37,18 +37,18 @@ void UBaseEmpiresWeapon::PostInitProperties()
 	}
 }
 
-UWorld* UBaseEmpiresWeapon::GetWorld() const
+UWorld* ABaseEmpiresWeapon::GetWorld() const
 {
 	check(OwningCharacter);
 	return OwningCharacter->GetWorld();
 }
 
-void UBaseEmpiresWeapon::SetOwner(class AEmpires2Character* Owner)
+void ABaseEmpiresWeapon::SetOwner(class AEmpires2Character* Owner)
 {
 	OwningCharacter = Owner;
 }
 
-void UBaseEmpiresWeapon::PlaySound(USoundBase* Sound)
+void ABaseEmpiresWeapon::PlaySound(USoundBase* Sound)
 {
 	// try and play the sound if specified
 	if (Sound != nullptr)
@@ -57,7 +57,7 @@ void UBaseEmpiresWeapon::PlaySound(USoundBase* Sound)
 	}
 }
 
-void UBaseEmpiresWeapon::PlayAnimation(UAnimMontage* Animation)
+void ABaseEmpiresWeapon::PlayAnimation(UAnimMontage* Animation)
 {
 	// try and play a animation
 	if (Animation != nullptr)
@@ -76,7 +76,7 @@ void UBaseEmpiresWeapon::PlayAnimation(UAnimMontage* Animation)
 
 
 //////////////////////////EQUIPPING
-void UBaseEmpiresWeapon::Equip()
+void ABaseEmpiresWeapon::Equip()
 {
 	check(OwningCharacter);
 
@@ -84,7 +84,7 @@ void UBaseEmpiresWeapon::Equip()
 	OwningCharacter->Mesh1P->SetSkeletalMesh(ViewModel);
 	OwningCharacter->Mesh1P->SetAnimation(GetActiveWeaponAnimationSet().FireAnimation);
 }
-void UBaseEmpiresWeapon::Unequip()
+void ABaseEmpiresWeapon::Unequip()
 {
 
 }
@@ -93,7 +93,7 @@ void UBaseEmpiresWeapon::Unequip()
 
 /////////////////////FIRE CONTROL
 
-bool UBaseEmpiresWeapon::CanFire()
+bool ABaseEmpiresWeapon::CanFire()
 {
 	UBaseFiremode* firemode = GetActiveFiremode();
 	if (firemode == nullptr) return false; //No active firemode
@@ -106,7 +106,7 @@ bool UBaseEmpiresWeapon::CanFire()
 	return true;
 }
 
-void UBaseEmpiresWeapon::BeginFire()
+void ABaseEmpiresWeapon::BeginFire()
 {
 	if (!CanFire()) return; //Don't Fire if we can't fire
 	if (GetCurrentAmmoPool().AmmoInClip <= 0) //If we are out of ammo, attempt to reload
@@ -124,7 +124,7 @@ void UBaseEmpiresWeapon::BeginFire()
 
 }
 
-void UBaseEmpiresWeapon::EndFire()
+void ABaseEmpiresWeapon::EndFire()
 {
 	UBaseFiremode* firemode = GetActiveFiremode();
 	check(firemode);
@@ -134,7 +134,7 @@ void UBaseEmpiresWeapon::EndFire()
 }
 
 
-void UBaseEmpiresWeapon::FireShot()
+void ABaseEmpiresWeapon::FireShot()
 {
 	check(OwningCharacter);
 
@@ -149,7 +149,7 @@ void UBaseEmpiresWeapon::FireShot()
 
 	
 
-
+	
 
 	const FRotator SpawnRotation = OwningCharacter->GetControlRotation();
 	// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
@@ -196,7 +196,7 @@ void UBaseEmpiresWeapon::FireShot()
 
 }
 
-FVector UBaseEmpiresWeapon::GetFireDirection()
+FVector ABaseEmpiresWeapon::GetFireDirection()
 {
 	FVector Vec;
 	FRotator Rot;
@@ -205,26 +205,26 @@ FVector UBaseEmpiresWeapon::GetFireDirection()
 }
 
 ///////////////////////////////////// FIREMODES
-FWeaponData UBaseEmpiresWeapon::GetActiveFiremodeData()
+FWeaponData ABaseEmpiresWeapon::GetActiveFiremodeData()
 {
 
 	return FiremodeData[ActiveFiremode];
 }
 
 
-UBaseFiremode* UBaseEmpiresWeapon::GetActiveFiremode()
+UBaseFiremode* ABaseEmpiresWeapon::GetActiveFiremode()
 {
 	return Firemodes[ActiveFiremode];
 }
 
 
-FAmmoPool UBaseEmpiresWeapon::GetCurrentAmmoPool()
+FAmmoPool ABaseEmpiresWeapon::GetCurrentAmmoPool()
 {
 	return AmmoPools[FiremodeData[ActiveFiremode].AmmoPoolIndex];
 }
 
 
-void UBaseEmpiresWeapon::NextFiremode()
+void ABaseEmpiresWeapon::NextFiremode()
 {
 	if (GetActiveFiremode()->IsFiring()) return; //Don't change modes if we are shooting
 	if (Firemodes.Num() == 1) return; //Don't change firemode if we only have one firemode
@@ -240,7 +240,7 @@ void UBaseEmpiresWeapon::NextFiremode()
 	}
 }
 
-UBaseFiremode* UBaseEmpiresWeapon::GetFiremode(int32 Firemode)
+UBaseFiremode* ABaseEmpiresWeapon::GetFiremode(int32 Firemode)
 {
 	if (Firemode == CurrentFiremode)
 	{
@@ -253,7 +253,7 @@ UBaseFiremode* UBaseEmpiresWeapon::GetFiremode(int32 Firemode)
 	}
 }
 
-FWeaponData UBaseEmpiresWeapon::GetFiremodeData(int32 Firemode)
+FWeaponData ABaseEmpiresWeapon::GetFiremodeData(int32 Firemode)
 {
 	if (Firemode == CurrentFiremode)
 	{
@@ -268,7 +268,7 @@ FWeaponData UBaseEmpiresWeapon::GetFiremodeData(int32 Firemode)
 
 ////////////////////////////////// AMMO
 
-FAmmoPool UBaseEmpiresWeapon::GetAmmoPool(int32 FromAmmoPool)
+FAmmoPool ABaseEmpiresWeapon::GetAmmoPool(int32 FromAmmoPool)
 {
 	if (FromAmmoPool == CurrentAmmopool)
 	{
@@ -281,26 +281,26 @@ FAmmoPool UBaseEmpiresWeapon::GetAmmoPool(int32 FromAmmoPool)
 	}
 }
 
-void UBaseEmpiresWeapon::ConsumeAmmo(int32 HowMuch, int32 FromAmmoPool)
+void ABaseEmpiresWeapon::ConsumeAmmo(int32 HowMuch, int32 FromAmmoPool)
 {
 	int32 AmmoPoolidx = FromAmmoPool == CurrentAmmopool ? GetActiveFiremodeData().AmmoPoolIndex : FromAmmoPool;
 
 	AmmoPools[AmmoPoolidx].AmmoInClip -= HowMuch;
 }
 
-int32 UBaseEmpiresWeapon::GetAmmoInClip(int32 FromAmmoPool)
+int32 ABaseEmpiresWeapon::GetAmmoInClip(int32 FromAmmoPool)
 {
 	FAmmoPool AmmoPool = GetAmmoPool(FromAmmoPool);
 	return AmmoPool.AmmoInClip;
 }
 
-int32 UBaseEmpiresWeapon::GetTotalAmmo(int32 FromAmmoPool)
+int32 ABaseEmpiresWeapon::GetTotalAmmo(int32 FromAmmoPool)
 {
 	FAmmoPool AmmoPool = GetAmmoPool(FromAmmoPool);
 	return AmmoPool.CurrentAmmo;
 }
 
-void UBaseEmpiresWeapon::AddAmmo(int32 Ammount, int32 ToAmmoPool)
+void ABaseEmpiresWeapon::AddAmmo(int32 Ammount, int32 ToAmmoPool)
 {
 	FAmmoPool AmmoPool = GetAmmoPool(ToAmmoPool);
 	AmmoPool.CurrentAmmo += Ammount;
@@ -310,7 +310,7 @@ void UBaseEmpiresWeapon::AddAmmo(int32 Ammount, int32 ToAmmoPool)
 	}
 }
 
-void UBaseEmpiresWeapon::Reload()
+void ABaseEmpiresWeapon::Reload()
 {
 	if (GetTotalAmmo() <= 0) return; //We don't have any ammo to reload
 
@@ -325,12 +325,12 @@ void UBaseEmpiresWeapon::Reload()
 		PlayAnimation(ReloadAnim);
 	}
 
-	GetWorld()->GetTimerManager().SetTimer(this, &UBaseEmpiresWeapon::DoReload, ReloadTime, false);
+	GetWorld()->GetTimerManager().SetTimer(this, &ABaseEmpiresWeapon::DoReload, ReloadTime, false);
 
 	bReloading = true;
 }
 
-void UBaseEmpiresWeapon::DoReload()
+void ABaseEmpiresWeapon::DoReload()
 {
 	SCREENLOG(TEXT("Ending Reload"));
 
@@ -356,7 +356,7 @@ void UBaseEmpiresWeapon::DoReload()
 	
 }
 
-FVector UBaseEmpiresWeapon::AdjustByCof(FVector Aim)
+FVector ABaseEmpiresWeapon::AdjustByCof(FVector Aim)
 {
 	//Get the current cone of fire
 
@@ -400,7 +400,7 @@ FVector UBaseEmpiresWeapon::AdjustByCof(FVector Aim)
 	return FMath::VRandCone(Aim, FMath::DegreesToRadians(AdjustedBloom / 2));
 
 }
-float UBaseEmpiresWeapon::RollVerticalRecoil()
+float ABaseEmpiresWeapon::RollVerticalRecoil()
 {
 
 	FWeaponRecoilData recoilData = GetCurrentRecoilData();
@@ -420,7 +420,7 @@ float UBaseEmpiresWeapon::RollVerticalRecoil()
 
 	return recoilVal * recoilMultiplier;
 }
-float UBaseEmpiresWeapon::RollHorizontalRecoil()
+float ABaseEmpiresWeapon::RollHorizontalRecoil()
 {
 	
 

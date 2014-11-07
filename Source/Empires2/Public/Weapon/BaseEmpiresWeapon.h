@@ -387,8 +387,8 @@ public:
 /**
  * Base Weapon
  */
-UCLASS(Blueprintable)
-class EMPIRES2_API UBaseEmpiresWeapon : public UObject
+UCLASS()
+class EMPIRES2_API ABaseEmpiresWeapon : public AActor
 {
 	GENERATED_UCLASS_BODY()
 		//GENERAL

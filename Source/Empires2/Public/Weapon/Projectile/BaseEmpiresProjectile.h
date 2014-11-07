@@ -23,7 +23,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
 	TSubobjectPtr<class UProjectileMovementComponent> ProjectileMovement;
 
-	class UBaseEmpiresWeapon* OwningWeapon;
+	class ABaseEmpiresWeapon* OwningWeapon;
 
 	/** called when projectile hits something */
 	UFUNCTION()

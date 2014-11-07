@@ -78,11 +78,11 @@ public:
 	void EndFire();
 
 	/* Switching Weapons */
-	void DrawWeapon(UBaseInfantryWeapon* Weapon);
+	void DrawWeapon(ABaseInfantryWeapon* Weapon);
 	void SwitchToWeapon(EInfantryInventorySlots::Type Weapon);
 
 	UFUNCTION(BlueprintCallable, Category = Weapon)
-	UBaseInfantryWeapon* GetActiveWeapon();
+	ABaseInfantryWeapon* GetActiveWeapon();
 
 	/* Weapon Input Events */
 	void SelectNextWeapon();

@@ -9,7 +9,7 @@
  * 
  */
 UCLASS()
-class EMPIRES2_API UBaseInfantryWeapon : public UBaseEmpiresWeapon
+class EMPIRES2_API ABaseInfantryWeapon : public ABaseEmpiresWeapon
 {
 	GENERATED_UCLASS_BODY()
 
