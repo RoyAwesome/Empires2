@@ -37,12 +37,6 @@ void ABaseEmpiresWeapon::PostInitProperties()
 	}
 }
 
-UWorld* ABaseEmpiresWeapon::GetWorld() const
-{
-	check(OwningCharacter);
-	return OwningCharacter->GetWorld();
-}
-
 void ABaseEmpiresWeapon::SetOwner(class AEmpires2Character* Owner)
 {
 	OwningCharacter = Owner;

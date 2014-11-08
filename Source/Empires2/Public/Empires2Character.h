@@ -45,6 +45,7 @@ protected:
 
 
 	void BeginPlay() override;
+	void PossessedBy(AController * NewController) override;
 		
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);

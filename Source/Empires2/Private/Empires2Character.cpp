@@ -42,7 +42,15 @@ AEmpires2Character::AEmpires2Character(const class FPostConstructInitializePrope
 
 
 void AEmpires2Character::BeginPlay()
+{	
+	Super::BeginPlay();
+
+}
+
+void AEmpires2Character::PossessedBy(AController * NewController)
 {
+	Super::PossessedBy(NewController);
+
 	AEmpiresPlayerState* playerState = Cast<AEmpiresPlayerState>(this->GetController()->PlayerState);
 	check(playerState);
 
@@ -52,15 +60,12 @@ void AEmpires2Character::BeginPlay()
 	{
 		ABaseInfantryWeapon* Weap = GetWorld()->SpawnActor<ABaseInfantryWeapon>(playerState->Inventory.Weapons[i]);
 		Weap->AttachRootComponentToActor(this);
-		
+
 		Weap->SetOwner(this);
 		playerState->Inventory.ConstructedWeapons.Add(Weap);
 	}
 
 	SwitchToWeapon(EInfantryInventorySlots::Slot_Primary);
-
-
-	Super::BeginPlay();
 }
 
 
