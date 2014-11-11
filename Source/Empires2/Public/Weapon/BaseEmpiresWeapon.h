@@ -493,6 +493,7 @@ public:
 
 
 protected:
+	UPROPERTY()
 	TArray<UBaseFiremode*> Firemodes;
 
 	int32 ActiveFiremode;

@@ -1,7 +1,7 @@
 // Copyright 1998-2014 Epic Games, Inc. All Rights Reserved.
 #pragma once
 #include "GameFramework/Character.h"
-#include "InfantryInventory.h"
+#include "BaseEmpiresInventory.h"
 #include "EmpiresPlayerState.h"
 #include "Empires2Character.generated.h"
 
@@ -39,13 +39,15 @@ public:
 		return bIsMoving;
 	}
 
-
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 
 protected:
 
 
 	void BeginPlay() override;
 	void PossessedBy(AController * NewController) override;
+	void PostInitProperties() override;
+	
 		
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
@@ -79,7 +81,7 @@ public:
 	void EndFire();
 
 	/* Switching Weapons */
-	void DrawWeapon(ABaseInfantryWeapon* Weapon);
+	void DrawWeapon(class ABaseInfantryWeapon* Weapon);
 	void SwitchToWeapon(EInfantryInventorySlots::Type Weapon);
 
 	UFUNCTION(BlueprintCallable, Category = Weapon)

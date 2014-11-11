@@ -3,7 +3,6 @@
 #pragma once
 
 #include "GameFramework/PlayerState.h"
-#include "InfantryInventory.h"
 #include "EmpiresPlayerState.generated.h"
 
 /**
@@ -16,8 +15,24 @@ class EMPIRES2_API AEmpiresPlayerState : public APlayerState
 
 
 public:
-	
-	//The inventory we want
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Infantry)
-	FInfantryInventory Inventory;
+	virtual void PostInitializeComponents() override;
+
+	virtual bool ReplicateSubobjects(class UActorChannel *Channel, class FOutBunch *Bunch, FReplicationFlags *RepFlags) override;
+
+	UPROPERTY(Replicated)
+	class UBaseEmpiresInventory* Inventory;
+
+	UPROPERTY(EditDefaultsOnly, Category = Class)
+	class UInfantryClass* DefaultClass;
+
+	UPROPERTY(Replicated)
+	UInfantryClass* CurrentClass;
+
+public:
+	/* Class Selection */
+	virtual void SelectClass(UInfantryClass* Class);
+
+	//TODO: RequestClassChange
+
+
 };

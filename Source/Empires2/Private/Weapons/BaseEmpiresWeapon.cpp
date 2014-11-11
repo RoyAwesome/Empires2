@@ -37,8 +37,10 @@ void ABaseEmpiresWeapon::PostInitProperties()
 	}
 }
 
-void ABaseEmpiresWeapon::SetOwner(class AEmpires2Character* Owner)
+void ABaseEmpiresWeapon::SetOwner(AEmpires2Character* Owner)
 {
+	Super::SetOwner(Owner);
+
 	OwningCharacter = Owner;
 }
 
