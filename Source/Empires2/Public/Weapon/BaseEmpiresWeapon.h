@@ -423,6 +423,7 @@ public:
 
 
 public:
+	UPROPERTY(Replicated)
 	class AEmpires2Character* OwningCharacter;
 
 	virtual void SetOwner(AEmpires2Character* Owner);
@@ -441,14 +442,27 @@ public:
 	//Shooting
 public:
 	virtual bool CanFire();
-
 	virtual void BeginFire();
-
 	virtual void EndFire();
-
 
 	/*Called when the weapon is to fire a single bullet/projectile*/
 	virtual void FireShot();
+
+
+	///////// Serverside Input
+	UFUNCTION(Reliable, Server, WithValidation)
+	void ServerStartFire();
+
+	UFUNCTION(Reliable, Server, WithValidation)
+	void ServerEndFire();
+	
+	UFUNCTION(Reliable, Server, WithValidation)
+	void ServerFireShot();
+
+
+	
+	UFUNCTION()
+	void OnRep_Reload();
 
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Projectile)
@@ -457,7 +471,9 @@ public:
 	FVector GetFireDirection();
 
 protected:
+	UPROPERTY(Replicated)
 	bool bIsFiring;
+	UPROPERTY(Replicated)
 	int32 ShotsFired;
 
 
@@ -496,6 +512,7 @@ protected:
 	UPROPERTY()
 	TArray<UBaseFiremode*> Firemodes;
 
+	UPROPERTY(Replicated)
 	int32 ActiveFiremode;
 
 
@@ -518,6 +535,7 @@ public:
 protected:
 	FAmmoPool GetAmmoPool(int32 FromAmmoPool = CurrentAmmopool);
 
+	UPROPERTY(Replicated, ReplicatedUsing=OnRep_Reload)
 	bool bReloading;
 
 public:
@@ -529,6 +547,7 @@ public:
 		return RecoilData[GetActiveFiremodeData().RecoilDataIndex];
 	}
 protected:
+	UPROPERTY(Replicated)
 	float CurrentCoF;
 
 	FVector AdjustByCof(FVector Aim);

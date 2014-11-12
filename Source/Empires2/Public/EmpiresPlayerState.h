@@ -23,14 +23,14 @@ public:
 	class UBaseEmpiresInventory* Inventory;
 
 	UPROPERTY(EditDefaultsOnly, Category = Class)
-	class UInfantryClass* DefaultClass;
+	TAssetPtr<class UInfantryClass> DefaultClass;
 
 	UPROPERTY(Replicated)
-	UInfantryClass* CurrentClass;
+	TAssetPtr<UInfantryClass> CurrentClass;
 
 public:
 	/* Class Selection */
-	virtual void SelectClass(UInfantryClass* Class);
+	virtual void SelectClass(TAssetPtr<UInfantryClass> Class);
 
 	//TODO: RequestClassChange
 

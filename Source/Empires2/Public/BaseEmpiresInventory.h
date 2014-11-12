@@ -6,12 +6,12 @@
 #include "Core.h"
 #include "BaseEmpiresInventory.generated.h"
 
-
+UENUM(BlueprintType)
 namespace EInfantryInventorySlots
 {
 	enum Type
 	{
-		Slot_None = -1,
+		
 		Slot_Sidearm = 0,
 		Slot_Primary = 1,
 		Slot_Tertiary = 2,
@@ -21,6 +21,7 @@ namespace EInfantryInventorySlots
 		Slot_Skill3 = 6,
 		Slot_Skill4 = 7,
 		Slot_Count = 8,
+		Slot_None = 9,
 	};
 }
 

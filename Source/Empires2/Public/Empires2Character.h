@@ -39,8 +39,6 @@ public:
 		return bIsMoving;
 	}
 
-	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
-
 protected:
 
 
@@ -96,9 +94,10 @@ public:
 	/* End Weapon Input Events */
 
 protected:
-		
-	EInfantryInventorySlots::Type SelectedWeapon;
-	EInfantryInventorySlots::Type LastSelectedWeapon;
+	UPROPERTY(Replicated)
+	uint8 SelectedWeapon;
+	UPROPERTY(Replicated)
+	uint8 LastSelectedWeapon;
 
 protected:
 	// APawn interface

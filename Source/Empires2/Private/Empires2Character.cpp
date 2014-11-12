@@ -7,6 +7,7 @@
 #include "EmpiresPlayerState.h"
 #include "BaseEmpiresInventory.h"
 #include "Animation/AnimInstance.h"
+#include "UnrealNetwork.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -82,6 +83,10 @@ void AEmpires2Character::PostInitProperties()
 void AEmpires2Character::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AEmpires2Character, SelectedWeapon);
+	DOREPLIFETIME(AEmpires2Character, LastSelectedWeapon);
+		
 }
 
 
@@ -180,7 +185,7 @@ ABaseInfantryWeapon* AEmpires2Character::GetActiveWeapon()
 {
 	AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
 	check(playerState);
-	return Cast<ABaseInfantryWeapon>(playerState->Inventory->GetItemInSlot(SelectedWeapon));	
+	return Cast<ABaseInfantryWeapon>(playerState->Inventory->GetItemInSlot((EInfantryInventorySlots::Type)SelectedWeapon));	
 }
 
 void AEmpires2Character::DrawWeapon(ABaseInfantryWeapon* Weapon)
@@ -264,7 +269,7 @@ void AEmpires2Character::SelectPreviousWeapon()
 }
 void AEmpires2Character::SelectLastWeapon()
 {
-	SwitchToWeapon(this->LastSelectedWeapon);
+	SwitchToWeapon((EInfantryInventorySlots::Type)this->LastSelectedWeapon);
 }
 
 void AEmpires2Character::ChangeFiremode()

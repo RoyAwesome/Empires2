@@ -41,18 +41,14 @@ bool AEmpiresPlayerState::ReplicateSubobjects(class UActorChannel *Channel, clas
 	if (Inventory != nullptr)
 	{
 		Wrote |= Channel->ReplicateSubobject(Inventory, *Bunch, *RepFlags);
-	}
-	if (CurrentClass != nullptr)
-	{
-		Wrote |= Channel->ReplicateSubobject(CurrentClass, *Bunch, *RepFlags);
-	}
+	}	
 
 	return Wrote;
 }
 
-void AEmpiresPlayerState::SelectClass(UInfantryClass* Class)
+void AEmpiresPlayerState::SelectClass(TAssetPtr<UInfantryClass> Class)
 {
-	if (Class == nullptr) return;
+	if (Class.IsNull()) return;
 
 	
 

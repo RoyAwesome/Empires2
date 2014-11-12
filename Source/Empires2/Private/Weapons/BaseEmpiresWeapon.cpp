@@ -5,6 +5,7 @@
 #include "BaseEmpiresProjectile.h"
 #include "BaseFiremode.h"
 #include "BaseEmpiresWeapon.h"
+#include "UnrealNetwork.h"
 
 
 ABaseEmpiresWeapon::ABaseEmpiresWeapon(const class FPostConstructInitializeProperties& PCIP)
@@ -30,12 +31,24 @@ void ABaseEmpiresWeapon::PostInitProperties()
 			SCREENLOG(TEXT("[%s] Error constructing firemode %d, Firemode is null"), GetName(), i);
 			continue;
 		}
-		UBaseFiremode* firemode = ConstructObject<UBaseFiremode>(FiremodeData[i].FiremodeClass);
+		UBaseFiremode* firemode = ConstructObject<UBaseFiremode>(FiremodeData[i].FiremodeClass, this);
 
 		firemode->SetWeapon(this);
 		Firemodes.Add(firemode);
 	}
 }
+
+void ABaseEmpiresWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ABaseEmpiresWeapon, CurrentCoF);
+	DOREPLIFETIME(ABaseEmpiresWeapon, ActiveFiremode);
+	DOREPLIFETIME(ABaseEmpiresWeapon, ShotsFired);
+	DOREPLIFETIME(ABaseEmpiresWeapon, bIsFiring);
+	DOREPLIFETIME(ABaseEmpiresWeapon, OwningCharacter);
+}
+
 
 void ABaseEmpiresWeapon::SetOwner(AEmpires2Character* Owner)
 {
@@ -105,6 +118,12 @@ bool ABaseEmpiresWeapon::CanFire()
 void ABaseEmpiresWeapon::BeginFire()
 {
 	if (!CanFire()) return; //Don't Fire if we can't fire
+
+	if (Role < ROLE_Authority)
+	{
+		ServerStartFire();
+	}
+
 	if (GetCurrentAmmoPool().AmmoInClip <= 0) //If we are out of ammo, attempt to reload
 	{
 		Reload();
@@ -120,8 +139,28 @@ void ABaseEmpiresWeapon::BeginFire()
 
 }
 
+
+void ABaseEmpiresWeapon::ServerStartFire_Implementation()
+{
+	BeginFire();
+}
+
+
+bool ABaseEmpiresWeapon::ServerStartFire_Validate()
+{
+	return true;
+}
+
+
 void ABaseEmpiresWeapon::EndFire()
 {
+	//If we are the client, send a server RPC to fire our weapon
+	if (Role < ROLE_Authority)
+	{
+		ServerEndFire();
+	}
+
+	if (!bIsFiring) return; //Don't need to EndFire if we aren't firing.
 	UBaseFiremode* firemode = GetActiveFiremode();
 	check(firemode);
 	firemode->EndFire();
@@ -130,9 +169,25 @@ void ABaseEmpiresWeapon::EndFire()
 }
 
 
+void ABaseEmpiresWeapon::ServerEndFire_Implementation()
+{
+	EndFire();
+}
+
+bool ABaseEmpiresWeapon::ServerEndFire_Validate()
+{
+	return true;
+}
+
+
 void ABaseEmpiresWeapon::FireShot()
 {
 	check(OwningCharacter);
+
+	if (Role < ROLE_Authority)
+	{
+		ServerFireShot();
+	}
 
 	//Get the current firemode's projectile
 	FAmmoPool ammoPool = GetCurrentAmmoPool();
@@ -190,6 +245,17 @@ void ABaseEmpiresWeapon::FireShot()
 		Reload();
 	}
 
+}
+
+
+void ABaseEmpiresWeapon::ServerFireShot_Implementation()
+{
+	FireShot();
+}
+
+bool ABaseEmpiresWeapon::ServerFireShot_Validate()
+{
+	return true;
 }
 
 FVector ABaseEmpiresWeapon::GetFireDirection()
@@ -463,4 +529,11 @@ float ABaseEmpiresWeapon::RollHorizontalRecoil()
 	if (ShotsFired == 0) recoilMultiplier += recoilData.FirstShotRecoilMultiplier;
 
 	return recoilVal * recoilMultiplier;
+}
+
+/////////////////////////REPLICATION
+
+void  ABaseEmpiresWeapon::OnRep_Reload()
+{
+	//TODO: Simulate Weaponing
 }
