@@ -15,6 +15,7 @@ ABaseEmpiresWeapon::ABaseEmpiresWeapon(const class FPostConstructInitializePrope
 	GunOffset = FVector(100.0f, 30.0f, 10.0f);
 	ActiveFiremode = 0;
 	bReloading = false;
+	bAlwaysRelevant = true;
 }
 
 //////////////////////GENERAL

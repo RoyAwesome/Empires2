@@ -53,30 +53,35 @@ void AEmpires2Character::PossessedBy(AController * NewController)
 	Super::PossessedBy(NewController);
 
 
-	AEmpiresPlayerState* playerState = Cast<AEmpiresPlayerState>(this->GetController()->PlayerState);
-	check(playerState);
 
 
-	if (Role == ROLE_Authority)
+}
+
+void AEmpires2Character::PostInitProperties()
+{
+	Super::PostInitProperties();
+
+	
+
+	if (Role == ROLE_Authority && Controller)
 	{
+		AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
+		if (!playerState) return;
+
 		playerState->SelectClass(playerState->DefaultClass);
 
 		for (int32 i = 0; i < playerState->Inventory->InventoryItems.Num(); i++)
 		{
 			if (playerState->Inventory->InventoryItems[i])
 			{
-				playerState->Inventory->InventoryItems[i]->SetOwner(this);
+				playerState->Inventory->InventoryItems[i]->SetOwner(this); 
 			}
 		}
 
 		SwitchToWeapon(EInfantryInventorySlots::Slot_Primary);
 	}
-	
-}
 
-void AEmpires2Character::PostInitProperties()
-{
-	Super::PostInitProperties();
+
 	
 }
 
@@ -286,4 +291,27 @@ void AEmpires2Character::ReloadWeapon()
 	if (Weapon == nullptr) return; //No weapon? Don't bother reloading
 
 	Weapon->Reload();
+}
+
+
+void AEmpires2Character::PickupWeapon(EInfantryInventorySlots::Type Slot, ABaseEmpiresWeapon* Weapon)
+{
+	if (Role < ROLE_Authority) return; //Only the server can pick up a weapon
+	if (Weapon == nullptr) return;
+
+	Weapon->SetOwner(this);
+	
+	AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
+	playerState->Inventory->AddItem(Slot, Weapon);
+}
+
+
+void AEmpires2Character::SpawnInventory()
+{
+	if (Role < ROLE_Authority)
+	{
+		return;
+	}
+
+	
 }

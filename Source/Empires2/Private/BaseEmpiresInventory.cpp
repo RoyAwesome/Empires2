@@ -19,7 +19,9 @@ void UBaseEmpiresInventory::GetLifetimeReplicatedProps(TArray< FLifetimeProperty
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UBaseEmpiresInventory, InventoryItems);
+	
 }
+
 
 void UBaseEmpiresInventory::ClearInventory()
 {

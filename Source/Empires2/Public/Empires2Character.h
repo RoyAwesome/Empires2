@@ -93,6 +93,8 @@ public:
 	void ReloadWeapon();
 	/* End Weapon Input Events */
 
+	void PickupWeapon(EInfantryInventorySlots::Type Slot, class ABaseEmpiresWeapon* Weapon);
+
 protected:
 	UPROPERTY(Replicated)
 	uint8 SelectedWeapon;
@@ -103,5 +105,8 @@ protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 	// End of APawn interface
+
+protected: 
+	virtual void SpawnInventory();
 };
 
