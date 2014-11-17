@@ -40,13 +40,14 @@ AEmpires2Character::AEmpires2Character(const class FPostConstructInitializePrope
 	Mesh1P->bCastDynamicShadow = false;
 	Mesh1P->CastShadow = false;
 
+	Inventory = PCIP.CreateDefaultSubobject<UBaseEmpiresInventory>(this, TEXT("Inventory"));
 }
 
 
 void AEmpires2Character::BeginPlay()
 {	
 	Super::BeginPlay();
-
+	
 }
 
 void AEmpires2Character::PossessedBy(AController * NewController)
@@ -55,11 +56,13 @@ void AEmpires2Character::PossessedBy(AController * NewController)
 
 	if (Role == ROLE_Authority && Controller)
 	{
+	
+
 		AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
 		if (!playerState) return;
 
 		//Add the primary and secondary weapons
-		
+
 		ABaseEmpiresWeapon* Pistol = GetWorld()->SpawnActor<ABaseEmpiresWeapon>(playerState->DefaultClass->Pistol);
 		Pistol->SetOwner(this);
 		Inventory->AddItem(EInfantryInventorySlots::Slot_Sidearm, Pistol);
@@ -79,10 +82,7 @@ void AEmpires2Character::PostInitProperties()
 {
 	Super::PostInitProperties();
 
-	if (Role == ROLE_Authority)
-	{
-		Inventory = NewObject<UBaseEmpiresInventory>(this);		
-	}
+
 
 }
 
@@ -95,20 +95,6 @@ void AEmpires2Character::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > 
 	DOREPLIFETIME(AEmpires2Character, Inventory);
 		
 }
-
-
-bool AEmpires2Character::ReplicateSubobjects(class UActorChannel *Channel, class FOutBunch *Bunch, FReplicationFlags *RepFlags)
-{
-	bool Wrote = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
-
-	if (Inventory != nullptr)
-	{
-		Wrote |= Channel->ReplicateSubobject(Inventory, *Bunch, *RepFlags);
-	}
-
-	return Wrote;
-}
-
 
 //////////////////////////////////////////////////////////////////////////
 // Input

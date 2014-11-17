@@ -30,20 +30,26 @@ namespace EInfantryInventorySlots
  * 
  */
 UCLASS()
-class EMPIRES2_API UBaseEmpiresInventory : public UObject
+class EMPIRES2_API UBaseEmpiresInventory : public UActorComponent
 {
 	GENERATED_UCLASS_BODY()
 public:
+	
 
-	virtual bool IsSupportedForNetworking() const override
-	{
-		return true;
-	}
+	///HACKHACK: These are individual pointers because an array of pointers does not replicate correctly
 
 
-	//TODO: Create an BaseEmpiresAbility actor so that everything you have in this array is abilities, including weapons
-	UPROPERTY(Replicated)
-	TArray<class ABaseEmpiresWeapon*> InventoryItems;
+	UPROPERTY(VisibleAnywhere, Replicated, Category = General)
+	class ABaseEmpiresWeapon* Pistol;
+	UPROPERTY(VisibleAnywhere, Replicated, Category = General)
+	ABaseEmpiresWeapon* Primary;
+	UPROPERTY(VisibleAnywhere, Replicated, Category = General)
+	ABaseEmpiresWeapon* Tertiary;
+	UPROPERTY(VisibleAnywhere, Replicated, Category = General)
+	ABaseEmpiresWeapon* Special;
+
+	
+		
 
 	virtual void ClearInventory();
 
@@ -53,7 +59,7 @@ public:
 
 	virtual int32 GetInventorySize()
 	{
-		return InventoryItems.Num();
+		return EInfantryInventorySlots::Slot_Count;
 	}
 	
 };

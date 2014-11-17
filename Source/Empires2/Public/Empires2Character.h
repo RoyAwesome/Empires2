@@ -45,13 +45,11 @@ protected:
 	void BeginPlay() override;
 	void PossessedBy(AController * NewController) override;
 	void PostInitProperties() override;
-	
-	virtual bool ReplicateSubobjects(class UActorChannel *Channel, class FOutBunch *Bunch, FReplicationFlags *RepFlags) override;
 		
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
 
-	/** Handles stafing movement, left and right */
+	/** Handles strafing movement, left and right */
 	void MoveRight(float Val);
 
 	/**
@@ -105,8 +103,8 @@ protected:
 	UPROPERTY()
 	bool bIsFiring;
 
-	UPROPERTY(Replicated)
-	class UBaseEmpiresInventory* Inventory;
+	UPROPERTY(VisibleAnywhere, Replicated, Category=General)
+	TSubobjectPtr<class UBaseEmpiresInventory> Inventory;
 
 
 protected:
