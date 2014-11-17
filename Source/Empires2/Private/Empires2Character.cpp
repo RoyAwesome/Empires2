@@ -6,9 +6,10 @@
 #include "BaseInfantryWeapon.h"
 #include "EmpiresPlayerState.h"
 #include "BaseEmpiresInventory.h"
+#include "Engine/ActorChannel.h"
 #include "Animation/AnimInstance.h"
 #include "UnrealNetwork.h"
-
+#include "InfantryClass.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AEmpires2Character
@@ -52,8 +53,25 @@ void AEmpires2Character::PossessedBy(AController * NewController)
 {
 	Super::PossessedBy(NewController);
 
+	if (Role == ROLE_Authority && Controller)
+	{
+		AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
+		if (!playerState) return;
+
+		//Add the primary and secondary weapons
+		
+		ABaseEmpiresWeapon* Pistol = GetWorld()->SpawnActor<ABaseEmpiresWeapon>(playerState->DefaultClass->Pistol);
+		Pistol->SetOwner(this);
+		Inventory->AddItem(EInfantryInventorySlots::Slot_Sidearm, Pistol);
+
+		ABaseEmpiresWeapon* Rifle = GetWorld()->SpawnActor<ABaseEmpiresWeapon>(playerState->DefaultClass->Primary);
+		Rifle->SetOwner(this);
+		Inventory->AddItem(EInfantryInventorySlots::Slot_Primary, Rifle);
 
 
+
+		SwitchToWeapon(EInfantryInventorySlots::Slot_Primary);
+	}
 
 }
 
@@ -61,28 +79,11 @@ void AEmpires2Character::PostInitProperties()
 {
 	Super::PostInitProperties();
 
-	
-
-	if (Role == ROLE_Authority && Controller)
+	if (Role == ROLE_Authority)
 	{
-		AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
-		if (!playerState) return;
-
-		playerState->SelectClass(playerState->DefaultClass);
-
-		for (int32 i = 0; i < playerState->Inventory->InventoryItems.Num(); i++)
-		{
-			if (playerState->Inventory->InventoryItems[i])
-			{
-				playerState->Inventory->InventoryItems[i]->SetOwner(this); 
-			}
-		}
-
-		SwitchToWeapon(EInfantryInventorySlots::Slot_Primary);
+		Inventory = NewObject<UBaseEmpiresInventory>(this);		
 	}
 
-
-	
 }
 
 void AEmpires2Character::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
@@ -91,7 +92,21 @@ void AEmpires2Character::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > 
 
 	DOREPLIFETIME(AEmpires2Character, SelectedWeapon);
 	DOREPLIFETIME(AEmpires2Character, LastSelectedWeapon);
+	DOREPLIFETIME(AEmpires2Character, Inventory);
 		
+}
+
+
+bool AEmpires2Character::ReplicateSubobjects(class UActorChannel *Channel, class FOutBunch *Bunch, FReplicationFlags *RepFlags)
+{
+	bool Wrote = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+
+	if (Inventory != nullptr)
+	{
+		Wrote |= Channel->ReplicateSubobject(Inventory, *Bunch, *RepFlags);
+	}
+
+	return Wrote;
 }
 
 
@@ -173,15 +188,19 @@ void AEmpires2Character::BeginFire()
 	ABaseInfantryWeapon* Weap = GetActiveWeapon();
 	if (Weap == nullptr) return; //No weapon? Don't bother firing
 
+	bIsFiring = true;
 	Weap->BeginFire();
 
 }
 void AEmpires2Character::EndFire()
 {
+	if (!bIsFiring) return; //If we aren't firing our weapon, don't bother ending
+
 	ABaseInfantryWeapon* Weapon = GetActiveWeapon();
 	check(Weapon); //If the weapon goes null while we are firing... uh, crash
 
 	Weapon->EndFire();
+	bIsFiring = false;
 }
 
 ////////////////////////////////////////////WEAPONS
@@ -190,7 +209,7 @@ ABaseInfantryWeapon* AEmpires2Character::GetActiveWeapon()
 {
 	AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
 	check(playerState);
-	return Cast<ABaseInfantryWeapon>(playerState->Inventory->GetItemInSlot((EInfantryInventorySlots::Type)SelectedWeapon));	
+	return Cast<ABaseInfantryWeapon>(Inventory->GetItemInSlot((EInfantryInventorySlots::Type)SelectedWeapon));	
 }
 
 void AEmpires2Character::DrawWeapon(ABaseInfantryWeapon* Weapon)
@@ -217,23 +236,20 @@ void AEmpires2Character::DrawWeapon(ABaseInfantryWeapon* Weapon)
 
 void AEmpires2Character::SwitchToWeapon(EInfantryInventorySlots::Type Weapon)
 {
-	
-	AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
-	check(playerState);
-
-	if (playerState->Inventory->GetInventorySize() <= Weapon) return; //Trying to select an out of bounds weapon	
-	if (!playerState->Inventory->GetItemInSlot(Weapon))
+		
+	if (Inventory->GetInventorySize() <= Weapon) return; //Trying to select an out of bounds weapon	
+	if (!Inventory->GetItemInSlot(Weapon))
 	{
 		this->LastSelectedWeapon = this->SelectedWeapon;
 		this->SelectedWeapon = EInfantryInventorySlots::Slot_None;
 		DrawWeapon(nullptr); //Trying to get a null weapon
 		return;
 	}
-	if (!playerState->Inventory->GetItemInSlot(Weapon)->GetClass()->IsChildOf(ABaseInfantryWeapon::StaticClass())) return; //Not an infantry weapon
+	if (!Inventory->GetItemInSlot(Weapon)->GetClass()->IsChildOf(ABaseInfantryWeapon::StaticClass())) return; //Not an infantry weapon
 
 
 	this->LastSelectedWeapon = this->SelectedWeapon;
-	ABaseInfantryWeapon* Weap = Cast<ABaseInfantryWeapon>(playerState->Inventory->GetItemInSlot(Weapon));
+	ABaseInfantryWeapon* Weap = Cast<ABaseInfantryWeapon>(Inventory->GetItemInSlot(Weapon));
 	DrawWeapon(Weap);
 	this->SelectedWeapon = Weapon;
 	
@@ -241,15 +257,11 @@ void AEmpires2Character::SwitchToWeapon(EInfantryInventorySlots::Type Weapon)
 }
 
 void AEmpires2Character::SelectNextWeapon()
-{
-	
-	AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
-	check(playerState);
-
+{	
 	//Increment the slot
 	int32 Slot = this->SelectedWeapon + 1;
 	//If the slot is greater than the number of weapons, reset it
-	if (playerState->Inventory->GetInventorySize() <= Slot)
+	if (Inventory->GetInventorySize() <= Slot)
 	{
 		Slot = EInfantryInventorySlots::Slot_Sidearm;
 	}
@@ -259,15 +271,12 @@ void AEmpires2Character::SelectNextWeapon()
 }
 void AEmpires2Character::SelectPreviousWeapon()
 {
-	AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
-	check(playerState);
-
 	//Increment the slot
 	int32 Slot = this->SelectedWeapon - 1;
 	//If the number is less than 0, set it to the max weapon
 	if (Slot < 0)
 	{
-		Slot = playerState->Inventory->GetInventorySize() - 1;
+		Slot = Inventory->GetInventorySize() - 1;
 	}
 	SwitchToWeapon((EInfantryInventorySlots::Type)Slot);
 	
@@ -300,9 +309,8 @@ void AEmpires2Character::PickupWeapon(EInfantryInventorySlots::Type Slot, ABaseE
 	if (Weapon == nullptr) return;
 
 	Weapon->SetOwner(this);
-	
-	AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
-	playerState->Inventory->AddItem(Slot, Weapon);
+		
+	Inventory->AddItem(Slot, Weapon);
 }
 
 

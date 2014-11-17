@@ -46,6 +46,7 @@ protected:
 	void PossessedBy(AController * NewController) override;
 	void PostInitProperties() override;
 	
+	virtual bool ReplicateSubobjects(class UActorChannel *Channel, class FOutBunch *Bunch, FReplicationFlags *RepFlags) override;
 		
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
@@ -97,9 +98,16 @@ public:
 
 protected:
 	UPROPERTY(Replicated)
-	uint8 SelectedWeapon;
+	TEnumAsByte<EInfantryInventorySlots::Type> SelectedWeapon;
 	UPROPERTY(Replicated)
-	uint8 LastSelectedWeapon;
+	TEnumAsByte<EInfantryInventorySlots::Type> LastSelectedWeapon;
+
+	UPROPERTY()
+	bool bIsFiring;
+
+	UPROPERTY(Replicated)
+	class UBaseEmpiresInventory* Inventory;
+
 
 protected:
 	// APawn interface

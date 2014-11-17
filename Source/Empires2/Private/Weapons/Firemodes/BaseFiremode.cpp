@@ -8,7 +8,7 @@
 UBaseFiremode::UBaseFiremode(const class FPostConstructInitializeProperties& PCIP)
 	: Super(PCIP)
 {
-
+	
 }
 
 UWorld* UBaseFiremode::GetWorld() const

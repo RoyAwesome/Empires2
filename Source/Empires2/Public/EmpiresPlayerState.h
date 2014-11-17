@@ -17,16 +17,14 @@ class EMPIRES2_API AEmpiresPlayerState : public APlayerState
 public:
 	virtual void PostInitializeComponents() override;
 
-	virtual bool ReplicateSubobjects(class UActorChannel *Channel, class FOutBunch *Bunch, FReplicationFlags *RepFlags) override;
 
-	UPROPERTY(Replicated)
-	class UBaseEmpiresInventory* Inventory;
 
+	
 	UPROPERTY(EditDefaultsOnly, Category = Class)
 	TAssetPtr<class UInfantryClass> DefaultClass;
 
 	UPROPERTY(Replicated)
-	TAssetPtr<UInfantryClass> CurrentClass;
+	TAssetPtr<UInfantryClass> RequestedClass;
 
 public:
 	/* Class Selection */
