@@ -17,6 +17,9 @@
 AEmpires2Character::AEmpires2Character(const class FPostConstructInitializeProperties& PCIP)
 	: Super(PCIP)
 {
+	this->bAlwaysRelevant = true;
+	this->bReplicates = true;
+
 	// Set size for collision capsule
 	CapsuleComponent->InitCapsuleSize(42.f, 96.0f);
 
@@ -39,15 +42,22 @@ AEmpires2Character::AEmpires2Character(const class FPostConstructInitializePrope
 	Mesh1P->RelativeLocation = FVector(0.f, 0.f, -150.f);
 	Mesh1P->bCastDynamicShadow = false;
 	Mesh1P->CastShadow = false;
+	if (Role == ROLE_Authority)
+	{
+		Inventory = PCIP.CreateDefaultSubobject<UBaseEmpiresInventory>(this, TEXT("Inventory"));
+		Inventory->SetNetAddressable();
+		Inventory->SetIsReplicated(true);
 
-	Inventory = PCIP.CreateDefaultSubobject<UBaseEmpiresInventory>(this, TEXT("Inventory"));
+	}
+
+	
 }
 
 
 void AEmpires2Character::BeginPlay()
 {	
 	Super::BeginPlay();
-	
+		
 }
 
 void AEmpires2Character::PossessedBy(AController * NewController)
@@ -71,8 +81,6 @@ void AEmpires2Character::PossessedBy(AController * NewController)
 		Rifle->SetOwner(this);
 		Inventory->AddItem(EInfantryInventorySlots::Slot_Primary, Rifle);
 
-
-
 		SwitchToWeapon(EInfantryInventorySlots::Slot_Primary);
 	}
 
@@ -92,7 +100,7 @@ void AEmpires2Character::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > 
 
 	DOREPLIFETIME(AEmpires2Character, SelectedWeapon);
 	DOREPLIFETIME(AEmpires2Character, LastSelectedWeapon);
-	DOREPLIFETIME(AEmpires2Character, Inventory);
+
 		
 }
 
@@ -193,16 +201,13 @@ void AEmpires2Character::EndFire()
 
 ABaseInfantryWeapon* AEmpires2Character::GetActiveWeapon()
 {
-	AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
-	check(playerState);
-	return Cast<ABaseInfantryWeapon>(Inventory->GetItemInSlot((EInfantryInventorySlots::Type)SelectedWeapon));	
+	ABaseEmpiresWeapon* Weap = Inventory->GetItemInSlot((EInfantryInventorySlots::Type)SelectedWeapon);
+	return Cast<ABaseInfantryWeapon>(Weap);	
 }
 
 void AEmpires2Character::DrawWeapon(ABaseInfantryWeapon* Weapon)
 {
 	
-	// Get the animation object for the arms mesh
-	UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
 
 	//If the weapon is null, hide the view model
 	if (Weapon == nullptr)
@@ -220,60 +225,101 @@ void AEmpires2Character::DrawWeapon(ABaseInfantryWeapon* Weapon)
 
 }
 
+
 void AEmpires2Character::SwitchToWeapon(EInfantryInventorySlots::Type Weapon)
 {
 		
 	if (Inventory->GetInventorySize() <= Weapon) return; //Trying to select an out of bounds weapon	
-	if (!Inventory->GetItemInSlot(Weapon))
+
+	ABaseInfantryWeapon* Weap = Cast<ABaseInfantryWeapon>(Inventory->GetItemInSlot(Weapon));
+
+	if (Weap == nullptr)
 	{
-		this->LastSelectedWeapon = this->SelectedWeapon;
-		this->SelectedWeapon = EInfantryInventorySlots::Slot_None;
+		if (Role == ROLE_Authority)
+		{
+			this->LastSelectedWeapon = this->SelectedWeapon;
+			this->SelectedWeapon = EInfantryInventorySlots::Slot_None;
+		}
+	
 		DrawWeapon(nullptr); //Trying to get a null weapon
 		return;
 	}
-	if (!Inventory->GetItemInSlot(Weapon)->GetClass()->IsChildOf(ABaseInfantryWeapon::StaticClass())) return; //Not an infantry weapon
 
-
-	this->LastSelectedWeapon = this->SelectedWeapon;
-	ABaseInfantryWeapon* Weap = Cast<ABaseInfantryWeapon>(Inventory->GetItemInSlot(Weapon));
-	DrawWeapon(Weap);
-	this->SelectedWeapon = Weapon;
+	if(Role == ROLE_Authority) this->LastSelectedWeapon = this->SelectedWeapon;
 	
+	DrawWeapon(Weap);
+	this->SelectedWeapon = Weapon;	
 
 }
 
+
+void AEmpires2Character::RefreshHeldWeapon()
+{
+	ABaseInfantryWeapon* Weap = Cast<ABaseInfantryWeapon>(Inventory->GetItemInSlot(SelectedWeapon));
+	DrawWeapon(Weap);
+}
+
+
 void AEmpires2Character::SelectNextWeapon()
 {	
+	if (Role < ROLE_Authority)
+	{
+		ServerSelectNextWeapon();
+	}
 	//Increment the slot
 	int32 Slot = this->SelectedWeapon + 1;
 	//If the slot is greater than the number of weapons, reset it
-	if (Inventory->GetInventorySize() <= Slot)
+	if (Slot > (int32)EInfantryInventorySlots::Slot_Tertiary)
 	{
-		Slot = EInfantryInventorySlots::Slot_Sidearm;
+		Slot = (int32)EInfantryInventorySlots::Slot_Sidearm;
 	}
+	
+	TRACE("Switched to slot %d", Slot);
 	SwitchToWeapon((EInfantryInventorySlots::Type)Slot);
 	
 
 }
 void AEmpires2Character::SelectPreviousWeapon()
 {
+	if (Role < ROLE_Authority)
+	{
+		ServerSelectPreviousWeapon();
+	}
+
 	//Increment the slot
 	int32 Slot = this->SelectedWeapon - 1;
 	//If the number is less than 0, set it to the max weapon
-	if (Slot < 0)
+	if (Slot < (int32)EInfantryInventorySlots::Slot_Sidearm)
 	{
-		Slot = Inventory->GetInventorySize() - 1;
+		Slot = (int32)EInfantryInventorySlots::Slot_Tertiary;
 	}
+	TRACE("Switched to slot %d", Slot);
 	SwitchToWeapon((EInfantryInventorySlots::Type)Slot);
 	
 }
 void AEmpires2Character::SelectLastWeapon()
 {
-	SwitchToWeapon((EInfantryInventorySlots::Type)this->LastSelectedWeapon);
+	if (Role < ROLE_Authority)
+	{
+		ServerSelectLastWeapon();
+	}
+	SwitchToWeapon(this->LastSelectedWeapon);
 }
+
+
+void AEmpires2Character::OnRep_SelectedWeapon()
+{
+	SwitchToWeapon(SelectedWeapon);
+}
+
+
 
 void AEmpires2Character::ChangeFiremode()
 {
+	if (Role < ROLE_Authority)
+	{
+		ServerChangeFiremode();
+	}
 	ABaseInfantryWeapon* Weapon = GetActiveWeapon();
 	if (Weapon == nullptr) return; //No weapon? Don't bother changing firemode
 
@@ -282,12 +328,61 @@ void AEmpires2Character::ChangeFiremode()
 
 void AEmpires2Character::ReloadWeapon()
 {
+	if (Role < ROLE_Authority)
+	{
+		ServerReloadWeapon();
+	}
 	ABaseInfantryWeapon* Weapon = GetActiveWeapon();
 	if (Weapon == nullptr) return; //No weapon? Don't bother reloading
 
 	Weapon->Reload();
 }
 
+
+void AEmpires2Character::ServerSelectNextWeapon_Implementation()
+{
+	SelectNextWeapon();
+}
+bool AEmpires2Character::ServerSelectNextWeapon_Validate()
+{
+	return true;
+}
+
+void AEmpires2Character::ServerSelectPreviousWeapon_Implementation()
+{
+	this->SelectPreviousWeapon();
+}
+bool AEmpires2Character::ServerSelectPreviousWeapon_Validate()
+{
+	return true;
+}
+
+void AEmpires2Character::ServerSelectLastWeapon_Implementation()
+{
+	SelectLastWeapon();
+}
+bool AEmpires2Character::ServerSelectLastWeapon_Validate()
+{
+	return true;
+}
+
+void AEmpires2Character::ServerChangeFiremode_Implementation()
+{
+	ChangeFiremode();
+}
+bool AEmpires2Character::ServerChangeFiremode_Validate()
+{
+	return true;
+}
+
+void AEmpires2Character::ServerReloadWeapon_Implementation()
+{
+	ReloadWeapon();
+}
+bool AEmpires2Character::ServerReloadWeapon_Validate()
+{
+	return true;
+}
 
 void AEmpires2Character::PickupWeapon(EInfantryInventorySlots::Type Slot, ABaseEmpiresWeapon* Weapon)
 {

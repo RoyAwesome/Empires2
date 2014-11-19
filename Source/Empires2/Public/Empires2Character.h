@@ -85,20 +85,40 @@ public:
 	ABaseInfantryWeapon* GetActiveWeapon();
 
 	/* Weapon Input Events */
-	void SelectNextWeapon();
+	void SelectNextWeapon();	
 	void SelectPreviousWeapon();
 	void SelectLastWeapon();
 	void ChangeFiremode();
 	void ReloadWeapon();
+
+	UFUNCTION(Reliable, Server, WithValidation)
+	void ServerSelectNextWeapon();
+	UFUNCTION(Reliable, Server, WithValidation)
+	void ServerSelectPreviousWeapon();
+	UFUNCTION(Reliable, Server, WithValidation)
+	void ServerSelectLastWeapon();
+	UFUNCTION(Reliable, Server, WithValidation)
+	void ServerChangeFiremode();
+	UFUNCTION(Reliable, Server, WithValidation)
+	void ServerReloadWeapon();
 	/* End Weapon Input Events */
+
+	
 
 	void PickupWeapon(EInfantryInventorySlots::Type Slot, class ABaseEmpiresWeapon* Weapon);
 
+	UFUNCTION()
+	void OnRep_SelectedWeapon();
+
+	void RefreshHeldWeapon();
+
 protected:
-	UPROPERTY(Replicated)
+	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = OnRep_SelectedWeapon, Category=Inventory)
 	TEnumAsByte<EInfantryInventorySlots::Type> SelectedWeapon;
-	UPROPERTY(Replicated)
+	UPROPERTY(VisibleAnywhere, Replicated, Category = Inventory)
 	TEnumAsByte<EInfantryInventorySlots::Type> LastSelectedWeapon;
+
+
 
 	UPROPERTY()
 	bool bIsFiring;

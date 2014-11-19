@@ -7,7 +7,7 @@
 ABaseInfantryWeapon::ABaseInfantryWeapon(const class FPostConstructInitializeProperties& PCIP)
 	: Super(PCIP)
 {
-
+	bAlwaysRelevant = true;
 }
 
 void ABaseInfantryWeapon::Equip()

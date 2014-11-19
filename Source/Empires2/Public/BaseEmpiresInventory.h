@@ -39,17 +39,25 @@ public:
 	///HACKHACK: These are individual pointers because an array of pointers does not replicate correctly
 
 
-	UPROPERTY(VisibleAnywhere, Replicated, Category = General)
+	UPROPERTY(VisibleAnywhere, Category = General, ReplicatedUsing=OnRep_Pistol)
 	class ABaseEmpiresWeapon* Pistol;
-	UPROPERTY(VisibleAnywhere, Replicated, Category = General)
+	UPROPERTY(VisibleAnywhere, Category = General, ReplicatedUsing = OnRep_Primary)
 	ABaseEmpiresWeapon* Primary;
-	UPROPERTY(VisibleAnywhere, Replicated, Category = General)
+	UPROPERTY(VisibleAnywhere, Category = General, ReplicatedUsing = OnRep_Tertiary)
 	ABaseEmpiresWeapon* Tertiary;
-	UPROPERTY(VisibleAnywhere, Replicated, Category = General)
+	UPROPERTY(VisibleAnywhere, Category = General, ReplicatedUsing = OnRep_Special)
 	ABaseEmpiresWeapon* Special;
 
-	
+	UFUNCTION()
+	void OnRep_Pistol();
+	UFUNCTION()
+	void OnRep_Primary();
+	UFUNCTION()
+	void OnRep_Tertiary();
+	UFUNCTION()
+	void OnRep_Special();
 		
+	void OnRep_Any();
 
 	virtual void ClearInventory();
 

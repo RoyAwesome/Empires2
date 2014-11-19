@@ -6,24 +6,6 @@
 #include "InfantryClass.generated.h"
 
 
-//Class slot filters
-namespace EInfantryWeaponTypes
-{
-	enum Type
-	{
-		WeaponClass_Pistol = 0,
-		WeaponClass_Rifle = 1,
-		WeaponClass_SMG = 2,
-		WeaponClass_Rocket = 3,
-		WeaponClass_Siege = 4, //Mortars, other possible siege weapons
-
-		WeaponClass_Grenade = 5,
-		WeaponClass_Tool = 6,
-		WeaponClass_Deployable = 7,
-	};
-
-}
-
 /**
  * 
  */
@@ -42,8 +24,16 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = General)
 	TSubclassOf<class ABaseInfantryWeapon> Pistol;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = General)
 		TSubclassOf<ABaseInfantryWeapon> Primary;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = General)
+	TArray<TSubclassOf<ABaseInfantryWeapon>> Pistols;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = General)
+	TArray<TSubclassOf<ABaseInfantryWeapon>> Primaries;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = General)
+	TArray<TSubclassOf<ABaseInfantryWeapon>> Tertiaries;
+
+	//TArray<TSubclassOf<UInfantryActiveAbility>> Actives;
+	//TArray<TSubclassOf<UInfantryPassiveAbility>> Passives;
 };

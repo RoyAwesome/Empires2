@@ -2,7 +2,7 @@
 
 #include "Empires2.h"
 #include "BaseEmpiresInventory.h"
-#include "UnrealNetwork.h"
+#include "Net/UnrealNetwork.h"
 #include "BaseEmpiresWeapon.h"
 
 
@@ -11,8 +11,8 @@
 UBaseEmpiresInventory::UBaseEmpiresInventory(const class FPostConstructInitializeProperties& PCIP)
 	: Super(PCIP)
 {
-	SetNetAddressable();
-	SetIsReplicated(true);
+	bReplicates = true;
+	
 }
 
 
@@ -96,4 +96,32 @@ ABaseEmpiresWeapon* UBaseEmpiresInventory::GetItemInSlot(EInfantryInventorySlots
 	default:
 		return nullptr;
 	}
+}
+
+void UBaseEmpiresInventory::OnRep_Pistol()
+{
+	TRACE("Pistol Replicated: %u", Pistol);
+	OnRep_Any();
+}
+
+void UBaseEmpiresInventory::OnRep_Primary()
+{
+	TRACE("Primary Replicated: %u", Primary);
+	OnRep_Any();
+}
+
+void UBaseEmpiresInventory::OnRep_Tertiary()
+{
+	OnRep_Any();
+}
+
+void UBaseEmpiresInventory::OnRep_Special()
+{
+	
+}
+
+void UBaseEmpiresInventory::OnRep_Any()
+{
+	AEmpires2Character* Character = Cast<AEmpires2Character>(this->GetOwner());
+	if (Character) Character->RefreshHeldWeapon();
 }
