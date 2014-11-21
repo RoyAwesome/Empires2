@@ -316,10 +316,7 @@ void AEmpires2Character::OnRep_SelectedWeapon()
 
 void AEmpires2Character::ChangeFiremode()
 {
-	if (Role < ROLE_Authority)
-	{
-		ServerChangeFiremode();
-	}
+	
 	ABaseInfantryWeapon* Weapon = GetActiveWeapon();
 	if (Weapon == nullptr) return; //No weapon? Don't bother changing firemode
 
@@ -328,10 +325,6 @@ void AEmpires2Character::ChangeFiremode()
 
 void AEmpires2Character::ReloadWeapon()
 {
-	if (Role < ROLE_Authority)
-	{
-		ServerReloadWeapon();
-	}
 	ABaseInfantryWeapon* Weapon = GetActiveWeapon();
 	if (Weapon == nullptr) return; //No weapon? Don't bother reloading
 
@@ -366,24 +359,6 @@ bool AEmpires2Character::ServerSelectLastWeapon_Validate()
 	return true;
 }
 
-void AEmpires2Character::ServerChangeFiremode_Implementation()
-{
-	ChangeFiremode();
-}
-bool AEmpires2Character::ServerChangeFiremode_Validate()
-{
-	return true;
-}
-
-void AEmpires2Character::ServerReloadWeapon_Implementation()
-{
-	ReloadWeapon();
-}
-bool AEmpires2Character::ServerReloadWeapon_Validate()
-{
-	return true;
-}
-
 void AEmpires2Character::PickupWeapon(EInfantryInventorySlots::Type Slot, ABaseEmpiresWeapon* Weapon)
 {
 	if (Role < ROLE_Authority) return; //Only the server can pick up a weapon
@@ -403,4 +378,19 @@ void AEmpires2Character::SpawnInventory()
 	}
 
 	
+}
+
+void AEmpires2Character::Respawn()
+{
+
+}
+
+void AEmpires2Character::Die()
+{
+
+}
+
+void AEmpires2Character::Revive()
+{
+
 }

@@ -14,7 +14,6 @@ ABaseEmpiresWeapon::ABaseEmpiresWeapon(const class FPostConstructInitializePrope
 
 	GunOffset = FVector(100.0f, 30.0f, 10.0f);
 	ActiveFiremode = 0;
-	bReloading = false;
 	bReplicates = true;
 	bAlwaysRelevant = true;
 }
@@ -37,7 +36,20 @@ void ABaseEmpiresWeapon::PostInitProperties()
 
 		firemode->SetWeapon(this);
 		Firemodes.Add(firemode);
+
+		
 	}
+
+	//Create the ammo pools
+	CurrentClipPool.AddZeroed(AmmoPools.Num());
+	RemainingAmmoPool.AddZeroed(AmmoPools.Num());
+
+	for (int32 i = 0; i < AmmoPools.Num(); i++)
+	{
+		CurrentClipPool[i] = AmmoPools[i].ClipSize;
+		RemainingAmmoPool[i] = AmmoPools[i].MaxAmmo;
+	}
+
 }
 
 void ABaseEmpiresWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
@@ -47,8 +59,8 @@ void ABaseEmpiresWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > 
 	DOREPLIFETIME(ABaseEmpiresWeapon, CurrentCoF);
 	DOREPLIFETIME(ABaseEmpiresWeapon, ActiveFiremode);
 	DOREPLIFETIME(ABaseEmpiresWeapon, ShotsFired);
-	DOREPLIFETIME(ABaseEmpiresWeapon, bIsFiring);
 	DOREPLIFETIME(ABaseEmpiresWeapon, OwningCharacter);
+	DOREPLIFETIME(ABaseEmpiresWeapon, WeaponState);
 }
 
 
@@ -94,6 +106,8 @@ void ABaseEmpiresWeapon::Equip()
 	//Set the mesh to be the weapon we have
 	OwningCharacter->Mesh1P->SetSkeletalMesh(ViewModel);
 	OwningCharacter->Mesh1P->SetAnimation(GetActiveWeaponAnimationSet().FireAnimation);
+
+	WeaponState = EWeaponState::Weapon_Idle; //TODO: Drawing weapon makes this idle, not just equipping it
 }
 void ABaseEmpiresWeapon::Unequip()
 {
@@ -108,8 +122,8 @@ bool ABaseEmpiresWeapon::CanFire()
 {
 	UBaseFiremode* firemode = GetActiveFiremode();
 	if (firemode == nullptr) return false; //No active firemode
-	if (bReloading) return false; //Can't fire when we are reloading
-	if (GetCurrentAmmoPool().AmmoInClip <= 0) return false; //If we have no ammo, we can't fire
+	if (WeaponState != EWeaponState::Weapon_Idle) return false; //We can only fire if we are idle
+	if (GetAmmoInClip() <= 0) return false; //If we have no ammo, we can't fire
 	
 	//TODO: Check if the firemode is capable of firing
 
@@ -126,7 +140,7 @@ void ABaseEmpiresWeapon::BeginFire()
 		ServerStartFire();
 	}
 
-	if (GetCurrentAmmoPool().AmmoInClip <= 0) //If we are out of ammo, attempt to reload
+	if (GetAmmoInClip() <= 0) //If we are out of ammo, attempt to reload
 	{
 		Reload();
 		return;
@@ -136,7 +150,7 @@ void ABaseEmpiresWeapon::BeginFire()
 	check(firemode);
 	firemode->BeginFire();
 
-	bIsFiring = true;
+	WeaponState = EWeaponState::Weapon_Firing;
 	ShotsFired = 0;
 
 }
@@ -162,12 +176,12 @@ void ABaseEmpiresWeapon::EndFire()
 		ServerEndFire();
 	}
 
-	if (!bIsFiring) return; //Don't need to EndFire if we aren't firing.
+	if (WeaponState != EWeaponState::Weapon_Firing) return; //Don't need to EndFire if we aren't firing.
 	UBaseFiremode* firemode = GetActiveFiremode();
 	check(firemode);
 	firemode->EndFire();
 
-	bIsFiring = false;
+	WeaponState = EWeaponState::Weapon_Idle;
 }
 
 
@@ -349,28 +363,33 @@ void ABaseEmpiresWeapon::ConsumeAmmo(int32 HowMuch, int32 FromAmmoPool)
 {
 	int32 AmmoPoolidx = FromAmmoPool == CurrentAmmopool ? GetActiveFiremodeData().AmmoPoolIndex : FromAmmoPool;
 
-	AmmoPools[AmmoPoolidx].AmmoInClip -= HowMuch;
+	CurrentClipPool[AmmoPoolidx] -= HowMuch;
 }
 
 int32 ABaseEmpiresWeapon::GetAmmoInClip(int32 FromAmmoPool)
 {
-	FAmmoPool AmmoPool = GetAmmoPool(FromAmmoPool);
-	return AmmoPool.AmmoInClip;
+	int32 AmmoPoolidx = FromAmmoPool == CurrentAmmopool ? GetActiveFiremodeData().AmmoPoolIndex : FromAmmoPool;
+
+	return CurrentClipPool[AmmoPoolidx];
 }
 
 int32 ABaseEmpiresWeapon::GetTotalAmmo(int32 FromAmmoPool)
 {
-	FAmmoPool AmmoPool = GetAmmoPool(FromAmmoPool);
-	return AmmoPool.CurrentAmmo;
+	int32 AmmoPoolidx = FromAmmoPool == CurrentAmmopool ? GetActiveFiremodeData().AmmoPoolIndex : FromAmmoPool;
+	return RemainingAmmoPool[AmmoPoolidx];
 }
 
 void ABaseEmpiresWeapon::AddAmmo(int32 Ammount, int32 ToAmmoPool)
 {
+	int32 AmmoPoolidx = ToAmmoPool == CurrentAmmopool ? GetActiveFiremodeData().AmmoPoolIndex : ToAmmoPool;
 	FAmmoPool AmmoPool = GetAmmoPool(ToAmmoPool);
-	AmmoPool.CurrentAmmo += Ammount;
-	if (AmmoPool.CurrentAmmo > AmmoPool.MaxAmmo)
+
+
+	RemainingAmmoPool[AmmoPoolidx] += Ammount;
+
+	if (RemainingAmmoPool[AmmoPoolidx] > AmmoPool.MaxAmmo)
 	{
-		AmmoPool.CurrentAmmo = AmmoPool.MaxAmmo;
+		RemainingAmmoPool[AmmoPoolidx] = AmmoPool.MaxAmmo;
 	}
 }
 
@@ -391,7 +410,7 @@ void ABaseEmpiresWeapon::Reload()
 
 	GetWorld()->GetTimerManager().SetTimer(this, &ABaseEmpiresWeapon::DoReload, ReloadTime, false);
 
-	bReloading = true;
+	WeaponState = EWeaponState::Weapon_Reloading;
 }
 
 void ABaseEmpiresWeapon::DoReload()
@@ -401,22 +420,22 @@ void ABaseEmpiresWeapon::DoReload()
 	int Idx = GetActiveFiremodeData().AmmoPoolIndex;
 
 
-	if (AmmoPools[Idx].CurrentAmmo < AmmoPools[Idx].ClipSize) //We don't have enough ammo to fill out a full clip
+	if (RemainingAmmoPool[Idx] < AmmoPools[Idx].ClipSize) //We don't have enough ammo to fill out a full clip
 	{
-		AmmoPools[Idx].AmmoInClip = AmmoPools[Idx].CurrentAmmo; //So set the ammo to whatever is left
-		AmmoPools[Idx].CurrentAmmo = 0;
+		CurrentClipPool[Idx] = RemainingAmmoPool[Idx]; //So set the ammo to whatever is left
+		RemainingAmmoPool[Idx] = 0;
 	}
 	else //Otherwise, max out our clip
 	{
 		//Figure out how many bullets we need
-		int32 bulletsNeeded = AmmoPools[Idx].ClipSize - AmmoPools[Idx].AmmoInClip;
+		int32 bulletsNeeded = AmmoPools[Idx].ClipSize - CurrentClipPool[Idx];
 
 		//Max out the clip size
-		AmmoPools[Idx].AmmoInClip = AmmoPools[Idx].ClipSize;
+		CurrentClipPool[Idx] = AmmoPools[Idx].ClipSize;
 		//And take the diff from the pool
-		AmmoPools[Idx].CurrentAmmo -= bulletsNeeded;
+		RemainingAmmoPool[Idx] -= bulletsNeeded;
 	}
-	bReloading = false;
+	WeaponState = EWeaponState::Weapon_Idle;
 	
 }
 

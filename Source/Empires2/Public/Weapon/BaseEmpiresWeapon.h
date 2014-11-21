@@ -9,6 +9,30 @@
 const int32 CurrentAmmopool = -1;
 const int32 CurrentFiremode = -1;
 
+//Weapon State Enums
+//NotEquipped: Weapon is not attached to any character, and GetOwningCharacter() returns null
+//Equipping: Weapon is going into the inventory. 
+//NotSelected: Weapon is in the inventory, but not the active weapon
+//Drawing: Weapon is being pulled out to use
+//Idle: Weapon is in hand
+//Firing: Weapon is being fired
+//Reloading: Weapon is being reloaded. 
+UENUM()
+namespace EWeaponState
+{
+	enum Type
+	{
+		Weapon_NotEquipped,
+		Weapon_Equipping,
+		Weapon_NotSelected,
+		Weapon_Drawing,
+		Weapon_Idle,
+		Weapon_Firing,
+		Weapon_Reloading,
+	};
+
+}
+
 USTRUCT()
 struct FEmpDamageInfo : public FDamageEvent
 {
@@ -83,20 +107,12 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = Ammo)
 		TSubclassOf<class ABaseEmpiresProjectile> ProjectileClass;
-
-
-	UPROPERTY(BlueprintReadWrite, Category = Ammo)
-		int32 CurrentAmmo;
-	UPROPERTY(BlueprintReadWrite, Category = Ammo)
-		int32 AmmoInClip;
+	
 
 	FAmmoPool()
 	{
 		MaxAmmo = 120;
-		ClipSize = 30;
-
-		CurrentAmmo = MaxAmmo;
-		AmmoInClip = ClipSize;
+		ClipSize = 30;	
 	}
 
 };
@@ -471,8 +487,10 @@ public:
 	FVector GetFireDirection();
 
 protected:
-	UPROPERTY(Replicated)
-	bool bIsFiring;
+	UPROPERTY(VisibleAnywhere, Category = General, Replicated)
+	TEnumAsByte<EWeaponState::Type> WeaponState;
+
+	
 	UPROPERTY(Replicated)
 	int32 ShotsFired;
 
@@ -491,6 +509,11 @@ public:
 		*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Firemodes)
 		TArray<FAmmoPool> AmmoPools;
+
+	UPROPERTY(Replicated)
+	TArray<int32> CurrentClipPool;
+	UPROPERTY(Replicated)
+	TArray<int32> RemainingAmmoPool;
 
 	UFUNCTION(BlueprintCallable, Category = Firemode)
 		virtual FWeaponData GetActiveFiremodeData();
@@ -535,8 +558,7 @@ public:
 protected:
 	FAmmoPool GetAmmoPool(int32 FromAmmoPool = CurrentAmmopool);
 
-	UPROPERTY(Replicated, ReplicatedUsing=OnRep_Reload)
-	bool bReloading;
+
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Firemodes)

@@ -92,15 +92,12 @@ public:
 	void ReloadWeapon();
 
 	UFUNCTION(Reliable, Server, WithValidation)
-	void ServerSelectNextWeapon();
+		void ServerSelectNextWeapon();
 	UFUNCTION(Reliable, Server, WithValidation)
-	void ServerSelectPreviousWeapon();
+		void ServerSelectPreviousWeapon();
 	UFUNCTION(Reliable, Server, WithValidation)
-	void ServerSelectLastWeapon();
-	UFUNCTION(Reliable, Server, WithValidation)
-	void ServerChangeFiremode();
-	UFUNCTION(Reliable, Server, WithValidation)
-	void ServerReloadWeapon();
+		void ServerSelectLastWeapon();
+	
 	/* End Weapon Input Events */
 
 	
@@ -134,5 +131,15 @@ protected:
 
 protected: 
 	virtual void SpawnInventory();
+
+
+	////////////// GAME FLOW
+	public:
+
+		void Respawn();
+		void Die();
+		void Revive();
+
+
 };
 
