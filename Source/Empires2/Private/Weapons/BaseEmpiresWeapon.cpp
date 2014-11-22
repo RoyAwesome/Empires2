@@ -6,6 +6,7 @@
 #include "BaseFiremode.h"
 #include "BaseEmpiresWeapon.h"
 #include "UnrealNetwork.h"
+#include "WeaponFireType.h"
 
 
 ABaseEmpiresWeapon::ABaseEmpiresWeapon(const class FPostConstructInitializeProperties& PCIP)
@@ -43,11 +44,15 @@ void ABaseEmpiresWeapon::PostInitProperties()
 	//Create the ammo pools
 	CurrentClipPool.AddZeroed(AmmoPools.Num());
 	RemainingAmmoPool.AddZeroed(AmmoPools.Num());
+	Firetypes.AddZeroed(AmmoPools.Num());
 
 	for (int32 i = 0; i < AmmoPools.Num(); i++)
 	{
 		CurrentClipPool[i] = AmmoPools[i].ClipSize;
 		RemainingAmmoPool[i] = AmmoPools[i].MaxAmmo;
+
+		//Create the firetypes
+		if(AmmoPools[i].FireType) Firetypes[i] = NewObject<UWeaponFireType>(this, AmmoPools[i].FireType);
 	}
 
 }
@@ -94,6 +99,18 @@ void ABaseEmpiresWeapon::PlayAnimation(UAnimMontage* Animation)
 	}
 }
 
+
+void ABaseEmpiresWeapon::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	//Tick the tickable firetypes
+	for (int32 i = 0; i < Firetypes.Num(); i++)
+	{
+		if (Firetypes[i] && Firetypes[i]->bIsTicked) Firetypes[i]->Tick(DeltaSeconds);
+	}
+
+}
 
 
 
@@ -208,9 +225,11 @@ void ABaseEmpiresWeapon::FireShot()
 	//Get the current firemode's projectile
 	FAmmoPool ammoPool = GetCurrentAmmoPool();
 
-	if (ammoPool.ProjectileClass == nullptr)
+	UWeaponFireType* CurrentFiretype = GetCurrentFiretype();
+
+	if (CurrentFiretype == nullptr)
 	{
-		//UE_LOG(EmpiresGameplay, Display, TEXT("Unable to fire Weapon %s, firemode %d because projectile is null!"), GetName(), ActiveFiremode);
+		//UE_LOG(EmpiresGameplay, Display, TEXT("Unable to fire Weapon %s, firemode %d because Firetype is null!"), GetName(), ActiveFiremode);
 		return;
 	}
 
@@ -229,18 +248,10 @@ void ABaseEmpiresWeapon::FireShot()
 	DrawDebugLine(GetWorld(), SpawnLocation, SpawnLocation + (CofDirection * 1000), FColor::Red, true, -1.0f, 0, 1);
 
 	FRotator ConeAdjustedAngle = CofDirection.Rotation();
+	
+	//Let the firetype emit a shot.  
+	CurrentFiretype->EmitShot(SpawnLocation, ConeAdjustedAngle);
 
-	UWorld* const World = GetWorld();
-
-
-	if (World != NULL)
-	{
-		// spawn the projectile at the muzzle
-		ABaseEmpiresProjectile* projectile = World->SpawnActor<ABaseEmpiresProjectile>(ammoPool.ProjectileClass, SpawnLocation, ConeAdjustedAngle);
-		projectile->OwningWeapon = this;
-
-		//And look at it go!
-	}
 
 	PlaySound(GetActiveWeaponAnimationSet().FireSound);
 	PlayAnimation(GetActiveWeaponAnimationSet().FireAnimation);
@@ -300,6 +311,12 @@ FAmmoPool ABaseEmpiresWeapon::GetCurrentAmmoPool()
 {
 	return AmmoPools[FiremodeData[ActiveFiremode].AmmoPoolIndex];
 }
+
+UWeaponFireType* ABaseEmpiresWeapon::GetCurrentFiretype()
+{
+	return Firetypes[FiremodeData[ActiveFiremode].AmmoPoolIndex];
+}
+
 
 
 void ABaseEmpiresWeapon::NextFiremode()
@@ -558,3 +575,4 @@ void  ABaseEmpiresWeapon::OnRep_Reload()
 {
 	//TODO: Simulate Weaponing
 }
+

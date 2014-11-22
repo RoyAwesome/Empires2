@@ -105,9 +105,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = General)
 		float ReloadTime;
 
-	UPROPERTY(EditDefaultsOnly, Category = Ammo)
-		TSubclassOf<class ABaseEmpiresProjectile> ProjectileClass;
-	
+	UPROPERTY(EditDefaultsOnly, Category = General)
+	TSubclassOf<class UWeaponFireType> FireType;
 
 	FAmmoPool()
 	{
@@ -448,6 +447,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Weapon)
 		FVector GunOffset;
 
+	virtual void Tick(float DeltaSeconds) override;
+
 	//EQUIPPING
 public:
 	virtual void Equip();
@@ -494,7 +495,8 @@ protected:
 	UPROPERTY(Replicated)
 	int32 ShotsFired;
 
-
+	UPROPERTY(Replicated)
+	int32 WeaponSeed;
 
 	//Firemodes
 public:
@@ -515,6 +517,9 @@ public:
 	UPROPERTY(Replicated)
 	TArray<int32> RemainingAmmoPool;
 
+	UPROPERTY(VisibleAnywhere, Category = Firemodes)
+	TArray<UWeaponFireType*> Firetypes;
+
 	UFUNCTION(BlueprintCallable, Category = Firemode)
 		virtual FWeaponData GetActiveFiremodeData();
 
@@ -523,6 +528,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = Firemode)
 		virtual FAmmoPool GetCurrentAmmoPool();
+
+	virtual UWeaponFireType* GetCurrentFiretype();
 
 	void NextFiremode();
 
