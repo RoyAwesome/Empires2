@@ -13,8 +13,7 @@ UBaseFiremode::UBaseFiremode(const class FPostConstructInitializeProperties& PCI
 
 UWorld* UBaseFiremode::GetWorld() const
 {
-	check(Weapon);
-	return Weapon->GetWorld();
+	return GetOuter()->GetWorld();
 }
 
 void UBaseFiremode::BeginFire()
@@ -22,19 +21,28 @@ void UBaseFiremode::BeginFire()
 	BeginFireTime =  GetWorld()->GetTimeSeconds();
 	bFiring = true;
 
+	BTBeginFire();
+
 }
 void UBaseFiremode::EndFire()
 {
+	BTEndFire();
 	bFiring = false;
+
 }
 
 void UBaseFiremode::HandleFire()
 {
-
+	BTHandleFire();
 }
 
-void UBaseFiremode::SetWeapon(ABaseEmpiresWeapon* Weapon)
+ABaseEmpiresWeapon* UBaseFiremode::GetWeapon()
 {
-	this->Weapon = Weapon;
+	return Cast<ABaseEmpiresWeapon>(GetOuter());
+}
+
+bool UBaseFiremode::IsFiring()
+{
+	return bFiring;	
 }
 

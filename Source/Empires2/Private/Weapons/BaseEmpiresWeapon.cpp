@@ -34,8 +34,6 @@ void ABaseEmpiresWeapon::PostInitProperties()
 			continue;
 		}
 		UBaseFiremode* firemode = ConstructObject<UBaseFiremode>(FiremodeData[i].FiremodeClass, this);
-
-		firemode->SetWeapon(this);
 		Firemodes.Add(firemode);
 
 		

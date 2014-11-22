@@ -9,18 +9,21 @@
  * Base class for all firemodes.  
  * A weapon is a collection of fire modes.  A fire mode defines the way that a weapon fires and handles all of the behaviors of the weapon
  */
-UCLASS(Abstract)
+UCLASS(Abstract, Blueprintable)
 class EMPIRES2_API UBaseFiremode : public UObject
 {
 	GENERATED_UCLASS_BODY()
 
    //General Usage
 public:
-		virtual void SetWeapon(class ABaseEmpiresWeapon* Weapon);
-
+		
 		virtual UWorld* GetWorld() const override;
+
+		UFUNCTION(BlueprintCallable, Category=Firemode)
+		virtual ABaseEmpiresWeapon* GetWeapon();
 protected:
 
+	UPROPERTY()
 	ABaseEmpiresWeapon* Weapon;
 
 
@@ -41,23 +44,26 @@ public:
 		return true;
 	}
 
+	UFUNCTION(BlueprintImplementableEvent, meta = (FriendlyName = "Begin Fire"))
+	void BTBeginFire();
+	UFUNCTION(BlueprintImplementableEvent, meta = (FriendlyName = "End Fire"))
+	void BTEndFire();
+	UFUNCTION(BlueprintImplementableEvent, meta = (FriendlyName = "Handle Fire"))
+	void BTHandleFire();
+
+	//TODO: Allow this function to control when something can fire
+	UFUNCTION(BlueprintImplementableEvent, meta = (FriendlyName = "Can Fire"))
+	bool BTCanFire();
 	
-	//TODO: Implement Blueprint Hooks so designers can create their own firemodes
-	/*
-	UFUNCTION(BlueprintImplementableEvent, Category=Weapon)
-	void BP_BeginFire();
-
-	UFUNCTION(BlueprintImplementableEvent, Category = Weapon)
-	void BP_EndFire();
-	*/
-
-	bool IsFiring()
-	{
-		return bFiring;
-	}
+	
+	UFUNCTION(BlueprintCallable, Category = Firemode)
+		bool IsFiring();
+	
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Firemode)
 	float BeginFireTime;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category=Firemode)
 	bool bFiring;
 
 };
