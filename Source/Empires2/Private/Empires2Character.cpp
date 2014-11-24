@@ -50,7 +50,9 @@ AEmpires2Character::AEmpires2Character(const class FPostConstructInitializePrope
 
 	}
 
-	
+	RevivePercent = .5f;
+	MaxHealth = 1000;
+	DisableReviveTime = 10;
 }
 
 
@@ -65,23 +67,8 @@ void AEmpires2Character::PossessedBy(AController * NewController)
 	Super::PossessedBy(NewController);
 
 	if (Role == ROLE_Authority && Controller)
-	{
-	
-
-		AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
-		if (!playerState) return;
-
-		//Add the primary and secondary weapons
-
-		ABaseEmpiresWeapon* Pistol = GetWorld()->SpawnActor<ABaseEmpiresWeapon>(playerState->DefaultClass->Pistol);
-		Pistol->SetOwner(this);
-		Inventory->AddItem(EInfantryInventorySlots::Slot_Sidearm, Pistol);
-
-		ABaseEmpiresWeapon* Rifle = GetWorld()->SpawnActor<ABaseEmpiresWeapon>(playerState->DefaultClass->Primary);
-		Rifle->SetOwner(this);
-		Inventory->AddItem(EInfantryInventorySlots::Slot_Primary, Rifle);
-
-		SwitchToWeapon(EInfantryInventorySlots::Slot_Primary);
+	{	
+		SpawnInventory();	
 	}
 
 }
@@ -90,7 +77,7 @@ void AEmpires2Character::PostInitProperties()
 {
 	Super::PostInitProperties();
 
-
+	SetHealth(MaxHealth);
 
 }
 
@@ -377,20 +364,94 @@ void AEmpires2Character::SpawnInventory()
 		return;
 	}
 
+	//Clear the inventory
+	Inventory->ClearInventory();
+
+	AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
+	if (!playerState) return;
+
+	//Add the primary and secondary weapons
+	ABaseEmpiresWeapon* Pistol = GetWorld()->SpawnActor<ABaseEmpiresWeapon>(playerState->DefaultClass->Pistol);
+	Pistol->SetOwner(this);
+	Inventory->AddItem(EInfantryInventorySlots::Slot_Sidearm, Pistol);
+
+	ABaseEmpiresWeapon* Rifle = GetWorld()->SpawnActor<ABaseEmpiresWeapon>(playerState->DefaultClass->Primary);
+	Rifle->SetOwner(this);
+	Inventory->AddItem(EInfantryInventorySlots::Slot_Primary, Rifle);
+
+	SwitchToWeapon(EInfantryInventorySlots::Slot_Primary);
 	
 }
 
+//Destroy this character so that we can spawn a new character for him later.  
 void AEmpires2Character::Respawn()
 {
+	Inventory->ClearInventory();
+	//Start destroying this character
 
+	Destroy();
 }
 
-void AEmpires2Character::Die()
+void AEmpires2Character::Die(AController* Instigator, bool CanRevive)
 {
+	bIsDead = true;
+	bCanRevive = CanRevive;
+
+
+	//TODO: Play the death animation and then ragdoll
+
+	//Remove controls
+	InputComponent->Deactivate();
+
+	//Show the death screen
+
 
 }
 
 void AEmpires2Character::Revive()
 {
+	//Give controls back
+	InputComponent->Activate();
+	bIsDead = false;
 
+
+	//Remove the death screen
+
+	//Play the get up animation
+
+	//Set health to 1/2 max health
+	SetHealth(MaxHealth * RevivePercent);
+}
+
+float AEmpires2Character::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float RealDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	if (RealDamage == 0) return 0;
+
+	//TODO: Friendly Fire Y/N?
+
+	//TODO: Resistances
+
+	float Health = GetHealth() - RealDamage;
+
+	if (Health <= 0)
+	{
+		//Die
+		Die(EventInstigator, true); //TODO: Test to see if we can revive
+	}
+
+	SetHealth(Health);
+
+	return RealDamage;
+}
+
+void AEmpires2Character::SetHealth(float amount)
+{
+	Health = amount;
+}
+
+float AEmpires2Character::GetHealth()
+{
+	return Health;
 }

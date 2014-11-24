@@ -134,12 +134,39 @@ protected:
 
 
 	////////////// GAME FLOW
-	public:
+public:
 
-		void Respawn();
-		void Die();
-		void Revive();
+		virtual void Respawn();
+		virtual void Die(AController* Instigator, bool CanRevive);
+		virtual void Revive();
 
+		virtual void SetHealth(float amount);
+		virtual float GetHealth();
 
+		virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=GameFlow, Replicated)
+		bool bIsDead;
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = GameFlow, Replicated)
+		bool bCanRevive;
+		
+		UPROPERTY(Replicated)
+		float LastReviveTime;
+
+	
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category=GameFlow)
+	float Health;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameFlow)
+	float MaxHealth;
+	
+	/* How much of MaxHealth do you revive with */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameFlow)
+	float RevivePercent;
+
+	/* If you die within this amount of time since your last revive, you cannot revive */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=GameFlow)
+	float DisableReviveTime;
 };
 
