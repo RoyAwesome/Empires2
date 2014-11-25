@@ -43,7 +43,7 @@ void UFakeProjectileFiretype::Tick(float deltaTime)
 
 void UFakeProjectileFiretype::SimulateShot(FFakeProjectile& Projectile, float time)
 {
-	FVector EndPos = Projectile.CurrentPosition + (Projectile.Velocity + Gravity * GravityScale) * time;
+	FVector EndPos = Projectile.CurrentPosition + (Projectile.Velocity +  (.5f * Gravity * GravityScale * time)) * time;
 
 
 	FCollisionQueryParams TraceParams(FName(TEXT("FakeProjectileTrace")), true);
