@@ -36,4 +36,20 @@ DECLARE_LOG_CATEGORY_EXTERN(Empires, Log, All);
 }
 
 
+UENUM()
+namespace EEmpiresTeam
+{
+	enum Type
+	{
+		Team_Unassigned = 0, //When a player joins, they are naturally Unassigned.  
+		Team_BlueTeam = 1, //Usually Brenodi 
+		Team_RedTeam = 2, //Usually Northern Faction
+		Team_GreenTeam = 3, //Custom Team for special game modes
+		Team_YellowTeam = 4, //Custom Team for special game modes
+		Team_Spectator = 5,
+		Count = 6,
+	};
+}
+
+
 #endif
