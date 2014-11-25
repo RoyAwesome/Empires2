@@ -105,6 +105,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = General)
 		float ReloadTime;
 
+	UPROPERTY(EditDefaultsOnly, Category=General)
+	float Damage;
+
+
 	UPROPERTY(EditDefaultsOnly, Category = General)
 	TSubclassOf<class UWeaponFireType> FireType;
 
@@ -112,6 +116,7 @@ public:
 	{
 		MaxAmmo = 120;
 		ClipSize = 30;	
+		Damage = 143;
 	}
 
 };
@@ -486,6 +491,8 @@ public:
 		FEmpDamageInfo DamageInfo; //TODO: Remove this, Let Ammo Pool Decide
 
 	FVector GetFireDirection();
+
+	void DealDamage(AEmpires2Character* Target);
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category = General, Replicated)

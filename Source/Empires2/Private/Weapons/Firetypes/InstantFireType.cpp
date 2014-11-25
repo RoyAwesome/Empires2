@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Empires2.h"
+#include "BaseEmpiresWeapon.h"
 #include "InstantFireType.h"
 
 
@@ -28,7 +29,7 @@ void UInstantFireType::EmitShot(FVector Origin, FRotator Direction)
 	AEmpires2Character* Character = Cast<AEmpires2Character>(Hit.GetActor());
 	if (Character)
 	{
-		//Alert the weapon we have hit something
+		GetWeapon()->DealDamage(Character);
 	}
 
 }

@@ -574,3 +574,14 @@ void  ABaseEmpiresWeapon::OnRep_Reload()
 	//TODO: Simulate Weaponing
 }
 
+void ABaseEmpiresWeapon::DealDamage(AEmpires2Character* Target)
+{
+	float damage = GetAmmoPool().Damage;
+
+	FPointDamageEvent damageEvent;
+	damageEvent.Damage = damage;
+	//Fill in the rest of the damage event
+
+	Target->TakeDamage(damage, damageEvent, OwningCharacter->GetController(), OwningCharacter);
+}
+

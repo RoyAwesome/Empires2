@@ -24,6 +24,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category=General)
 	FRotator Direction;
 
+	UPROPERTY(VisibleAnywhere, Category = General)
+	FVector Velocity;
+
 	/*True if this fake projectile should be updated.  False if it's queued for removal*/
 	UPROPERTY(VisibleAnywhere, Category=General)
 	bool bSimulating;
