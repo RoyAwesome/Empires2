@@ -39,10 +39,8 @@ void ABaseEmpiresProjectile::OnHit(AActor* OtherActor, UPrimitiveComponent* Othe
 	//TODO: Apply Damage
 	if (OtherActor && OtherActor->bCanBeDamaged)
 	{
-		//TODO: Design this out and figure out how damage should work
-		FDamageEvent Damage;
-
-		OtherActor->TakeDamage(OwningWeapon->DamageInfo.Damage, Damage, OwningWeapon->OwningCharacter->GetController(), OwningWeapon->OwningCharacter);
+		AEmpires2Character* Character = Cast<AEmpires2Character>(OtherActor);
+		if (Character) OwningWeapon->DealDamage(Character);
 	}
 
 	Destroy();
