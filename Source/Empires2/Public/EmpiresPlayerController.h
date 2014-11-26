@@ -13,6 +13,21 @@ class EMPIRES2_API AEmpiresPlayerController : public APlayerController
 {
 	GENERATED_UCLASS_BODY()
 
+
+		/*  Death and Respawn   */
+public:
+
+
+	bool CanRespawn();
+
 	
+	void DoRespawn();
+
+	UPROPERTY()
+	class AEmpiresPlayerStart* WantedSpawn;
 	
+protected:
+
+	
+
 };

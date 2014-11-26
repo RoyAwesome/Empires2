@@ -87,6 +87,12 @@ void AEmpires2Character::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > 
 
 	DOREPLIFETIME(AEmpires2Character, SelectedWeapon);
 	DOREPLIFETIME(AEmpires2Character, LastSelectedWeapon);
+	DOREPLIFETIME(AEmpires2Character, Health);
+	DOREPLIFETIME(AEmpires2Character, LastReviveTime);
+	DOREPLIFETIME(AEmpires2Character, LastDeathTime);
+
+	DOREPLIFETIME(AEmpires2Character, bCanRevive);
+	DOREPLIFETIME(AEmpires2Character, bIsDead);
 
 		
 }
@@ -396,12 +402,13 @@ void AEmpires2Character::Die(AController* Instigator, bool CanRevive)
 {
 	bIsDead = true;
 	bCanRevive = CanRevive;
+	LastDeathTime = GetWorld()->TimeSeconds;
 
 
 	//TODO: Play the death animation and then ragdoll
 
 	//Remove controls
-	InputComponent->Deactivate();
+	if(InputComponent) InputComponent->Deactivate();
 
 	//Show the death screen
 
@@ -411,7 +418,7 @@ void AEmpires2Character::Die(AController* Instigator, bool CanRevive)
 void AEmpires2Character::Revive()
 {
 	//Give controls back
-	InputComponent->Activate();
+	if (InputComponent) InputComponent->Activate();
 	bIsDead = false;
 
 

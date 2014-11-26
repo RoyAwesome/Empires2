@@ -71,6 +71,9 @@ public:
 	/** hides the onscreen hud and restarts the map */
 	virtual void RestartGame() override;
 
+	/*  */
+	virtual void RespawnPlayer(class AEmpiresPlayerController* Controller);
+
 protected:
 
 	/** score for kill */

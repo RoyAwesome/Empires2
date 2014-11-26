@@ -153,10 +153,11 @@ public:
 		UPROPERTY(Replicated)
 		float LastReviveTime;
 
-	
+		UPROPERTY(Replicated)
+			float LastDeathTime;
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category=GameFlow)
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category=GameFlow)
 	float Health;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameFlow)
 	float MaxHealth;

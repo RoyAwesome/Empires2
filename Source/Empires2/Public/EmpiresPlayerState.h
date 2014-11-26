@@ -33,4 +33,11 @@ public:
 	//TODO: RequestClassChange
 
 
+	/*  SPAWN SELECTION  */
+public:
+	UPROPERTY()
+	class AEmpiresPlayerStart* WantedSpawn;
+
+
+
 };

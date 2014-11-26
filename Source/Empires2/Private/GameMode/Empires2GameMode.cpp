@@ -5,6 +5,8 @@
 #include "Empires2HUD.h"
 #include "Empires2Character.h"
 #include "EmpiresPlayerState.h"
+#include "EmpiresPlayerController.h"
+#include "EmpiresPlayerStart.h"
 
 namespace MatchState
 {
@@ -27,6 +29,8 @@ AEmpires2GameMode::AEmpires2GameMode(const class FPostConstructInitializePropert
 	HUDClass = AEmpires2HUD::StaticClass();
 
 	this->PlayerStateClass = AEmpiresPlayerState::StaticClass();
+
+	bUseSeamlessTravel = true;
 }
 
 void AEmpires2GameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
@@ -131,4 +135,17 @@ TSubclassOf<AGameSession> AEmpires2GameMode::GetGameSessionClass() const
 void AEmpires2GameMode::FinishMatch()
 {
 
+}
+
+void AEmpires2GameMode::RespawnPlayer(AEmpiresPlayerController* Controller)
+{
+
+	AEmpiresPlayerStart* StartSpot = Controller->WantedSpawn;
+	if (StartSpot == nullptr)
+	{
+		StartSpot = Cast<AEmpiresPlayerStart>(ChoosePlayerStart(Controller));
+		if (StartSpot == nullptr) UE_LOG(EmpiresGameplay, Warning, TEXT("Can't find a spawn for player"));
+	}
+
+	this->SpawnDefaultPawnFor(Controller, (AActor*) StartSpot);
 }
