@@ -17,7 +17,7 @@ void UFullAutoFiremode::BeginFire()
 	Super::BeginFire();
 
 	//Start a timer based off the first shot time
-	float FirstShotTime = Weapon->GetActiveFiremodeData().FirstShotFireDelay;
+	float FirstShotTime = GetWeapon()->GetActiveFiremodeData().FirstShotFireDelay;
 	if (FirstShotTime != 0)
 	{
 		GetWorld()->GetTimerManager().SetTimer(this, &UFullAutoFiremode::HandleFire, FirstShotTime, false);
@@ -32,11 +32,11 @@ void UFullAutoFiremode::HandleFire()
 {
 	if (!IsFiring()) return; //If we aren't firing anymore, don't fire a shot
 
-	Weapon->FireShot();
+	GetWeapon()->FireShot();
 
 
 	//get the time until the next shot
-	float FireTime = (1.0f / Weapon->GetActiveFiremodeData().RoundsPerMinute) * 60.0f;
+	float FireTime = (1.0f / GetWeapon()->GetActiveFiremodeData().RoundsPerMinute) * 60.0f;
 
 	GetWorld()->GetTimerManager().SetTimer(this, &UFullAutoFiremode::HandleFire, FireTime, false);
 

@@ -16,7 +16,7 @@ void USingleShotFiremode::BeginFire()
 	Super::BeginFire();
 
 	//Start a timer based off the first shot time
-	float FirstShotTime = Weapon->GetActiveFiremodeData().FirstShotFireDelay;
+	float FirstShotTime = GetWeapon()->GetActiveFiremodeData().FirstShotFireDelay;
 	if (FirstShotTime != 0)
 	{
 		GetWorld()->GetTimerManager().SetTimer(this, &USingleShotFiremode::HandleFire, FirstShotTime, false);
@@ -32,6 +32,6 @@ void USingleShotFiremode::BeginFire()
 
 void USingleShotFiremode::HandleFire()
 {
-	Weapon->FireShot();
+	GetWeapon()->FireShot();
 }
 

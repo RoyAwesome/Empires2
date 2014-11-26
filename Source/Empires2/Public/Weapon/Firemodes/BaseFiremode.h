@@ -23,9 +23,6 @@ public:
 		virtual ABaseEmpiresWeapon* GetWeapon();
 protected:
 
-	UPROPERTY()
-	ABaseEmpiresWeapon* Weapon;
-
 
 	//FIRE CONTROL
 public:

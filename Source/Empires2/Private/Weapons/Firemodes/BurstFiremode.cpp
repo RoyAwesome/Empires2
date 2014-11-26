@@ -18,7 +18,7 @@ void UBurstFiremode::BeginFire()
 	BurstsRemaining = ShotsInBurst;
 
 	//Start a timer based off the first shot time
-	float FirstShotTime = Weapon->GetActiveFiremodeData().FirstShotFireDelay;
+	float FirstShotTime = GetWeapon()->GetActiveFiremodeData().FirstShotFireDelay;
 	if (FirstShotTime != 0)
 	{
 		GetWorld()->GetTimerManager().SetTimer(this, &UBurstFiremode::HandleFire, FirstShotTime, false);
@@ -35,12 +35,12 @@ void UBurstFiremode::HandleFire()
 
 	BurstsRemaining--;
 
-	Weapon->FireShot();
+	GetWeapon()->FireShot();
 	
 	if (BurstsRemaining > 0)
 	{
 		//get the time until the next shot
-		float FireTime = (1.0f / Weapon->GetActiveFiremodeData().RoundsPerMinute) * 60.0f;
+		float FireTime = (1.0f / GetWeapon()->GetActiveFiremodeData().RoundsPerMinute) * 60.0f;
 
 		GetWorld()->GetTimerManager().SetTimer(this, &UBurstFiremode::HandleFire, FireTime, false);
 	}
