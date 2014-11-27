@@ -5,6 +5,7 @@
 #include "Engine/Canvas.h"
 #include "TextureResource.h"
 #include "CanvasItem.h"
+#include "UserWidget.h"
 
 AEmpires2HUD::AEmpires2HUD(const class FPostConstructInitializeProperties& PCIP) : Super(PCIP)
 {
@@ -12,6 +13,16 @@ AEmpires2HUD::AEmpires2HUD(const class FPostConstructInitializeProperties& PCIP)
 	static ConstructorHelpers::FObjectFinder<UTexture2D> CrosshiarTexObj(TEXT("/Game/Textures/Crosshair"));
 	CrosshairTex = CrosshiarTexObj.Object;
 }
+
+
+void AEmpires2HUD::BeginPlay()
+{
+	DeathScreen = NewObject<UUserWidget>(this, DeathScreenWidget);
+
+	DeathScreen->AddToViewport();
+	DeathScreen->SetVisibility(ESlateVisibility::Visible);
+}
+
 
 
 void AEmpires2HUD::DrawHUD()

@@ -6,6 +6,6 @@ public class Empires2 : ModuleRules
 {
 	public Empires2(TargetInfo Target)
 	{
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Slate", "UMG", "SlateCore" });
 	}
 }
