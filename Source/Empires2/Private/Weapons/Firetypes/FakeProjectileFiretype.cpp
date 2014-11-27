@@ -10,6 +10,8 @@ UFakeProjectileFiretype::UFakeProjectileFiretype(const class FPostConstructIniti
 	: Super(PCIP)
 {
 	bIsTicked = true;
+
+	MaxTravelDistance = 100000; //1unit = 1cm.  This is 1km
 }
 
 void UFakeProjectileFiretype::EmitShot(FVector Origin, FRotator Direction)
@@ -45,25 +47,32 @@ void UFakeProjectileFiretype::SimulateShot(FFakeProjectile& Projectile, float ti
 {
 	FVector EndPos = Projectile.CurrentPosition + (Projectile.Velocity +  (.5f * Gravity * GravityScale * time)) * time;
 
-
 	FCollisionQueryParams TraceParams(FName(TEXT("FakeProjectileTrace")), true);
 	TraceParams.bTraceAsyncScene = true;
 
 	FHitResult Hit;
 
-	GetWorld()->LineTraceSingle(Hit, Projectile.CurrentPosition, EndPos, COLLISION_PROJECTILE, TraceParams);
-
-	AEmpires2Character* Character = Cast<AEmpires2Character>(Hit.GetActor());
-	if (Character)
+	if (GetWorld()->LineTraceSingle(Hit, Projectile.CurrentPosition, EndPos, COLLISION_PROJECTILE, TraceParams))
 	{
-		GetWeapon()->DealDamage(Character);
+		AEmpires2Character* Character = Cast<AEmpires2Character>(Hit.GetActor());
+		if (Character)
+		{
+			GetWeapon()->DealDamage(Character);
+			
+		}
+
 		Projectile.bSimulating = false;
 	}
+	else
+	{
+		Projectile.CurrentPosition = EndPos;
+		Projectile.Velocity += (Gravity * GravityScale) * time;
 
-	Projectile.CurrentPosition = EndPos;
-	Projectile.Velocity += (Gravity * GravityScale) * time;
-
-
+		if (FVector::Dist(Projectile.CurrentPosition, Projectile.Origin) >= MaxTravelDistance)
+		{
+			Projectile.bSimulating = false;
+		}
+	}
 }
 
 

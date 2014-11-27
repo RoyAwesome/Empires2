@@ -54,6 +54,9 @@ public:
 
 	virtual void Tick(float deltaTime) override;
 
+	UPROPERTY(EditDefaultsOnly, Category=General)
+	float MaxTravelDistance;
+
 	protected:
 		virtual void SimulateShot(FFakeProjectile& Projectile, float time);
 
