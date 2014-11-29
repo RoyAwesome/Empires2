@@ -21,15 +21,18 @@ public:
 	/** Crosshair asset pointer */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Crosshair)
 	class UTexture2D* CrosshairTex;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = EventElements)
-	TSubclassOf<class UUserWidget> DeathScreenWidget;
-	
-	UPROPERTY()
-	UUserWidget* DeathScreen;
-
+		
 	UFUNCTION(BlueprintImplementableEvent, Category=HudEvents)
 	void NotifyTookDamage(FVector FromWhere, int32 HowMuch, APlayerState* FromWho);
+
+	UFUNCTION(BlueprintImplementableEvent, Category=HudEvents)
+	void NotifyLandedHit(APawn* HitWhat);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = HudEvents)
+	void NotifyDied(APlayerState* Killer);
+
+	UFUNCTION(BlueprintImplementableEvent, Category=HudEvents)
+	void NotifyRevive(APlayerState* Reviver);
 private:
 	
 };

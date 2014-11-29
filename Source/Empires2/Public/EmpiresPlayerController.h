@@ -31,7 +31,22 @@ public:
 
 	UFUNCTION(Client, Unreliable)
 		void ClientNotifyWasHit(APlayerState* InstigatatedBy, int32 damage, FVector RelHitLocation, TSubclassOf<UDamageType> DamageType);
+
+	virtual void NotifyLandedHit(APawn* Hit);
+
+	UFUNCTION(Client, Unreliable)
+	void ClientNotifyLandedHit(APawn* Hit);
+
+	virtual void NotifyDied(AController* InstigatedBy, bool CanRevive);
+
+	UFUNCTION(Client, Unreliable)
+	void ClientNotifyDied(APlayerState* InstigatedBy);
 	
+	virtual void NotifyRevived(AController* InstigatedBy);
+
+	UFUNCTION(Client, Unreliable)
+	void ClientNotifyRevived(APlayerState* InstigatedBy);
+
 protected:
 
 	

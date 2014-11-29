@@ -411,7 +411,8 @@ void AEmpires2Character::Die(AController* Instigator, bool CanRevive)
 	if(InputComponent) InputComponent->Deactivate();
 
 	//Show the death screen
-
+	AEmpiresPlayerController* EmpController = Cast<AEmpiresPlayerController>(GetController());
+	EmpController->NotifyDied(Instigator, CanRevive);
 
 }
 
@@ -444,6 +445,9 @@ float AEmpires2Character::TakeDamage(float Damage, struct FDamageEvent const& Da
 
 	AEmpiresPlayerController* EmpController = Cast<AEmpiresPlayerController>(GetController());
 	EmpController->NotifyWasHit(EventInstigator, RealDamage, DamageEvent);
+
+	AEmpiresPlayerController* OtherController = Cast<AEmpiresPlayerController>(EventInstigator);
+	OtherController->NotifyLandedHit(this);
 
 	if (Health <= 0)
 	{

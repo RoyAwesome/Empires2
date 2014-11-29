@@ -65,4 +65,63 @@ void AEmpiresPlayerController::ClientNotifyWasHit_Implementation(APlayerState* I
 	}
 }
 
+void AEmpiresPlayerController::NotifyLandedHit(APawn* Hit)
+{
+	if(Role == ROLE_Authority) ClientNotifyLandedHit(Hit);
+}
+
+void AEmpiresPlayerController::ClientNotifyLandedHit_Implementation(APawn* Hit)
+{
+	//Play something on the hud when we've hit a target
+	if (MyHUD)
+	{
+		AEmpires2HUD* Emp2Hud = Cast<AEmpires2HUD>(MyHUD);
+
+		//Notify that we have successfully hit the target
+		Emp2Hud->NotifyLandedHit(Hit);
+	}
+}
+
+void AEmpiresPlayerController::NotifyDied(AController* InstigatedBy, bool CanRevive)
+{
+	if (Role == ROLE_Authority)
+	{
+		APlayerState* InstigatedByState = (InstigatedBy != nullptr) ? InstigatedBy->PlayerState : nullptr;
+		ClientNotifyDied(InstigatedByState);
+	}
+}
+
+void AEmpiresPlayerController::ClientNotifyDied_Implementation(APlayerState* InstigatedBy)
+{
+	//Show the death screen when we die
+	if (MyHUD)
+	{
+		AEmpires2HUD* Emp2Hud = Cast<AEmpires2HUD>(MyHUD);
+
+		//Notify that we have died :X
+		Emp2Hud->NotifyDied(InstigatedBy);
+	}
+}
+
+void AEmpiresPlayerController::NotifyRevived(AController* InstigatedBy)
+{
+	if (Role == ROLE_Authority)
+	{
+		APlayerState* InstigatedByState = (InstigatedBy != nullptr) ? InstigatedBy->PlayerState : nullptr;
+		ClientNotifyRevived(InstigatedByState);
+	}
+}
+
+void AEmpiresPlayerController::ClientNotifyRevived_Implementation(APlayerState* InstigatedBy)
+{
+	//Play something on the hud when we are revived
+	if (MyHUD)
+	{
+		AEmpires2HUD* Emp2Hud = Cast<AEmpires2HUD>(MyHUD);
+
+		//Notify that we are being revived
+		Emp2Hud->NotifyRevive(InstigatedBy);
+	}
+}
+
 
