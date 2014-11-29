@@ -25,6 +25,12 @@ public:
 
 	UPROPERTY()
 	class AEmpiresPlayerStart* WantedSpawn;
+
+
+	virtual void NotifyWasHit(AController* InstigatedBy, int32 Damage, const FDamageEvent& DamageEvent);
+
+	UFUNCTION(Client, Unreliable)
+		void ClientNotifyWasHit(APlayerState* InstigatatedBy, int32 damage, FVector RelHitLocation, TSubclassOf<UDamageType> DamageType);
 	
 protected:
 

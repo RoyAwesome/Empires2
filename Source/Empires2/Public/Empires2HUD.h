@@ -27,6 +27,9 @@ public:
 	
 	UPROPERTY()
 	UUserWidget* DeathScreen;
+
+	UFUNCTION(BlueprintImplementableEvent, Category=HudEvents)
+	void NotifyTookDamage(FVector FromWhere, int32 HowMuch, APlayerState* FromWho);
 private:
 	
 };

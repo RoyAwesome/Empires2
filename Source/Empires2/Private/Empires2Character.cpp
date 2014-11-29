@@ -442,6 +442,9 @@ float AEmpires2Character::TakeDamage(float Damage, struct FDamageEvent const& Da
 
 	float Health = GetHealth() - RealDamage;
 
+	AEmpiresPlayerController* EmpController = Cast<AEmpiresPlayerController>(GetController());
+	EmpController->NotifyWasHit(EventInstigator, RealDamage, DamageEvent);
+
 	if (Health <= 0)
 	{
 		//Die
@@ -449,6 +452,8 @@ float AEmpires2Character::TakeDamage(float Damage, struct FDamageEvent const& Da
 	}
 
 	SetHealth(Health);
+
+
 
 	return RealDamage;
 }

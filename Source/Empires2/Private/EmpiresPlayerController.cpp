@@ -3,6 +3,7 @@
 #include "Empires2.h"
 #include "Empires2GameMode.h"
 #include "EmpiresPlayerController.h"
+#include "Empires2HUD.h"
 
 
 AEmpiresPlayerController::AEmpiresPlayerController(const class FPostConstructInitializeProperties& PCIP)
@@ -38,6 +39,30 @@ void AEmpiresPlayerController::DoRespawn()
 
 	GameMode->RespawnPlayer(this);
 	
+}
+
+void AEmpiresPlayerController::NotifyWasHit(AController* InstigatedBy, int32 Damage, const FDamageEvent& DamageEvent)
+{
+	APlayerState* InstigatedByState = (InstigatedBy != nullptr) ?  InstigatedBy->PlayerState : nullptr;
+
+	FVector HitLocation(FVector::ZeroVector);
+
+	//TODO: Get the location of the damage
+
+	ClientNotifyWasHit(InstigatedByState, Damage, HitLocation, DamageEvent.DamageTypeClass);
+
+}
+
+void AEmpiresPlayerController::ClientNotifyWasHit_Implementation(APlayerState* InstigatatedBy, int32 damage, FVector RelHitLocation, TSubclassOf<UDamageType> DamageType)
+{
+	//Play something on the hud when we've been damaged
+	if (this->MyHUD)
+	{
+		AEmpires2HUD* Emp2Hud = Cast<AEmpires2HUD>(MyHUD);
+		
+		//Notify that we've taken damage
+		Emp2Hud->NotifyTookDamage(RelHitLocation, damage, InstigatatedBy);
+	}
 }
 
 

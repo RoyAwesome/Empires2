@@ -5,6 +5,7 @@
 
 #include "Engine.h"
 #include "Empires2Character.h"
+#include "EmpiresPlayerController.h"
 #include "Empires2Classes.h"
 
 #define COLLISION_PROJECTILE	ECC_GameTraceChannel1

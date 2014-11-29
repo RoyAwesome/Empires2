@@ -17,10 +17,7 @@ AEmpires2HUD::AEmpires2HUD(const class FPostConstructInitializeProperties& PCIP)
 
 void AEmpires2HUD::BeginPlay()
 {
-	DeathScreen = NewObject<UUserWidget>(this, DeathScreenWidget);
 
-	DeathScreen->AddToViewport();
-	DeathScreen->SetVisibility(ESlateVisibility::Visible);
 }
 
 
