@@ -47,6 +47,16 @@ public:
 	UFUNCTION(Client, Unreliable)
 	void ClientNotifyRevived(APlayerState* InstigatedBy);
 
+	
+	virtual void NotifyGameStart();
+
+	UFUNCTION(Client, Unreliable)
+	void ClientNotifyGameStart();
+
+	virtual void NotifyCharacterSpawned();
+
+	UFUNCTION(Client, Unreliable)
+	void ClientNotifyCharacterSpawned();
 protected:
 
 	

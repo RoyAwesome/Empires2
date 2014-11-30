@@ -53,6 +53,8 @@ AEmpires2Character::AEmpires2Character(const class FPostConstructInitializePrope
 	RevivePercent = .5f;
 	MaxHealth = 1000;
 	DisableReviveTime = 10;
+
+	bShouldIgnoreInput = false;
 }
 
 
@@ -94,6 +96,8 @@ void AEmpires2Character::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > 
 	DOREPLIFETIME(AEmpires2Character, bCanRevive);
 	DOREPLIFETIME(AEmpires2Character, bIsDead);
 
+	DOREPLIFETIME(AEmpires2Character, bShouldIgnoreInput);
+
 		
 }
 
@@ -128,9 +132,9 @@ void AEmpires2Character::SetupPlayerInputComponent(class UInputComponent* InputC
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-	InputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+	InputComponent->BindAxis("Turn", this, &AEmpires2Character::AddControllerYawInput);
 	InputComponent->BindAxis("TurnRate", this, &AEmpires2Character::TurnAtRate);
-	InputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	InputComponent->BindAxis("LookUp", this, &AEmpires2Character::AddControllerPitchInput);
 	InputComponent->BindAxis("LookUpRate", this, &AEmpires2Character::LookUpAtRate);
 }
 
@@ -138,6 +142,8 @@ void AEmpires2Character::SetupPlayerInputComponent(class UInputComponent* InputC
 ////////////////////////////////// MOVEMENT
 void AEmpires2Character::MoveForward(float Value)
 {
+	if (bShouldIgnoreInput) return;
+
 	if (Value != 0.0f)
 	{
 		// add movement in that direction
@@ -148,6 +154,7 @@ void AEmpires2Character::MoveForward(float Value)
 
 void AEmpires2Character::MoveRight(float Value)
 {
+	if (bShouldIgnoreInput) return;
 	if (Value != 0.0f)
 	{
 		// add movement in that direction
@@ -158,20 +165,42 @@ void AEmpires2Character::MoveRight(float Value)
 
 void AEmpires2Character::TurnAtRate(float Rate)
 {
+	if (bShouldIgnoreInput) return;
+
 	// calculate delta for this frame from the rate information
 	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
 void AEmpires2Character::LookUpAtRate(float Rate)
 {
+	if (bShouldIgnoreInput) return;
+
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
+
+
+
+void AEmpires2Character::AddControllerPitchInput(float Rate)
+{
+	if (bShouldIgnoreInput) return;
+	Super::AddControllerPitchInput(Rate);
+}
+
+void AEmpires2Character::AddControllerYawInput(float Rate)
+{
+	if (bShouldIgnoreInput) return;
+	Super::AddControllerYawInput(Rate);
+}
+
+
 
 //////////////////////////////////////FIRE CONTROL
 
 void AEmpires2Character::BeginFire()
 {
+	if (bShouldIgnoreInput) return;
+
 	ABaseInfantryWeapon* Weap = GetActiveWeapon();
 	if (Weap == nullptr) return; //No weapon? Don't bother firing
 
@@ -181,6 +210,8 @@ void AEmpires2Character::BeginFire()
 }
 void AEmpires2Character::EndFire()
 {
+	if (bShouldIgnoreInput) return;
+
 	if (!bIsFiring) return; //If we aren't firing our weapon, don't bother ending
 
 	ABaseInfantryWeapon* Weapon = GetActiveWeapon();
@@ -255,6 +286,8 @@ void AEmpires2Character::RefreshHeldWeapon()
 
 void AEmpires2Character::SelectNextWeapon()
 {	
+	if (bShouldIgnoreInput) return;
+
 	if (Role < ROLE_Authority)
 	{
 		ServerSelectNextWeapon();
@@ -274,6 +307,8 @@ void AEmpires2Character::SelectNextWeapon()
 }
 void AEmpires2Character::SelectPreviousWeapon()
 {
+	if (bShouldIgnoreInput) return;
+
 	if (Role < ROLE_Authority)
 	{
 		ServerSelectPreviousWeapon();
@@ -292,6 +327,8 @@ void AEmpires2Character::SelectPreviousWeapon()
 }
 void AEmpires2Character::SelectLastWeapon()
 {
+	if (bShouldIgnoreInput) return;
+
 	if (Role < ROLE_Authority)
 	{
 		ServerSelectLastWeapon();
@@ -309,6 +346,7 @@ void AEmpires2Character::OnRep_SelectedWeapon()
 
 void AEmpires2Character::ChangeFiremode()
 {
+	if (bShouldIgnoreInput) return;
 	
 	ABaseInfantryWeapon* Weapon = GetActiveWeapon();
 	if (Weapon == nullptr) return; //No weapon? Don't bother changing firemode
@@ -318,6 +356,8 @@ void AEmpires2Character::ChangeFiremode()
 
 void AEmpires2Character::ReloadWeapon()
 {
+	if (bShouldIgnoreInput) return;
+
 	ABaseInfantryWeapon* Weapon = GetActiveWeapon();
 	if (Weapon == nullptr) return; //No weapon? Don't bother reloading
 
@@ -404,11 +444,14 @@ void AEmpires2Character::Die(AController* Instigator, bool CanRevive)
 	bCanRevive = CanRevive;
 	LastDeathTime = GetWorld()->TimeSeconds;
 
+	EndFire(); //Stop firing if we are firing
 
-	//TODO: Play the death animation and then ragdoll
-
-	//Remove controls
-	if(InputComponent) InputComponent->Deactivate();
+	//Play the death animation and then ragdoll
+	Mesh->SetSimulatePhysics(true);
+	Mesh->WakeAllRigidBodies();
+	
+	//RemoveControls
+	bShouldIgnoreInput = true;
 
 	//Show the death screen
 	AEmpiresPlayerController* EmpController = Cast<AEmpiresPlayerController>(GetController());
@@ -416,16 +459,26 @@ void AEmpires2Character::Die(AController* Instigator, bool CanRevive)
 
 }
 
+void AEmpires2Character::ClientDie()
+{
+	//Remove controls
+
+	
+}
+
+
 void AEmpires2Character::Revive()
 {
 	//Give controls back
-	if (InputComponent) InputComponent->Activate();
+	bShouldIgnoreInput = false;
 	bIsDead = false;
 
 
 	//Remove the death screen
 
 	//Play the get up animation
+	Mesh->SetSimulatePhysics(false);
+	Mesh->PutAllRigidBodiesToSleep();
 
 	//Set health to 1/2 max health
 	SetHealth(MaxHealth * RevivePercent);

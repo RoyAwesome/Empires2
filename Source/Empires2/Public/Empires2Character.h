@@ -39,6 +39,9 @@ public:
 		return bIsMoving;
 	}
 
+	virtual void AddControllerPitchInput(float Rate) override;
+	virtual void AddControllerYawInput(float Rate) override;
+
 protected:
 
 
@@ -70,6 +73,9 @@ protected:
 	{
 		return Cast<AEmpiresPlayerState>(this->GetController()->PlayerState);
 	}
+
+	UPROPERTY(Replicated)
+	bool bShouldIgnoreInput;
 
 	//WEAPONS
 public:
@@ -138,6 +144,7 @@ public:
 
 		virtual void Respawn();
 		virtual void Die(AController* Instigator, bool CanRevive);
+		virtual void ClientDie(); //Client side death related stuff.
 		virtual void Revive();
 
 		virtual void SetHealth(float amount);
@@ -155,6 +162,8 @@ public:
 
 		UPROPERTY(Replicated)
 			float LastDeathTime;
+
+
 
 protected:
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category=GameFlow)

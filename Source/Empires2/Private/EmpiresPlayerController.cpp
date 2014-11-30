@@ -93,6 +93,12 @@ void AEmpiresPlayerController::NotifyDied(AController* InstigatedBy, bool CanRev
 
 void AEmpiresPlayerController::ClientNotifyDied_Implementation(APlayerState* InstigatedBy)
 {
+	if (GetPawn())
+	{
+		AEmpires2Character* Character = Cast<AEmpires2Character>(GetPawn());
+		Character->ClientDie();
+	}
+
 	//Show the death screen when we die
 	if (MyHUD)
 	{
@@ -121,6 +127,42 @@ void AEmpiresPlayerController::ClientNotifyRevived_Implementation(APlayerState* 
 
 		//Notify that we are being revived
 		Emp2Hud->NotifyRevive(InstigatedBy);
+	}
+}
+
+void AEmpiresPlayerController::NotifyGameStart()
+{
+	if (Role == ROLE_Authority)
+	{
+		ClientNotifyGameStart();
+	}
+}
+
+void AEmpiresPlayerController::ClientNotifyGameStart_Implementation()
+{
+	//Play something on the hud when the game starts
+	if (MyHUD)
+	{
+		AEmpires2HUD* Emp2Hud = Cast<AEmpires2HUD>(MyHUD);
+
+	}
+}
+
+void AEmpiresPlayerController::NotifyCharacterSpawned()
+{
+	if (Role == ROLE_Authority)
+	{
+		ClientNotifyCharacterSpawned();
+	}
+}
+
+void AEmpiresPlayerController::ClientNotifyCharacterSpawned_Implementation()
+{
+	//Notify the hud that the character has spawned and we can display the normal hud
+	if (MyHUD)
+	{
+		AEmpires2HUD* Emp2Hud = Cast<AEmpires2HUD>(MyHUD);
+
 	}
 }
 
