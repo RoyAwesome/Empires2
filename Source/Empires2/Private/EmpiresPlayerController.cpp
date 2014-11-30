@@ -145,6 +145,7 @@ void AEmpiresPlayerController::ClientNotifyGameStart_Implementation()
 	{
 		AEmpires2HUD* Emp2Hud = Cast<AEmpires2HUD>(MyHUD);
 
+		Emp2Hud->NotifyGameStart();
 	}
 }
 
@@ -163,6 +164,7 @@ void AEmpiresPlayerController::ClientNotifyCharacterSpawned_Implementation()
 	{
 		AEmpires2HUD* Emp2Hud = Cast<AEmpires2HUD>(MyHUD);
 
+		Emp2Hud->NotifyCharacterSpawned();
 	}
 }
 

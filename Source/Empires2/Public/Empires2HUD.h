@@ -33,6 +33,13 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category=HudEvents)
 	void NotifyRevive(APlayerState* Reviver);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = HudEvents)
+	void NotifyGameStart();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = HudEvents)
+	void NotifyCharacterSpawned();
+
 private:
 	
 };
