@@ -139,7 +139,13 @@ void AEmpires2GameMode::FinishMatch()
 
 void AEmpires2GameMode::RespawnPlayer(AEmpiresPlayerController* Controller)
 {
+	//Remove the player's original pawn
+	AEmpires2Character* PlayerCharacter = Cast<AEmpires2Character>(Controller->GetPawn());
 
+	PlayerCharacter->Respawn();
+
+
+	//Create a new pawn for the player
 	AEmpiresPlayerStart* StartSpot = Controller->WantedSpawn;
 	if (StartSpot == nullptr)
 	{
@@ -147,5 +153,8 @@ void AEmpires2GameMode::RespawnPlayer(AEmpiresPlayerController* Controller)
 		if (StartSpot == nullptr) UE_LOG(EmpiresGameplay, Warning, TEXT("Can't find a spawn for player"));
 	}
 
-	this->SpawnDefaultPawnFor(Controller, (AActor*) StartSpot);
+	APawn* Pawn = this->SpawnDefaultPawnFor(Controller, (AActor*) StartSpot);
+
+	Controller->Possess(Pawn);
+	Controller->NotifyCharacterSpawned();
 }

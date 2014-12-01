@@ -17,7 +17,7 @@ AEmpires2HUD::AEmpires2HUD(const class FPostConstructInitializeProperties& PCIP)
 
 void AEmpires2HUD::BeginPlay()
 {
-
+	Super::BeginPlay();
 }
 
 

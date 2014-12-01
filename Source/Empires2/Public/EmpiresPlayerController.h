@@ -57,6 +57,12 @@ public:
 
 	UFUNCTION(Client, Unreliable)
 	void ClientNotifyCharacterSpawned();
+
+	UFUNCTION(BlueprintCallable, Category=GameFlow)
+	void RequestRespawn();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerRequestRespawn();
 protected:
 
 	

@@ -168,4 +168,22 @@ void AEmpiresPlayerController::ClientNotifyCharacterSpawned_Implementation()
 	}
 }
 
+void AEmpiresPlayerController::RequestRespawn()
+{
+	if (Role < ROLE_Authority)
+	{
+		ServerRequestRespawn();
+	}
+}
+
+void AEmpiresPlayerController::ServerRequestRespawn_Implementation()
+{
+	AEmpires2GameMode* GameMode = Cast<AEmpires2GameMode>(GetWorld()->GetAuthGameMode());
+	GameMode->RespawnPlayer(this);
+}
+bool AEmpiresPlayerController::ServerRequestRespawn_Validate()
+{
+	return true;
+}
+
 
