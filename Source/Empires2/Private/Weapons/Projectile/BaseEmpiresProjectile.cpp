@@ -7,11 +7,11 @@
 
 
 
-ABaseEmpiresProjectile::ABaseEmpiresProjectile(const class FPostConstructInitializeProperties& PCIP)
-	: Super(PCIP)
+ABaseEmpiresProjectile::ABaseEmpiresProjectile(const class FObjectInitializer & ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 
-	CollisionComp = PCIP.CreateDefaultSubobject<USphereComponent>(this, TEXT("SphereComp"));
+	CollisionComp = ObjectInitializer.CreateDefaultSubobject<USphereComponent>(this, TEXT("SphereComp"));
 
 	CollisionComp->InitSphereRadius(5.0f);
 	CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");			// Collision profiles are defined in DefaultEngine.ini
@@ -19,7 +19,7 @@ ABaseEmpiresProjectile::ABaseEmpiresProjectile(const class FPostConstructInitial
 	RootComponent = CollisionComp;
 
 	
-	ProjectileMovement = PCIP.CreateDefaultSubobject<UProjectileMovementComponent>(this, TEXT("ProjectileComp"));
+	ProjectileMovement = ObjectInitializer.CreateDefaultSubobject<UProjectileMovementComponent>(this, TEXT("ProjectileComp"));
 	ProjectileMovement->UpdatedComponent = CollisionComp;
 	ProjectileMovement->InitialSpeed = 3000.f;
 	ProjectileMovement->MaxSpeed = 3000.f;

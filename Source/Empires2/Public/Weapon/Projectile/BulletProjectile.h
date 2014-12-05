@@ -7,9 +7,11 @@
 UCLASS(config=Game)
 class ABulletProjectile : public ABaseEmpiresProjectile
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 protected:
+	ABulletProjectile(const class FObjectInitializer & ObjectInitializer);
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Projectile)
 	float PhysicsHitScale;

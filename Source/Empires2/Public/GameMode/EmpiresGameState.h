@@ -12,9 +12,11 @@
 UCLASS()
 class EMPIRES2_API AEmpiresGameState : public AGameState
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 public:
+
+	AEmpiresGameState(const class FObjectInitializer & ObjectInitializer);
 
 	UPROPERTY(Replicated)
 	int32 NumTeams;

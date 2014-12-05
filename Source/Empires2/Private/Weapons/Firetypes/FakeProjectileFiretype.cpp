@@ -6,8 +6,8 @@
 
 const FVector Gravity = FVector(0, 0, -981);
 
-UFakeProjectileFiretype::UFakeProjectileFiretype(const class FPostConstructInitializeProperties& PCIP)
-	: Super(PCIP)
+UFakeProjectileFiretype::UFakeProjectileFiretype()
+	:Super()
 {
 	bIsTicked = true;
 

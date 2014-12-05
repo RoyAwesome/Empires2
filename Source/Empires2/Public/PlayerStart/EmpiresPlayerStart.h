@@ -11,8 +11,10 @@
 UCLASS()
 class EMPIRES2_API AEmpiresPlayerStart : public APlayerStart
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
+public:
+	AEmpiresPlayerStart(const class FObjectInitializer & ObjectInitializer);
 	
 	
 };

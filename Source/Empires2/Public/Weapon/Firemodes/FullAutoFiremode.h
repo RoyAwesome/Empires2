@@ -11,9 +11,10 @@
 UCLASS()
 class EMPIRES2_API UFullAutoFiremode : public UBaseFiremode
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 public:
+	UFullAutoFiremode();
 
 	virtual void BeginFire() override;
 

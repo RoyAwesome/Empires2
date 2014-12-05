@@ -5,8 +5,8 @@
 #include "UnrealNetwork.h"
 
 
-AEmpiresGameState::AEmpiresGameState(const class FPostConstructInitializeProperties& PCIP)
-	: Super(PCIP)
+AEmpiresGameState::AEmpiresGameState(const class FObjectInitializer & ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 
 }

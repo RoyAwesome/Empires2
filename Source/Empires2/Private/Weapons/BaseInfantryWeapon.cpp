@@ -4,8 +4,8 @@
 #include "BaseInfantryWeapon.h"
 
 
-ABaseInfantryWeapon::ABaseInfantryWeapon(const class FPostConstructInitializeProperties& PCIP)
-	: Super(PCIP)
+ABaseInfantryWeapon::ABaseInfantryWeapon(const class FObjectInitializer & ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	bAlwaysRelevant = true;
 }

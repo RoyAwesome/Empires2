@@ -7,7 +7,8 @@
 #include "CanvasItem.h"
 #include "UserWidget.h"
 
-AEmpires2HUD::AEmpires2HUD(const class FPostConstructInitializeProperties& PCIP) : Super(PCIP)
+AEmpires2HUD::AEmpires2HUD(const class FObjectInitializer & ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	// Set the crosshair texture
 	static ConstructorHelpers::FObjectFinder<UTexture2D> CrosshiarTexObj(TEXT("/Game/Textures/Crosshair"));

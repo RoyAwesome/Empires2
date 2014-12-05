@@ -5,8 +5,8 @@
 #include "WeaponFireType.h"
 
 
-UWeaponFireType::UWeaponFireType(const class FPostConstructInitializeProperties& PCIP)
-	: Super(PCIP)
+UWeaponFireType::UWeaponFireType()
+	: Super()
 {
 	bIsTicked = false;
 }

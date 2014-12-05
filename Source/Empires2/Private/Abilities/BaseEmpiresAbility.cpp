@@ -4,8 +4,8 @@
 #include "BaseEmpiresAbility.h"
 
 
-ABaseEmpiresAbility::ABaseEmpiresAbility(const class FPostConstructInitializeProperties& PCIP)
-	: Super(PCIP)
+ABaseEmpiresAbility::ABaseEmpiresAbility(const class FObjectInitializer & ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 
 }

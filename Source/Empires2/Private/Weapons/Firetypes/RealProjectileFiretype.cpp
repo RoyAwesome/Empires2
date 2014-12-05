@@ -5,8 +5,8 @@
 #include "RealProjectileFiretype.h"
 
 
-URealProjectileFiretype::URealProjectileFiretype(const class FPostConstructInitializeProperties& PCIP)
-	: Super(PCIP)
+URealProjectileFiretype::URealProjectileFiretype()
+	: Super()
 {
 	bIsTicked = false;
 }

@@ -11,9 +11,11 @@
 UCLASS()
 class EMPIRES2_API UInstantFireType : public UWeaponFireType
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 public:
+
+	UInstantFireType();
 
 	virtual void EmitShot(FVector Origin, FRotator Direction) override;
 	

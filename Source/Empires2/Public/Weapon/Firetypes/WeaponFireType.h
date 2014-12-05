@@ -11,9 +11,11 @@
 UCLASS(ABSTRACT)
 class EMPIRES2_API UWeaponFireType : public UObject
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 public:
+	UWeaponFireType();
+
 
 	bool bIsTicked;
 

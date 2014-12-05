@@ -14,14 +14,14 @@
 //////////////////////////////////////////////////////////////////////////
 // AEmpires2Character
 
-AEmpires2Character::AEmpires2Character(const class FPostConstructInitializeProperties& PCIP)
-	: Super(PCIP)
+AEmpires2Character::AEmpires2Character(const class FObjectInitializer & ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	this->bAlwaysRelevant = true;
 	this->bReplicates = true;
 
 	// Set size for collision capsule
-	CapsuleComponent->InitCapsuleSize(42.f, 96.0f);
+	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
 	// set our turn rates for input
 	BaseTurnRate = 45.f;
@@ -30,13 +30,13 @@ AEmpires2Character::AEmpires2Character(const class FPostConstructInitializePrope
 	WeaponRelativeOffset = FVector(0, 0, -85.0f);
 
 	// Create a CameraComponent	
-	FirstPersonCameraComponent = PCIP.CreateDefaultSubobject<UCameraComponent>(this, TEXT("FirstPersonCamera"));
-	FirstPersonCameraComponent->AttachParent = CapsuleComponent;
+	FirstPersonCameraComponent = ObjectInitializer.CreateDefaultSubobject<UCameraComponent>(this, TEXT("FirstPersonCamera"));
+	FirstPersonCameraComponent->AttachParent = GetCapsuleComponent();
 	FirstPersonCameraComponent->RelativeLocation = FVector(0, 0, 64.f); // Position the camera
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
 	// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
-	Mesh1P = PCIP.CreateDefaultSubobject<USkeletalMeshComponent>(this, TEXT("CharacterMesh1P"));
+	Mesh1P = ObjectInitializer.CreateDefaultSubobject<USkeletalMeshComponent>(this, TEXT("CharacterMesh1P"));
 	Mesh1P->SetOnlyOwnerSee(true);			// only the owning player will see this mesh
 	Mesh1P->AttachParent = FirstPersonCameraComponent;
 	Mesh1P->RelativeLocation = FVector(0.f, 0.f, -150.f);
@@ -44,7 +44,7 @@ AEmpires2Character::AEmpires2Character(const class FPostConstructInitializePrope
 	Mesh1P->CastShadow = false;
 	if (Role == ROLE_Authority)
 	{
-		Inventory = PCIP.CreateDefaultSubobject<UBaseEmpiresInventory>(this, TEXT("Inventory"));
+		Inventory = ObjectInitializer.CreateDefaultSubobject<UBaseEmpiresInventory>(this, TEXT("Inventory"));
 		Inventory->SetNetAddressable();
 		Inventory->SetIsReplicated(true);
 
@@ -447,8 +447,8 @@ void AEmpires2Character::Die(AController* Instigator, bool CanRevive)
 	EndFire(); //Stop firing if we are firing
 
 	//Play the death animation and then ragdoll
-	Mesh->SetSimulatePhysics(true);
-	Mesh->WakeAllRigidBodies();
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->WakeAllRigidBodies();
 	
 	//RemoveControls
 	bShouldIgnoreInput = true;
@@ -477,8 +477,8 @@ void AEmpires2Character::Revive()
 	//Remove the death screen
 
 	//Play the get up animation
-	Mesh->SetSimulatePhysics(false);
-	Mesh->PutAllRigidBodiesToSleep();
+	GetMesh()->SetSimulatePhysics(false);
+	GetMesh()->PutAllRigidBodiesToSleep();
 
 	//Set health to 1/2 max health
 	SetHealth(MaxHealth * RevivePercent);

@@ -24,9 +24,10 @@ namespace MatchState
 UCLASS(minimalapi)
 class AEmpires2GameMode : public AGameMode
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 public:
+	AEmpires2GameMode(const class FObjectInitializer & ObjectInitializer);
 
 
 	/** Initialize the game. This is called before actors' PreInitializeComponents. */

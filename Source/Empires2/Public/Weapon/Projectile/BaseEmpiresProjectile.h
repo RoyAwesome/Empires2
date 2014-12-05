@@ -11,17 +11,11 @@
 UCLASS()
 class EMPIRES2_API ABaseEmpiresProjectile : public AActor
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 public: 
-	
-	/** Sphere collision component */
-	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
-    TSubobjectPtr<class USphereComponent> CollisionComp;
+	ABaseEmpiresProjectile(const class FObjectInitializer & ObjectInitializer);
 
-	/** Projectile movement component */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
-	TSubobjectPtr<class UProjectileMovementComponent> ProjectileMovement;
 
 	class ABaseEmpiresWeapon* OwningWeapon;
 
@@ -29,5 +23,27 @@ public:
 	UFUNCTION()
 	virtual void OnHit(AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+	
+
+private:
+	/** Sphere collision component */
+	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
+		class USphereComponent* CollisionComp;
+
+	/** Projectile movement component */
+	UPROPERTY(VisibleAnywhere, Category = Movement)
+		class UProjectileMovementComponent* ProjectileMovement;
+
+public:
+
+	USphereComponent* GetCollisionComponent() const
+	{
+		return CollisionComp;
+	}
+
+	UProjectileMovementComponent* GetProjectileMovement() const
+	{
+		return ProjectileMovement;
+	}
 	
 };

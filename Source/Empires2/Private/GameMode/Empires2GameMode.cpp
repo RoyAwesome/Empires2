@@ -18,8 +18,8 @@ namespace MatchState
 
 
 
-AEmpires2GameMode::AEmpires2GameMode(const class FPostConstructInitializeProperties& PCIP)
-	: Super(PCIP)
+AEmpires2GameMode::AEmpires2GameMode(const class FObjectInitializer & ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	// set default pawn class to our Blueprinted character
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/Blueprints/EmpiresCharacter"));

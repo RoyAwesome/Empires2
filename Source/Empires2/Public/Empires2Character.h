@@ -11,11 +11,21 @@
 UCLASS(config=Game)
 class AEmpires2Character : public ACharacter
 {
-	GENERATED_UCLASS_BODY()
-			
+	GENERATED_BODY()
+public:
+	AEmpires2Character(const class FObjectInitializer & ObjectInitializer);
+
+private:
 	/** First person camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
-	TSubobjectPtr<class UCameraComponent> FirstPersonCameraComponent;
+	UPROPERTY(VisibleAnywhere, Category = Camera)
+	class UCameraComponent* FirstPersonCameraComponent;
+
+	/** Pawn mesh: 1st person view (arms; seen only by self) */
+	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+	class USkeletalMeshComponent* Mesh1P;
+
+protected:
+
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
@@ -27,13 +37,19 @@ class AEmpires2Character : public ACharacter
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Weapon)
 	FVector WeaponRelativeOffset;
-	
-
-	/** Pawn mesh: 1st person view (arms; seen only by self) */
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	TSubobjectPtr<class USkeletalMeshComponent> Mesh1P;
 
 public:
+
+	UCameraComponent* GetFirstPersonCamera() const
+	{
+		return FirstPersonCameraComponent;
+	}
+
+	USkeletalMeshComponent* Get1PMesh() const
+	{
+		return Mesh1P;
+	}
+
 	bool IsMoving()
 	{
 		return bIsMoving;
@@ -126,9 +142,15 @@ protected:
 	UPROPERTY()
 	bool bIsFiring;
 
-	UPROPERTY(VisibleAnywhere, Replicated, Category=General)
-	TSubobjectPtr<class UBaseEmpiresInventory> Inventory;
+	UBaseEmpiresInventory* GetInventory() const
+	{
+		return Inventory;
+	}
 
+private:
+	UPROPERTY(VisibleAnywhere, Replicated, Category=General)
+	class UBaseEmpiresInventory* Inventory;
+		
 
 protected:
 	// APawn interface

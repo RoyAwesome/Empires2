@@ -11,9 +11,12 @@
 UCLASS()
 class EMPIRES2_API ABaseInfantryWeapon : public ABaseEmpiresWeapon
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 public:
+
+	ABaseInfantryWeapon(const class FObjectInitializer & ObjectInitializer);
+
 	/** AnimMontage to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Display)
 	class UAnimMontage* DrawWeaponAnimation;

@@ -32,8 +32,10 @@ namespace EInfantryInventorySlots
 UCLASS()
 class EMPIRES2_API UBaseEmpiresInventory : public UActorComponent
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 public:
+
+	UBaseEmpiresInventory(const class FObjectInitializer & ObjectInitializer);
 	
 
 	///HACKHACK: These are individual pointers because an array of pointers does not replicate correctly

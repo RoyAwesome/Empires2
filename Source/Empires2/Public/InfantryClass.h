@@ -12,9 +12,11 @@
 UCLASS()
 class EMPIRES2_API UInfantryClass : public UDataAsset
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 public:
+
+
 	virtual bool IsSupportedForNetworking() const override
 	{
 		return true;

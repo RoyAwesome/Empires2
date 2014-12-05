@@ -4,10 +4,5 @@
 #include "InfantryClass.h"
 
 
-UInfantryClass::UInfantryClass(const class FPostConstructInitializeProperties& PCIP)
-	: Super(PCIP)
-{
-
-}
 
 

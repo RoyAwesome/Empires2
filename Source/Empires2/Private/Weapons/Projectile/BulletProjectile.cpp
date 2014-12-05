@@ -4,16 +4,16 @@
 #include "BulletProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
-ABulletProjectile::ABulletProjectile(const class FPostConstructInitializeProperties& PCIP)
-	: Super(PCIP)
+ABulletProjectile::ABulletProjectile(const class FObjectInitializer & ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	PhysicsHitScale = 0.5f;
 
 	
-	ProjectileMovement->InitialSpeed = 3000.f;
-	ProjectileMovement->MaxSpeed = 3000.f;
-	ProjectileMovement->bRotationFollowsVelocity = true;
-	ProjectileMovement->bShouldBounce = false;
+	GetProjectileMovement()->InitialSpeed = 3000.f;
+	GetProjectileMovement()->MaxSpeed = 3000.f;
+	GetProjectileMovement()->bRotationFollowsVelocity = true;
+	GetProjectileMovement()->bShouldBounce = false;
 
 	// Die after 3 seconds by default
 	InitialLifeSpan = 3.0f;

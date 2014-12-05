@@ -4,8 +4,8 @@
 #include "BasePassiveAbility.h"
 
 
-ABasePassiveAbility::ABasePassiveAbility(const class FPostConstructInitializeProperties& PCIP)
-	: Super(PCIP)
+ABasePassiveAbility::ABasePassiveAbility(const class FObjectInitializer & ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 
 }

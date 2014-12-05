@@ -410,9 +410,11 @@ public:
 UCLASS()
 class EMPIRES2_API ABaseEmpiresWeapon : public AActor
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 		//GENERAL
 public:
+	ABaseEmpiresWeapon(const class FObjectInitializer & ObjectInitializer);
+
 
 	virtual void PostInitProperties() override;
 

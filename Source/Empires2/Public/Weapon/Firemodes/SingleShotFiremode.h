@@ -11,10 +11,11 @@
 UCLASS()
 class EMPIRES2_API USingleShotFiremode : public UBaseFiremode
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 		//FIRE CONTROL
 public:
+	USingleShotFiremode();
 
 	virtual void BeginFire() override;
 

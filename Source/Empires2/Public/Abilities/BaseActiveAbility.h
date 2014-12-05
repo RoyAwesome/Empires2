@@ -11,8 +11,10 @@
 UCLASS()
 class EMPIRES2_API ABaseActiveAbility : public ABaseEmpiresAbility
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
+public:
+	ABaseActiveAbility(const class FObjectInitializer & ObjectInitializer);
 	
 	
 };

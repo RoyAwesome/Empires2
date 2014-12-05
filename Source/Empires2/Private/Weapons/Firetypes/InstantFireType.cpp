@@ -5,8 +5,8 @@
 #include "InstantFireType.h"
 
 
-UInstantFireType::UInstantFireType(const class FPostConstructInitializeProperties& PCIP)
-	: Super(PCIP)
+UInstantFireType::UInstantFireType()
+	:Super()
 {
 
 }

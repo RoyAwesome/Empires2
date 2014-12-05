@@ -5,8 +5,7 @@
 #include "BaseFiremode.h"
 
 
-UBaseFiremode::UBaseFiremode(const class FPostConstructInitializeProperties& PCIP)
-	: Super(PCIP)
+UBaseFiremode::UBaseFiremode()
 {
 	
 }

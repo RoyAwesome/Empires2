@@ -8,8 +8,8 @@
 
 
 
-UBaseEmpiresInventory::UBaseEmpiresInventory(const class FPostConstructInitializeProperties& PCIP)
-	: Super(PCIP)
+UBaseEmpiresInventory::UBaseEmpiresInventory(const class FObjectInitializer & ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	bReplicates = true;
 	

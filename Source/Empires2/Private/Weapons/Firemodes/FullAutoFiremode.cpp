@@ -5,8 +5,8 @@
 #include "FullAutoFiremode.h"
 
 
-UFullAutoFiremode::UFullAutoFiremode(const class FPostConstructInitializeProperties& PCIP)
-	: Super(PCIP)
+UFullAutoFiremode::UFullAutoFiremode()
+	: Super()
 {
 
 }

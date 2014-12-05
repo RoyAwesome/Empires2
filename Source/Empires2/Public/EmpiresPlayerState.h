@@ -11,10 +11,12 @@
 UCLASS()
 class EMPIRES2_API AEmpiresPlayerState : public APlayerState
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 
 public:
+	AEmpiresPlayerState(const class FObjectInitializer & ObjectInitializer);
+
 	virtual void PostInitializeComponents() override;
 
 

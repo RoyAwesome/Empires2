@@ -6,8 +6,8 @@
 #include "Empires2HUD.h"
 
 
-AEmpiresPlayerController::AEmpiresPlayerController(const class FPostConstructInitializeProperties& PCIP)
-	: Super(PCIP)
+AEmpiresPlayerController::AEmpiresPlayerController(const class FObjectInitializer & ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 
 }

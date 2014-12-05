@@ -11,9 +11,11 @@
 UCLASS(Blueprintable, Abstract)
 class EMPIRES2_API UBurstFiremode : public UBaseFiremode
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 public:
+	UBurstFiremode();
+
 	virtual void BeginFire() override;
 
 	virtual void HandleFire() override;

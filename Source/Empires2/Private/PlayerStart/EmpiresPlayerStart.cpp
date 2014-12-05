@@ -4,8 +4,8 @@
 #include "EmpiresPlayerStart.h"
 
 
-AEmpiresPlayerStart::AEmpiresPlayerStart(const class FPostConstructInitializeProperties& PCIP)
-	: Super(PCIP)
+AEmpiresPlayerStart::AEmpiresPlayerStart(const class FObjectInitializer & ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 
 }

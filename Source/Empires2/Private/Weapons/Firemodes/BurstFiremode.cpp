@@ -5,8 +5,8 @@
 #include "BurstFiremode.h"
 
 
-UBurstFiremode::UBurstFiremode(const class FPostConstructInitializeProperties& PCIP)
-	: Super(PCIP)
+UBurstFiremode::UBurstFiremode() 
+	: Super()
 {
 
 }

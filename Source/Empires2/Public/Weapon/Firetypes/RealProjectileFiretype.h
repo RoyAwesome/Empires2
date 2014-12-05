@@ -7,20 +7,21 @@
 #include "RealProjectileFiretype.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS(Blueprintable, Abstract)
 class EMPIRES2_API URealProjectileFiretype : public UWeaponFireType
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 public:
 
-		
-		UPROPERTY(EditDefaultsOnly, Category = Projectile)
-		TSubclassOf<class ABaseEmpiresProjectile> RealProjectileClass;
-	
+	URealProjectileFiretype();
 
-		virtual void EmitShot(FVector Origin, FRotator Direction) override;
+	UPROPERTY(EditDefaultsOnly, Category = Projectile)
+		TSubclassOf<class ABaseEmpiresProjectile> RealProjectileClass;
+
+
+	virtual void EmitShot(FVector Origin, FRotator Direction) override;
 
 
 };

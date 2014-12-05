@@ -39,9 +39,11 @@ public:
 UCLASS(Blueprintable, Abstract)
 class EMPIRES2_API UFakeProjectileFiretype : public UWeaponFireType
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 public:
+	UFakeProjectileFiretype();
+
 	UPROPERTY(EditDefaultsOnly, Category=General)
 		float ProjectileSpeed;
 	UPROPERTY(EditDefaultsOnly, Category = General)

@@ -7,9 +7,11 @@
 UCLASS()
 class AEmpires2HUD : public AHUD
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 public:
+	AEmpires2HUD(const class FObjectInitializer & ObjectInitializer);
+
 
 	virtual void BeginPlay() override;
 

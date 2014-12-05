@@ -9,8 +9,8 @@
 #include "WeaponFireType.h"
 
 
-ABaseEmpiresWeapon::ABaseEmpiresWeapon(const class FPostConstructInitializeProperties& PCIP)
-	: Super(PCIP)
+ABaseEmpiresWeapon::ABaseEmpiresWeapon(const class FObjectInitializer & ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 
 	GunOffset = FVector(100.0f, 30.0f, 10.0f);
@@ -89,7 +89,7 @@ void ABaseEmpiresWeapon::PlayAnimation(UAnimMontage* Animation)
 	if (Animation != nullptr)
 	{
 		// Get the animation object for the arms mesh
-		UAnimInstance* AnimInstance = OwningCharacter->Mesh1P->GetAnimInstance();
+		UAnimInstance* AnimInstance = OwningCharacter->Get1PMesh()->GetAnimInstance();
 		if (AnimInstance != nullptr)
 		{
 			AnimInstance->Montage_Play(Animation, 1.f);
@@ -119,8 +119,8 @@ void ABaseEmpiresWeapon::Equip()
 	check(OwningCharacter);
 
 	//Set the mesh to be the weapon we have
-	OwningCharacter->Mesh1P->SetSkeletalMesh(ViewModel);
-	OwningCharacter->Mesh1P->SetAnimation(GetActiveWeaponAnimationSet().FireAnimation);
+	OwningCharacter->Get1PMesh()->SetSkeletalMesh(ViewModel);
+	OwningCharacter->Get1PMesh()->SetAnimation(GetActiveWeaponAnimationSet().FireAnimation);
 
 	WeaponState = EWeaponState::Weapon_Idle; //TODO: Drawing weapon makes this idle, not just equipping it
 }

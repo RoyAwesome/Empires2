@@ -11,12 +11,12 @@
 UCLASS()
 class EMPIRES2_API AEmpiresPlayerController : public APlayerController
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 
 		/*  Death and Respawn   */
 public:
-
+	AEmpiresPlayerController(const class FObjectInitializer & ObjectInitializer);
 
 	bool CanRespawn();
 

@@ -7,8 +7,8 @@
 #include "InfantryClass.h"
 #include "BaseInfantryWeapon.h"
 
-AEmpiresPlayerState::AEmpiresPlayerState(const class FPostConstructInitializeProperties& PCIP)
-	: Super(PCIP)
+AEmpiresPlayerState::AEmpiresPlayerState(const FObjectInitializer & ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	bReplicates = true;
 }

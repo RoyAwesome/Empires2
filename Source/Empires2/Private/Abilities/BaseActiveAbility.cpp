@@ -4,8 +4,8 @@
 #include "BaseActiveAbility.h"
 
 
-ABaseActiveAbility::ABaseActiveAbility(const class FPostConstructInitializeProperties& PCIP)
-	: Super(PCIP)
+ABaseActiveAbility::ABaseActiveAbility(const class FObjectInitializer & ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 
 }

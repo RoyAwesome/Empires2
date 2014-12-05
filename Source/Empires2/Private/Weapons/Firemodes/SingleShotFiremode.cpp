@@ -5,8 +5,8 @@
 #include "SingleShotFiremode.h"
 
 
-USingleShotFiremode::USingleShotFiremode(const class FPostConstructInitializeProperties& PCIP)
-	: Super(PCIP)
+USingleShotFiremode::USingleShotFiremode()
+	: Super()
 {
 
 }
