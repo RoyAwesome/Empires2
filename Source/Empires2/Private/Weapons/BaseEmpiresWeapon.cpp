@@ -7,6 +7,11 @@
 #include "BaseEmpiresWeapon.h"
 #include "UnrealNetwork.h"
 #include "WeaponFireType.h"
+#include "SkeletalMeshTypes.h"
+//Turns on COF Adjusted fire angles
+static TAutoConsoleVariable<int32> CVarDisplayCofTraces(TEXT("emp.DesignDisplayCoFLines"), 0, 
+	TEXT("Displays lines showing the CoF adjusted Firing Angle")/*, EConsoleVariableFlags::ECVF_Cheat*/);
+	
 
 
 ABaseEmpiresWeapon::ABaseEmpiresWeapon(const class FObjectInitializer & ObjectInitializer)
@@ -17,6 +22,18 @@ ABaseEmpiresWeapon::ABaseEmpiresWeapon(const class FObjectInitializer & ObjectIn
 	ActiveFiremode = 0;
 	bReplicates = true;
 	bAlwaysRelevant = true;
+	CollisionComponent = ObjectInitializer.CreateDefaultSubobject<UCapsuleComponent>(this, TEXT("Collision Capsue"));
+	RootComponent = CollisionComponent;
+
+	Mesh1P = ObjectInitializer.CreateDefaultSubobject<USkeletalMeshComponent>(this, TEXT("FirstPersonMesh"));
+	Mesh1P->bOnlyOwnerSee = true;
+
+
+	Mesh3P = ObjectInitializer.CreateDefaultSubobject<USkeletalMeshComponent>(this, TEXT("ThirdPersonMesh"));
+	Mesh3P->bOwnerNoSee = true;
+
+	Mesh3P->AttachParent = RootComponent;
+	Mesh1P->AttachParent = RootComponent;
 }
 
 //////////////////////GENERAL
@@ -240,11 +257,14 @@ void ABaseEmpiresWeapon::FireShot()
 	const FVector SpawnLocation = OwningCharacter->GetActorLocation() + SpawnRotation.RotateVector(GunOffset);
 
 	FVector AimDirection = GetFireDirection();
-
-	DrawDebugLine(GetWorld(), SpawnLocation, SpawnLocation + (AimDirection * 1000), FColor::Blue, true, -1.0f, 0, 1);
 	FVector CofDirection = AdjustByCof(AimDirection);
-	DrawDebugLine(GetWorld(), SpawnLocation, SpawnLocation + (CofDirection * 1000), FColor::Red, true, -1.0f, 0, 1);
 
+	if (CVarDisplayCofTraces.GetValueOnGameThread())
+	{
+		DrawDebugLine(GetWorld(), SpawnLocation, SpawnLocation + (AimDirection * 1000), FColor::Blue, true, -1.0f, 0, 1);		
+		DrawDebugLine(GetWorld(), SpawnLocation, SpawnLocation + (CofDirection * 1000), FColor::Red, true, -1.0f, 0, 1);
+	}
+	
 	FRotator ConeAdjustedAngle = CofDirection.Rotation();
 	
 	//Let the firetype emit a shot.  
@@ -261,6 +281,11 @@ void ABaseEmpiresWeapon::FireShot()
 	//Recoil the shot
 	OwningCharacter->AddControllerPitchInput(-RollVerticalRecoil());
 	OwningCharacter->AddControllerYawInput(RollHorizontalRecoil());
+
+	if (Role < ROLE_Authority)
+	{
+		ClientPlayWeaponEffect();
+	}
 
 
 	//If we are out of ammo, stop firing and reload
@@ -583,5 +608,44 @@ void ABaseEmpiresWeapon::DealDamage(AEmpires2Character* Target)
 	//Fill in the rest of the damage event
 
 	Target->TakeDamage(damage, damageEvent, OwningCharacter->GetController(), OwningCharacter);
+}
+
+void ABaseEmpiresWeapon::ClientPlayWeaponEffect()
+{
+	SCREENLOG(TEXT("ClientPlayEffect"));
+
+	//Spawn the muzzleflash effect
+	FWeaponAnimationSet AnimSet = GetActiveWeaponAnimationSet();
+
+	if (AnimSet.MuzzleFlash)
+	{
+		USkeletalMeshComponent* Component = Mesh3P;
+		if (OwningCharacter->IsLocallyControlled())
+		{
+			Component = Mesh1P;
+		}
+
+		UGameplayStatics::SpawnEmitterAttached(AnimSet.MuzzleFlash,
+			Component,
+			FName("Muzzle"),
+			FVector::ZeroVector,
+			FRotator::ZeroRotator,
+			EAttachLocation::KeepRelativeOffset,
+			true);
+	}
+	
+	
+	//Spawn the bullet projectile particle effect
+
+	if (AnimSet.BulletEffect)
+	{
+		const USkeletalMeshSocket* Muzzle = ViewModel->FindSocket("Muzzle");
+		FVector SpawnLocation = GunOffset;
+		if (Muzzle)
+		{
+			SpawnLocation = Muzzle->RelativeLocation;
+		}
+		UGameplayStatics::SpawnEmitterAtLocation(this, AnimSet.BulletEffect, this->GetActorLocation() + SpawnLocation);
+	}
 }
 

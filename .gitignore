@@ -37,3 +37,4 @@ Saved/
 *.sdf
 Build/
 DerivedDataCache/
+.svn/

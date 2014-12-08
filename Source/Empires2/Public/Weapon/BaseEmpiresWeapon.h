@@ -146,6 +146,15 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Sound)
 		USoundBase* ReloadSound;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=Particles)
+	class UParticleSystem* MuzzleFlash;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Particles)
+	bool bMuzzleFlashLight;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Particles)
+	UParticleSystem* BulletEffect;
 };
 
 USTRUCT()
@@ -418,6 +427,25 @@ public:
 
 	virtual void PostInitProperties() override;
 
+	
+	USkeletalMeshComponent* GetMesh1P() const
+	{
+		return Mesh1P;
+	}
+
+	USkeletalMeshComponent* GetMesh3P() const
+	{
+		return Mesh3P;
+	}
+
+private:
+	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
+	UCapsuleComponent* CollisionComponent;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+	USkeletalMeshComponent* Mesh1P;
+	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+	USkeletalMeshComponent* Mesh3P;
 
 	//Display Properties
 public:
@@ -591,5 +619,10 @@ protected:
 	FVector AdjustByCof(FVector Aim);
 	float RollVerticalRecoil();
 	float RollHorizontalRecoil();
+
+	/*  Play Weapon Effects */
+	public: 
+		void ClientPlayWeaponEffect();
+
 
 };
