@@ -135,10 +135,17 @@ void ABaseEmpiresWeapon::Equip()
 {
 	check(OwningCharacter);
 
-	//Set the mesh to be the weapon we have
-	OwningCharacter->Get1PMesh()->SetSkeletalMesh(ViewModel);
-	OwningCharacter->Get1PMesh()->SetAnimation(GetActiveWeaponAnimationSet().FireAnimation);
 
+	//Get the socket
+	if (OwningCharacter->IsLocallyControlled())
+	{
+		this->AttachRootComponentTo(OwningCharacter->Get1PMesh(), OwningCharacter->GetWeaponAttachSocket());
+	}
+	else
+	{
+		this->AttachRootComponentTo(OwningCharacter->GetMesh(), OwningCharacter->GetWeaponAttachSocket());
+	}
+	
 	WeaponState = EWeaponState::Weapon_Idle; //TODO: Drawing weapon makes this idle, not just equipping it
 }
 void ABaseEmpiresWeapon::Unequip()

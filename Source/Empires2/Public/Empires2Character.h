@@ -131,13 +131,16 @@ public:
 
 	void RefreshHeldWeapon();
 
+	FName GetWeaponAttachSocket();
+
 protected:
 	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = OnRep_SelectedWeapon, Category=Inventory)
 	TEnumAsByte<EInfantryInventorySlots::Type> SelectedWeapon;
 	UPROPERTY(VisibleAnywhere, Replicated, Category = Inventory)
 	TEnumAsByte<EInfantryInventorySlots::Type> LastSelectedWeapon;
 
-
+	UPROPERTY(EditDefaultsOnly, Category = Inventory)
+	FName WeaponAttachSocket;
 
 	UPROPERTY()
 	bool bIsFiring;

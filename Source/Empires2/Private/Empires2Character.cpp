@@ -524,3 +524,8 @@ float AEmpires2Character::GetHealth()
 {
 	return Health;
 }
+
+FName AEmpires2Character::GetWeaponAttachSocket()
+{
+	return WeaponAttachSocket;
+}
