@@ -534,6 +534,12 @@ protected:
 	UFUNCTION(NetMulticast, Unreliable)
 	void NotifyClientShotFired(FVector StartPoint, FRotator Direction);
 
+	//Called on Clients and server to emit the shot.  
+	void EmitShot(FVector StartPoint, FRotator Direction);
+
+	void ClientPlayWeaponEffect(FVector StartPoint, FRotator Direction);
+
+
 	UPROPERTY(Replicated)
 	int32 ShotsFired;
 
@@ -627,7 +633,7 @@ protected:
 
 	/*  Play Weapon Effects */
 	public: 
-		void ClientPlayWeaponEffect();
+
 
 
 };

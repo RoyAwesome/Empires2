@@ -34,6 +34,8 @@ ABaseEmpiresWeapon::ABaseEmpiresWeapon(const class FObjectInitializer & ObjectIn
 
 	Mesh3P->AttachParent = RootComponent;
 	Mesh1P->AttachParent = RootComponent;
+
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 //////////////////////GENERAL
@@ -246,19 +248,7 @@ void ABaseEmpiresWeapon::FireShot()
 
 	//Get the current firemode's projectile
 	FAmmoPool ammoPool = GetCurrentAmmoPool();
-
-	UWeaponFireType* CurrentFiretype = GetCurrentFiretype();
-
-	if (CurrentFiretype == nullptr)
-	{
-		//UE_LOG(EmpiresGameplay, Display, TEXT("Unable to fire Weapon %s, firemode %d because Firetype is null!"), GetName(), ActiveFiremode);
-		return;
-	}
-
-	
-
-	
-
+				
 	const FRotator SpawnRotation = OwningCharacter->GetControlRotation();
 	// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
 	const FVector SpawnLocation = OwningCharacter->GetActorLocation() + SpawnRotation.RotateVector(GunOffset);
@@ -271,29 +261,26 @@ void ABaseEmpiresWeapon::FireShot()
 		DrawDebugLine(GetWorld(), SpawnLocation, SpawnLocation + (AimDirection * 1000), FColor::Blue, true, -1.0f, 0, 1);		
 		DrawDebugLine(GetWorld(), SpawnLocation, SpawnLocation + (CofDirection * 1000), FColor::Red, true, -1.0f, 0, 1);
 	}
-	
 	FRotator ConeAdjustedAngle = CofDirection.Rotation();
-	
-	//Let the firetype emit a shot.  
-	CurrentFiretype->EmitShot(SpawnLocation, ConeAdjustedAngle);
 
-
-	PlaySound(GetActiveWeaponAnimationSet().FireSound);
-	PlayAnimation(GetActiveWeaponAnimationSet().FireAnimation);
-
-	
+	EmitShot(SpawnLocation, ConeAdjustedAngle);
+		
 	ConsumeAmmo(GetActiveFiremodeData().AmmoConsumedPerShot);
 	ShotsFired++;
 
-	//Recoil the shot
-	OwningCharacter->AddControllerPitchInput(-RollVerticalRecoil());
-	OwningCharacter->AddControllerYawInput(RollHorizontalRecoil());
-
-	if (Role < ROLE_Authority)
+	if (OwningCharacter->IsLocallyControlled())
 	{
-		ClientPlayWeaponEffect();
+		PlaySound(GetActiveWeaponAnimationSet().FireSound);
+		PlayAnimation(GetActiveWeaponAnimationSet().FireAnimation);
+
+		//Recoil the shot
+		OwningCharacter->AddControllerPitchInput(-RollVerticalRecoil());
+		OwningCharacter->AddControllerYawInput(RollHorizontalRecoil());
+
+		ClientPlayWeaponEffect(SpawnLocation, ConeAdjustedAngle);
+
 	}
-	else if (Role == ROLE_Authority)
+	if (Role == ROLE_Authority)
 	{
 		NotifyClientShotFired(SpawnLocation, ConeAdjustedAngle);
 	}
@@ -307,6 +294,77 @@ void ABaseEmpiresWeapon::FireShot()
 	}
 
 }
+
+//Emits a simulated bullet.  This does not play any effects.
+void ABaseEmpiresWeapon::EmitShot(FVector StartPoint, FRotator Direction)
+{
+
+	UWeaponFireType* CurrentFiretype = GetCurrentFiretype();
+
+	if (CurrentFiretype == nullptr)
+	{
+		//UE_LOG(EmpiresGameplay, Display, TEXT("Unable to fire Weapon %s, firemode %d because Firetype is null!"), GetName(), ActiveFiremode);
+		return;
+	}
+	
+	//Let the firetype emit a shot.  
+	CurrentFiretype->EmitShot(StartPoint, Direction);
+}
+
+void ABaseEmpiresWeapon::NotifyClientShotFired_Implementation(FVector StartPoint, FRotator Direction)
+{
+	//if (!OwningCharacter->IsLocallyControlled()) return; //If we are locally controlled, we've already played the effect and simulated the shot
+	
+	//Play the effect
+	ClientPlayWeaponEffect(StartPoint, Direction);
+
+	//And simulate a shot
+	EmitShot(StartPoint, Direction);
+}
+
+
+
+
+void ABaseEmpiresWeapon::ClientPlayWeaponEffect(FVector StartPoint, FRotator Direction)
+{
+	SCREENLOG(TEXT("ClientPlayEffect On Player"));
+
+	//Spawn the muzzleflash effect
+	FWeaponAnimationSet AnimSet = GetActiveWeaponAnimationSet();
+
+	if (AnimSet.MuzzleFlash)
+	{
+		USkeletalMeshComponent* Component = Mesh3P;
+		if (OwningCharacter->IsLocallyControlled())
+		{
+			Component = Mesh1P;
+		}
+
+		UGameplayStatics::SpawnEmitterAttached(AnimSet.MuzzleFlash,
+			Component,
+			FName("Muzzle"),
+			FVector::ZeroVector,
+			FRotator::ZeroRotator,
+			EAttachLocation::KeepRelativeOffset,
+			true);
+	}
+
+
+	//Spawn the bullet projectile particle effect
+
+	if (AnimSet.BulletEffect)
+	{
+		const USkeletalMeshSocket* Muzzle = ViewModel->FindSocket("Muzzle");
+		FVector SpawnLocation = StartPoint;
+		if (Muzzle)
+		{
+			SpawnLocation = Muzzle->RelativeLocation;
+		}
+		UGameplayStatics::SpawnEmitterAtLocation(this, AnimSet.BulletEffect, SpawnLocation);
+	}
+}
+
+
 
 
 void ABaseEmpiresWeapon::ServerFireShot_Implementation()
@@ -621,53 +679,9 @@ void ABaseEmpiresWeapon::DealDamage(AEmpires2Character* Target)
 	Target->TakeDamage(damage, damageEvent, OwningCharacter->GetController(), OwningCharacter);
 }
 
-void ABaseEmpiresWeapon::ClientPlayWeaponEffect()
-{
-	SCREENLOG(TEXT("ClientPlayEffect"));
-
-	//Spawn the muzzleflash effect
-	FWeaponAnimationSet AnimSet = GetActiveWeaponAnimationSet();
-
-	if (AnimSet.MuzzleFlash)
-	{
-		USkeletalMeshComponent* Component = Mesh3P;
-		if (OwningCharacter->IsLocallyControlled())
-		{
-			Component = Mesh1P;
-		}
-
-		UGameplayStatics::SpawnEmitterAttached(AnimSet.MuzzleFlash,
-			Component,
-			FName("Muzzle"),
-			FVector::ZeroVector,
-			FRotator::ZeroRotator,
-			EAttachLocation::KeepRelativeOffset,
-			true);
-	}
-	
-	
-	//Spawn the bullet projectile particle effect
-
-	if (AnimSet.BulletEffect)
-	{
-		const USkeletalMeshSocket* Muzzle = ViewModel->FindSocket("Muzzle");
-		FVector SpawnLocation = GunOffset;
-		if (Muzzle)
-		{
-			SpawnLocation = Muzzle->RelativeLocation;
-		}
-		UGameplayStatics::SpawnEmitterAtLocation(this, AnimSet.BulletEffect, this->GetActorLocation() + SpawnLocation);
-	}
-}
 
 void ABaseEmpiresWeapon::OnRep_WeaponState()
 {
 	
-}
-
-void ABaseEmpiresWeapon::NotifyClientShotFired_Implementation(FVector StartPoint, FRotator Direction)
-{
-	//TODO: Play the effect given the start point and direction we were provided. 
-	ClientPlayWeaponEffect();
 }
 
