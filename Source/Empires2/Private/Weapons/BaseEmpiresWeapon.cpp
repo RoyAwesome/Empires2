@@ -293,6 +293,10 @@ void ABaseEmpiresWeapon::FireShot()
 	{
 		ClientPlayWeaponEffect();
 	}
+	else if (Role == ROLE_Authority)
+	{
+		NotifyClientShotFired(SpawnLocation, ConeAdjustedAngle);
+	}
 
 
 	//If we are out of ammo, stop firing and reload
@@ -654,5 +658,16 @@ void ABaseEmpiresWeapon::ClientPlayWeaponEffect()
 		}
 		UGameplayStatics::SpawnEmitterAtLocation(this, AnimSet.BulletEffect, this->GetActorLocation() + SpawnLocation);
 	}
+}
+
+void ABaseEmpiresWeapon::OnRep_WeaponState()
+{
+	
+}
+
+void ABaseEmpiresWeapon::NotifyClientShotFired_Implementation(FVector StartPoint, FRotator Direction)
+{
+	//TODO: Play the effect given the start point and direction we were provided. 
+	ClientPlayWeaponEffect();
 }
 

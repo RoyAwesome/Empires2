@@ -525,10 +525,15 @@ public:
 	void DealDamage(AEmpires2Character* Target);
 
 protected:
-	UPROPERTY(VisibleAnywhere, Category = General, Replicated)
+	UPROPERTY(VisibleAnywhere, Category = General, Replicated, ReplicatedUsing=OnRep_WeaponState)
 	TEnumAsByte<EWeaponState::Type> WeaponState;
 
-	
+	UFUNCTION()
+	void OnRep_WeaponState();
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void NotifyClientShotFired(FVector StartPoint, FRotator Direction);
+
 	UPROPERTY(Replicated)
 	int32 ShotsFired;
 
