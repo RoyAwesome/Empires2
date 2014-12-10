@@ -489,6 +489,13 @@ public:
 	virtual void Equip();
 	virtual void Unequip();
 
+	virtual void DrawWeapon();
+	virtual void PutAwayWeapon();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void NotifyPutAway();
+	UFUNCTION(NetMulticast, Reliable)
+	void NotifyDrawn();
 
 
 	//Shooting

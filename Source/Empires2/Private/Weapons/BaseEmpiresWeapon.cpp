@@ -137,6 +137,8 @@ void ABaseEmpiresWeapon::Equip()
 {
 	check(OwningCharacter);
 
+	Mesh1P->SetVisibility(false);
+	Mesh3P->SetVisibility(false);
 
 	//Get the socket
 	if (OwningCharacter->IsLocallyControlled())
@@ -148,12 +150,56 @@ void ABaseEmpiresWeapon::Equip()
 		this->AttachRootComponentTo(OwningCharacter->GetMesh(), OwningCharacter->GetWeaponAttachSocket());
 	}
 	
-	WeaponState = EWeaponState::Weapon_Idle; //TODO: Drawing weapon makes this idle, not just equipping it
+	WeaponState = EWeaponState::Weapon_NotSelected; //TODO: Play the equipping sound/goto equipping state
 }
 void ABaseEmpiresWeapon::Unequip()
 {
+	this->DetachRootComponentFromParent();
+
+	WeaponState = EWeaponState::Weapon_NotEquipped;
+}
+
+
+void ABaseEmpiresWeapon::DrawWeapon()
+{
+	//Todo: Play the equip animation and make the state drawing here
+	WeaponState = EWeaponState::Weapon_Idle;
+	Mesh1P->SetVisibility(true);
+	Mesh3P->SetVisibility(true);
+
+	if (Role == ROLE_Authority)
+	{
+		NotifyDrawn();
+	}
+}
+
+void ABaseEmpiresWeapon::PutAwayWeapon()
+{
+	this->Mesh1P->SetVisibility(false);
+	this->Mesh3P->SetVisibility(false);
+	WeaponState = EWeaponState::Weapon_NotSelected;
+
+	if (Role == ROLE_Authority)
+	{
+		NotifyPutAway();
+	}
+}
+
+void ABaseEmpiresWeapon::NotifyPutAway_Implementation()
+{
+	this->Mesh1P->SetVisibility(false);
+	this->Mesh3P->SetVisibility(false);
+}
+
+
+void ABaseEmpiresWeapon::NotifyDrawn_Implementation()
+{
+	Mesh1P->SetVisibility(true);
+	Mesh3P->SetVisibility(true);
 
 }
+
+
 
 
 

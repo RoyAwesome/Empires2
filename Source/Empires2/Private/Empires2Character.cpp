@@ -55,6 +55,8 @@ AEmpires2Character::AEmpires2Character(const class FObjectInitializer & ObjectIn
 	DisableReviveTime = 10;
 
 	bShouldIgnoreInput = false;
+
+	
 }
 
 
@@ -244,17 +246,21 @@ void AEmpires2Character::DrawWeapon(ABaseInfantryWeapon* Weapon)
 		Mesh1P->SetHiddenInGame(false);
 	}
 
-	Weapon->Equip();
-	
+	Weapon->DrawWeapon();
 
 }
 
 
 void AEmpires2Character::SwitchToWeapon(EInfantryInventorySlots::Type Weapon)
-{
-		
+{		
 	if (Inventory->GetInventorySize() <= Weapon) return; //Trying to select an out of bounds weapon	
 
+	//Put away the weapon we have out
+	if (GetActiveWeapon())
+	{
+		GetActiveWeapon()->PutAwayWeapon();
+	}
+	
 	ABaseInfantryWeapon* Weap = Cast<ABaseInfantryWeapon>(Inventory->GetItemInSlot(Weapon));
 
 	if (Weap == nullptr)
@@ -271,6 +277,7 @@ void AEmpires2Character::SwitchToWeapon(EInfantryInventorySlots::Type Weapon)
 
 	if(Role == ROLE_Authority) this->LastSelectedWeapon = this->SelectedWeapon;
 	
+
 	DrawWeapon(Weap);
 	this->SelectedWeapon = Weapon;	
 
@@ -420,10 +427,12 @@ void AEmpires2Character::SpawnInventory()
 	ABaseEmpiresWeapon* Pistol = GetWorld()->SpawnActor<ABaseEmpiresWeapon>(playerState->DefaultClass->Pistol);
 	Pistol->SetOwner(this);
 	Inventory->AddItem(EInfantryInventorySlots::Slot_Sidearm, Pistol);
+	Pistol->Equip();
 
 	ABaseEmpiresWeapon* Rifle = GetWorld()->SpawnActor<ABaseEmpiresWeapon>(playerState->DefaultClass->Primary);
 	Rifle->SetOwner(this);
 	Inventory->AddItem(EInfantryInventorySlots::Slot_Primary, Rifle);
+	Rifle->Equip();
 
 	SwitchToWeapon(EInfantryInventorySlots::Slot_Primary);
 	
