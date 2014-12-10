@@ -141,7 +141,7 @@ void ABaseEmpiresWeapon::Equip()
 	Mesh3P->SetVisibility(false);
 
 	//Get the socket
-	if (OwningCharacter->IsLocallyControlled())
+	if (OwningCharacter->Role == ROLE_AutonomousProxy)
 	{
 		this->AttachRootComponentTo(OwningCharacter->Get1PMesh(), OwningCharacter->GetWeaponAttachSocket());
 	}
@@ -359,8 +359,9 @@ void ABaseEmpiresWeapon::EmitShot(FVector StartPoint, FRotator Direction)
 
 void ABaseEmpiresWeapon::NotifyClientShotFired_Implementation(FVector StartPoint, FRotator Direction)
 {
-	//if (!OwningCharacter->IsLocallyControlled()) return; //If we are locally controlled, we've already played the effect and simulated the shot
-	
+
+	if (OwningCharacter->Role == ROLE_AutonomousProxy) return; //If we are locally controlled, we've already played the effect and simulated the shot
+
 	//Play the effect
 	ClientPlayWeaponEffect(StartPoint, Direction);
 
