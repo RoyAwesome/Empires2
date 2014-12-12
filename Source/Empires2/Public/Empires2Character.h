@@ -15,6 +15,8 @@ class AEmpires2Character : public ACharacter
 public:
 	AEmpires2Character(const class FObjectInitializer & ObjectInitializer);
 
+	virtual void Tick(float DeltaTime) override;
+
 private:
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -203,5 +205,18 @@ protected:
 	/* If you die within this amount of time since your last revive, you cannot revive */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=GameFlow)
 	float DisableReviveTime;
+
+	//////////////////////USE OBJECT
+	public:
+		virtual void Use();
+
+		virtual void StopUse();
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Use")
+		int32 UseInteractDistance;
+	protected:
+		class IUsable* UseFocus;
+
+		IUsable* UsingObject;
 };
 

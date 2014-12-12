@@ -10,6 +10,7 @@
 #include "Animation/AnimInstance.h"
 #include "UnrealNetwork.h"
 #include "InfantryClass.h"
+#include "Usable.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AEmpires2Character
@@ -56,8 +57,57 @@ AEmpires2Character::AEmpires2Character(const class FObjectInitializer & ObjectIn
 
 	bShouldIgnoreInput = false;
 
+	UseInteractDistance = 200;
+
+	PrimaryActorTick.bCanEverTick = true;
+
 	
 }
+
+void AEmpires2Character::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (Controller != nullptr && Controller->IsLocalPlayerController())
+	{		
+		FVector CamLoc;
+		FRotator CamRot;
+		Controller->GetPlayerViewPoint(CamLoc, CamRot);
+		const FVector StartTrace = CamLoc;
+		const FVector TraceDir = CamRot.Vector();
+		const FVector EndTrace = StartTrace + TraceDir * UseInteractDistance;
+
+		FCollisionQueryParams TraceParams(FName(TEXT("UseTrace")), true);
+		TraceParams.bTraceAsyncScene = true;
+		TraceParams.AddIgnoredActor(this);
+
+		FHitResult Hit(ForceInit);
+		if (GetWorld()->LineTraceSingle(Hit, StartTrace, EndTrace, COLLISION_PROJECTILE, TraceParams))
+		{
+			IUsable* usable = Cast<IUsable>(Hit.GetActor());
+			if (usable)
+			{
+				SCREENLOG(TEXT("Lookin at a usable object"));
+				if (UseFocus == nullptr)
+				{
+					usable->DisplayPrompt(this->GetController());
+					UseFocus = usable;
+				}
+			}
+			else
+			{
+				if (UseFocus != nullptr)
+				{
+					UseFocus->HidePropmt();
+					UseFocus = nullptr;
+				}
+			}
+		}
+
+	
+	}
+}
+
 
 
 void AEmpires2Character::BeginPlay()
@@ -126,6 +176,8 @@ void AEmpires2Character::SetupPlayerInputComponent(class UInputComponent* InputC
 	InputComponent->BindAction("ChangeFiremode", EInputEvent::IE_Pressed, this, &AEmpires2Character::ChangeFiremode);
 	InputComponent->BindAction("Reload", EInputEvent::IE_Pressed, this, &AEmpires2Character::ReloadWeapon);
 
+	InputComponent->BindAction("Use", EInputEvent::IE_Pressed, this, &AEmpires2Character::Use);
+	InputComponent->BindAction("Use", EInputEvent::IE_Released, this, &AEmpires2Character::StopUse);
 
 	//Movement
 	InputComponent->BindAxis("MoveForward", this, &AEmpires2Character::MoveForward);
@@ -538,3 +590,44 @@ FName AEmpires2Character::GetWeaponAttachSocket()
 {
 	return WeaponAttachSocket;
 }
+
+void AEmpires2Character::Use()
+{
+	if (Controller == nullptr)
+	{
+		return;
+	}
+
+	FVector CamLoc;
+	FRotator CamRot;
+	Controller->GetPlayerViewPoint(CamLoc, CamRot);
+	const FVector StartTrace = CamLoc;
+	const FVector TraceDir = CamRot.Vector();
+	const FVector EndTrace = StartTrace + TraceDir * UseInteractDistance;
+
+	FCollisionQueryParams TraceParams(FName(TEXT("UseTrace")), true);
+	TraceParams.bTraceAsyncScene = true;
+	TraceParams.AddIgnoredActor(this);
+	
+	FHitResult Hit(ForceInit);
+	if (GetWorld()->LineTraceSingle(Hit, StartTrace, EndTrace, COLLISION_PROJECTILE, TraceParams))
+	{
+		IUsable* usable = InterfaceCast<IUsable>(Hit.GetActor());
+		if (usable)
+		{
+			usable->OnUsed(this->Controller);
+			UsingObject = usable;
+		}
+	}
+
+	
+}
+
+void AEmpires2Character::StopUse()
+{
+	if (UsingObject)
+	{
+		UsingObject->StopUsed(this->GetController());
+	}
+}
+

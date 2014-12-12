@@ -143,13 +143,15 @@ void ABaseEmpiresWeapon::Equip()
 	//Get the socket
 	if (OwningCharacter->Role == ROLE_AutonomousProxy)
 	{
-		this->AttachRootComponentTo(OwningCharacter->Get1PMesh(), OwningCharacter->GetWeaponAttachSocket());
+		Mesh1P->AttachTo(OwningCharacter->Get1PMesh(), OwningCharacter->GetWeaponAttachSocket(), EAttachLocation::SnapToTarget, true);
+		//this->AttachRootComponentTo(OwningCharacter->Get1PMesh(), OwningCharacter->GetWeaponAttachSocket(), EAttachLocation::SnapToTarget, true);
 	}
 	else
 	{
 		this->AttachRootComponentTo(OwningCharacter->GetMesh(), OwningCharacter->GetWeaponAttachSocket());
 	}
 	
+	RegisterAllComponents();
 	WeaponState = EWeaponState::Weapon_NotSelected; //TODO: Play the equipping sound/goto equipping state
 }
 void ABaseEmpiresWeapon::Unequip()
@@ -374,8 +376,6 @@ void ABaseEmpiresWeapon::NotifyClientShotFired_Implementation(FVector StartPoint
 
 void ABaseEmpiresWeapon::ClientPlayWeaponEffect(FVector StartPoint, FRotator Direction)
 {
-	SCREENLOG(TEXT("ClientPlayEffect On Player"));
-
 	//Spawn the muzzleflash effect
 	FWeaponAnimationSet AnimSet = GetActiveWeaponAnimationSet();
 

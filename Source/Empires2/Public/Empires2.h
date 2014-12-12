@@ -9,6 +9,7 @@
 #include "Empires2Classes.h"
 
 #define COLLISION_PROJECTILE	ECC_GameTraceChannel1
+#define COLLISION_USE			ECC_GameTraceChannel2
 
 DECLARE_LOG_CATEGORY_EXTERN(EmpiresGameplay, Display, All);
 DECLARE_LOG_CATEGORY_EXTERN(EmpiresNetwork, Log, All);
