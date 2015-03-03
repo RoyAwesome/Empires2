@@ -223,8 +223,8 @@ protected:
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Use")
 		int32 UseInteractDistance;
 	protected:
-		class IUsable* UseFocus;
+		class AActor* UseFocus;
 
-		IUsable* UsingObject;
+		AActor* UsingObject;
 };
 

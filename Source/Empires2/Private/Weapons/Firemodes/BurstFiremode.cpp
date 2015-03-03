@@ -21,7 +21,8 @@ void UBurstFiremode::BeginFire()
 	float FirstShotTime = GetWeapon()->GetActiveFiremodeData().FirstShotFireDelay;
 	if (FirstShotTime != 0)
 	{
-		GetWorld()->GetTimerManager().SetTimer(this, &UBurstFiremode::HandleFire, FirstShotTime, false);
+		FTimerHandle handle;
+		GetWorld()->GetTimerManager().SetTimer(handle, this, &UBurstFiremode::HandleFire, FirstShotTime, false);
 	}
 	else
 	{
@@ -42,7 +43,9 @@ void UBurstFiremode::HandleFire()
 		//get the time until the next shot
 		float FireTime = (1.0f / GetWeapon()->GetActiveFiremodeData().RoundsPerMinute) * 60.0f;
 
-		GetWorld()->GetTimerManager().SetTimer(this, &UBurstFiremode::HandleFire, FireTime, false);
+		FTimerHandle handle;
+
+		GetWorld()->GetTimerManager().SetTimer(handle, this, &UBurstFiremode::HandleFire, FireTime, false);
 	}
 	
 }

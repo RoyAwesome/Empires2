@@ -5,4 +5,15 @@
 
 
 
+UInfantryClass::UInfantryClass(const class FObjectInitializer & ObjectInitializer)
+	:Super(ObjectInitializer)
+{
+	DefaultPistol = 0;
+	DefaultPrimary = 0;
+	DefaultTertiary = 0;
+	DefaultActiveAbility = 0;
 
+	NumPassives = 4;
+
+	bIsOnGUI = true;
+}

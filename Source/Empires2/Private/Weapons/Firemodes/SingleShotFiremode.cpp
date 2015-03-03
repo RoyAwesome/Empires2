@@ -19,7 +19,8 @@ void USingleShotFiremode::BeginFire()
 	float FirstShotTime = GetWeapon()->GetActiveFiremodeData().FirstShotFireDelay;
 	if (FirstShotTime != 0)
 	{
-		GetWorld()->GetTimerManager().SetTimer(this, &USingleShotFiremode::HandleFire, FirstShotTime, false);
+		FTimerHandle handle;
+		GetWorld()->GetTimerManager().SetTimer(handle, this, &USingleShotFiremode::HandleFire, FirstShotTime, false);
 	}
 	else
 	{

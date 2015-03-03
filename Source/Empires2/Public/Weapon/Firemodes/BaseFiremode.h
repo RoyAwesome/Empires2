@@ -30,29 +30,32 @@ protected:
 public:
 
 	/* Start the firing sequence. */
+	UFUNCTION(BlueprintCallable, Category = "Fire Mode")
 	virtual void BeginFire();
 
 	/* End the firing sequence */
+	UFUNCTION(BlueprintCallable, Category = "Fire Mode")
 	virtual void EndFire();
 
 	//Actually Fire the bullet
+	UFUNCTION(BlueprintCallable, Category = "Fire Mode")
 	virtual void HandleFire();
 
-	virtual bool CanFire()
-	{
-		return true;
-	}
+	virtual bool CanFire();
 
-	UFUNCTION(BlueprintImplementableEvent, meta = (FriendlyName = "Begin Fire"))
-		void BTBeginFire();
-	UFUNCTION(BlueprintImplementableEvent, meta = (FriendlyName = "End Fire"))
-		void BTEndFire();
-	UFUNCTION(BlueprintImplementableEvent, meta = (FriendlyName = "Handle Fire"))
-		void BTHandleFire();
+	//Handle the start of firing
+	UFUNCTION(BlueprintImplementableEvent, meta = (FriendlyName = "Begin Fire Event"))
+		void BPBeginFire();
+	//Handle the end of firing (when the player releases the fire key)
+	UFUNCTION(BlueprintImplementableEvent, meta = (FriendlyName = "End Fire Event"))
+		void BPEndFire();
+	//handle the act of firing
+	UFUNCTION(BlueprintImplementableEvent, meta = (FriendlyName = "Handle Fire Event"))
+		void BPHandleFire();
 
-	//TODO: Allow this function to control when something can fire
+	//Controls if this firemode can fire
 	UFUNCTION(BlueprintImplementableEvent, meta = (FriendlyName = "Can Fire"))
-		bool BTCanFire();
+		bool BPCanFire();
 
 
 	UFUNCTION(BlueprintCallable, Category = Firemode)

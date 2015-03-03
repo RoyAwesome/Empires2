@@ -29,15 +29,15 @@ public:
 	
 
 	UFUNCTION(BlueprintImplementableEvent, Category="Usable", meta = (FriendlyName = "On Used"))
-	void BTOnUsed(AController* User);
+	void BPOnUsed(AController* User);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Usable",  meta = (FriendlyName = "Stop Used"))
-	void BTStopUsed(AController* User);
+	void BPStopUsed(AController* User);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Usable", meta = (FriendlyName = "Display Prompt"))
-	void BTDisplayPrompt(AController* User);
+	void BPDisplayPrompt(AController* User);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Usable", meta = (FriendlyName = "Hide Prompt"))
-	void BTHidePrompt();
+	void BPHidePrompt();
 
 };

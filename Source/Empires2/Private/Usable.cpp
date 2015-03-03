@@ -11,20 +11,20 @@ UUsable::UUsable(const class FObjectInitializer & ObjectInitializer)
 
 void IUsable::OnUsed(AController* user)
 {
-	BTOnUsed(user);
+	BPOnUsed(user);
 }
 
 void IUsable::StopUsed(AController* user)
 {
-	BTStopUsed(user);
+	BPStopUsed(user);
 }
 
 void IUsable::DisplayPrompt(AController* User)
 {
-	BTDisplayPrompt(User);
+	BPDisplayPrompt(User);
 }
 
 void IUsable::HidePropmt()
 {
-	BTHidePrompt();
+	BPHidePrompt();
 }

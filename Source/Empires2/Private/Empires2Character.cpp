@@ -85,20 +85,40 @@ void AEmpires2Character::Tick(float DeltaTime)
 		if (GetWorld()->LineTraceSingle(Hit, StartTrace, EndTrace, COLLISION_PROJECTILE, TraceParams))
 		{
 			IUsable* usable = Cast<IUsable>(Hit.GetActor());
-			if (usable)
+													 
+			bool hitUsableObject = usable != nullptr || Hit.GetActor()->GetClass()->ImplementsInterface(UUsable::StaticClass());			
+			if (hitUsableObject)
 			{
-				SCREENLOG(TEXT("Lookin at a usable object"));
 				if (UseFocus == nullptr)
 				{
-					usable->DisplayPrompt(this->GetController());
-					UseFocus = usable;
+					if (usable)
+					{
+						usable->DisplayPrompt(GetController());
+					}
+					else
+					{  //HACKHACK - If the actor is a blueprinted actor that implements the interface, it fails to cast with Cast<>().  
+						//Instead, we manually execute the blueprint node
+						IUsable::Execute_BPDisplayPrompt(Hit.GetActor(), GetController());
+					}					
+					UseFocus = Hit.GetActor();
 				}
 			}
 			else
 			{
 				if (UseFocus != nullptr)
 				{
-					UseFocus->HidePropmt();
+					IUsable* u = Cast<IUsable>(UseFocus);
+					if (u)
+					{
+						u->HidePropmt();
+					}
+					else
+					{
+						//HACKHACK - If the actor is a blueprinted actor that implements the interface, it fails to cast with Cast<>().  
+						//Instead, we manually execute the blueprint node
+						IUsable::Execute_BPHidePrompt(UseFocus);
+					}
+										
 					UseFocus = nullptr;
 				}
 			}
@@ -476,12 +496,14 @@ void AEmpires2Character::SpawnInventory()
 	if (!playerState) return;
 
 	//Add the primary and secondary weapons
-	ABaseEmpiresWeapon* Pistol = GetWorld()->SpawnActor<ABaseEmpiresWeapon>(playerState->DefaultClass->Pistol);
+	int32 DefaultPistol = playerState->DefaultClass->DefaultPistol;
+	ABaseEmpiresWeapon* Pistol = GetWorld()->SpawnActor<ABaseEmpiresWeapon>(playerState->DefaultClass->Pistols[DefaultPistol]);
 	Pistol->SetOwner(this);
 	Inventory->AddItem(EInfantryInventorySlots::Slot_Sidearm, Pistol);
 	Pistol->Equip();
 
-	ABaseEmpiresWeapon* Rifle = GetWorld()->SpawnActor<ABaseEmpiresWeapon>(playerState->DefaultClass->Primary);
+	int32 DefaultPrimary = playerState->DefaultClass->DefaultPrimary;
+	ABaseEmpiresWeapon* Rifle = GetWorld()->SpawnActor<ABaseEmpiresWeapon>(playerState->DefaultClass->Primaries[DefaultPrimary]);
 	Rifle->SetOwner(this);
 	Inventory->AddItem(EInfantryInventorySlots::Slot_Primary, Rifle);
 	Rifle->Equip();
@@ -612,22 +634,44 @@ void AEmpires2Character::Use()
 	FHitResult Hit(ForceInit);
 	if (GetWorld()->LineTraceSingle(Hit, StartTrace, EndTrace, COLLISION_PROJECTILE, TraceParams))
 	{
+
 		IUsable* usable = Cast<IUsable>(Hit.GetActor());
 		if (usable)
 		{
 			usable->OnUsed(this->Controller);
-			UsingObject = usable;
+			UsingObject = Hit.GetActor();
 		}
+		//HACKHACK
+		//For some reason, Cast<IUsuable> doesn't work when an object implements an interface in BP only. 
+		//so we need to double check to make sure that this implements the interface and call the BP function
+		else if (Hit.Actor->GetClass()->ImplementsInterface(UUsable::StaticClass()))
+		{
+			IUsable::Execute_BPOnUsed(Hit.GetActor(), GetController());
+			UsingObject = Hit.GetActor();
+		}
+		
 	}
-
-	
+		
 }
 
 void AEmpires2Character::StopUse()
 {
 	if (UsingObject)
 	{
-		UsingObject->StopUsed(this->GetController());
+		IUsable* usable = Cast<IUsable>(UsingObject);
+		if (usable)
+		{
+			usable->StopUsed(this->GetController());
+		}
+		//HACKHACK
+		//For some reason, Cast<IUsuable> doesn't work when an object implements an interface in BP only. 
+		//so we need to double check to make sure that this implements the interface and call the BP function
+		else if (UsingObject->GetClass()->ImplementsInterface(UUsable::StaticClass()))
+		{
+			IUsable::Execute_BPStopUsed(UsingObject, GetController());
+		}
+
+		UsingObject = nullptr;
 	}
 }
 

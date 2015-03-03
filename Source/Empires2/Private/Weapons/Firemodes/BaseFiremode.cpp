@@ -20,19 +20,19 @@ void UBaseFiremode::BeginFire()
 	BeginFireTime =  GetWorld()->GetTimeSeconds();
 	bFiring = true;
 
-	BTBeginFire();
+	BPBeginFire();
 
 }
 void UBaseFiremode::EndFire()
 {
-	BTEndFire();
+	BPEndFire();
 	bFiring = false;
 
 }
 
 void UBaseFiremode::HandleFire()
 {
-	BTHandleFire();
+	BPHandleFire();
 }
 
 ABaseEmpiresWeapon* UBaseFiremode::GetWeapon()
@@ -43,5 +43,10 @@ ABaseEmpiresWeapon* UBaseFiremode::GetWeapon()
 bool UBaseFiremode::IsFiring()
 {
 	return bFiring;	
+}
+
+bool UBaseFiremode::CanFire()
+{
+	return true && BPCanFire();
 }
 

@@ -26,7 +26,17 @@ public:
 	TAssetPtr<class UInfantryClass> DefaultClass;
 
 	UPROPERTY(Replicated)
-	TAssetPtr<UInfantryClass> RequestedClass;
+	TAssetPtr<UInfantryClass> RequestedClass;	
+
+	int32 RequestedPistol;
+	int32 RequestedPrimary;
+	int32 RequestedTertiary;
+	int32 RequestedActive;
+
+	int32 RequestedPassive1;
+	int32 RequestedPassive2;
+	int32 RequestedPassive3;
+	int32 RequestedPassive4;
 
 public:
 	/* Class Selection */
