@@ -71,7 +71,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = DataReferences)
 		int32 AnimationSetIndex;
 	UPROPERTY(EditDefaultsOnly, Category = DataReferences)
-	int32 RecoilDataIndex;
+		int32 RecoilDataIndex;
 
 
 	//Damage
@@ -105,17 +105,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = General)
 		float ReloadTime;
 
-	UPROPERTY(EditDefaultsOnly, Category=General)
-	float Damage;
+	UPROPERTY(EditDefaultsOnly, Category = General)
+		float Damage;
 
 
 	UPROPERTY(EditDefaultsOnly, Category = General)
-	TSubclassOf<class UWeaponFireType> FireType;
+		TSubclassOf<class UWeaponFireType> FireType;
 
 	FAmmoPool()
 	{
 		MaxAmmo = 120;
-		ClipSize = 30;	
+		ClipSize = 30;
 		Damage = 143;
 	}
 
@@ -147,14 +147,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Sound)
 		USoundBase* ReloadSound;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=Particles)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Particles)
 	class UParticleSystem* MuzzleFlash;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Particles)
-	bool bMuzzleFlashLight;
+		bool bMuzzleFlashLight;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Particles)
-	UParticleSystem* BulletEffect;
+		UParticleSystem* BulletEffect;
 };
 
 USTRUCT()
@@ -166,23 +166,23 @@ public:
 	//RECOIL
 
 	/*
-		How much the gun kicks up in degrees max.  
+		How much the gun kicks up in degrees max.
 		Actual recoil value will be between Min and Max Inclusive
-	*/
+		*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
 		float VerticalRecoilMin;
-	/* 
-		How much the gun kicks up in degrees min.  
+	/*
+		How much the gun kicks up in degrees min.
 		Actual recoil value will be between Min and Max Inclusive
-	*/
+		*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
 		float VerticalRecoilMax;
 
-	/*		
+	/*
 		How much the gun kicks left or right in degrees max.
 		Multipled by the Left or Right recoil bias.
 		Actual recoil value will be between Min and Max Inclusive
-	*/
+		*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
 		float HorizontalRecoilMin;
 	/*
@@ -193,7 +193,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
 		float HorizontalRecoilMax;
 
-	
+
 	/*
 	Indicates whether it is possible to recoil to the right
 	*/
@@ -218,7 +218,7 @@ public:
 
 	/*
 		How much more the first shot recoils over consecutive shots.
-	*/
+		*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Recoil)
 		float FirstShotRecoilMultiplier;
 
@@ -311,7 +311,7 @@ public:
 		float ProneADSStill;
 
 	/*
-	How much the cone of fire blooms when standing per shot. 	
+	How much the cone of fire blooms when standing per shot.
 	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float StandingHipBloom;
@@ -358,7 +358,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ConeOfFire)
 		float MaxProne;
 
-	
+
 	FWeaponRecoilData()
 	{
 		VerticalRecoilMin = .1f;
@@ -416,7 +416,7 @@ public:
 /**
  * Base Weapon
  */
-UCLASS()
+UCLASS(HideCategories = (Transform, Animation, Mesh, Tick, Materials, Shape, Physics, Collision, Rendering, PhysicsVolume, Tags, Clothing, Lighting, Activation, Replication, Input, SkeletalMesh, Actor, Optimization))
 class EMPIRES2_API ABaseEmpiresWeapon : public AActor
 {
 	GENERATED_BODY()
@@ -427,25 +427,21 @@ public:
 
 	virtual void PostInitProperties() override;
 
-	
+
 	USkeletalMeshComponent* GetMesh1P() const
 	{
 		return Mesh1P;
 	}
 
-	USkeletalMeshComponent* GetMesh3P() const
-	{
-		return Mesh3P;
-	}
 
 private:
-	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
-	UCapsuleComponent* CollisionComponent;
+	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+		UCapsuleComponent* CollisionComponent;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	USkeletalMeshComponent* Mesh1P;
+		USkeletalMeshComponent* Mesh1P;
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	USkeletalMeshComponent* Mesh3P;
+		USkeletalMeshComponent* Mesh3P;
 
 	//Display Properties
 public:
@@ -493,9 +489,13 @@ public:
 	virtual void PutAwayWeapon();
 
 	UFUNCTION(NetMulticast, Reliable)
-	void NotifyPutAway();
+		void NotifyPutAway();
+	void NotifyPutAway_Implementation();
+
+
 	UFUNCTION(NetMulticast, Reliable)
-	void NotifyDrawn();
+		void NotifyDrawn();
+	void NotifyDrawn_Implementation();
 
 
 	//Shooting
@@ -511,17 +511,24 @@ public:
 	///////// Serverside Input
 	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerStartFire();
+	void ServerStartFire_Implementation();
+	bool ServerStartFire_Validate();
+
 
 	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerEndFire();
-	
+	void ServerEndFire_Implementation();
+	bool ServerEndFire_Validate();
+
 	UFUNCTION(Reliable, Server, WithValidation)
-	void ServerFireShot();
+		void ServerFireShot();
+	void ServerFireShot_Implementation();
+	bool ServerFireShot_Validate();
 
 
-	
+
 	UFUNCTION()
-	void OnRep_Reload();
+		void OnRep_Reload();
 
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Projectile)
@@ -532,14 +539,15 @@ public:
 	void DealDamage(AEmpires2Character* Target);
 
 protected:
-	UPROPERTY(VisibleAnywhere, Category = General, Replicated, ReplicatedUsing=OnRep_WeaponState)
-	TEnumAsByte<EWeaponState::Type> WeaponState;
+	UPROPERTY(VisibleAnywhere, Category = General, Replicated, ReplicatedUsing = OnRep_WeaponState)
+		TEnumAsByte<EWeaponState::Type> WeaponState;
 
 	UFUNCTION()
-	void OnRep_WeaponState();
+		void OnRep_WeaponState();
 
 	UFUNCTION(NetMulticast, Unreliable)
-	void NotifyClientShotFired(FVector StartPoint, FRotator Direction);
+		void NotifyClientShotFired(FVector StartPoint, FRotator Direction);
+	void NotifyClientShotFired_Implementation(FVector StartPoint, FRotator Direction);
 
 	//Called on Clients and server to emit the shot.  
 	void EmitShot(FVector StartPoint, FRotator Direction);
@@ -548,10 +556,10 @@ protected:
 
 
 	UPROPERTY(Replicated)
-	int32 ShotsFired;
+		int32 ShotsFired;
 
 	UPROPERTY(Replicated)
-	int32 WeaponSeed;
+		int32 WeaponSeed;
 
 	//Firemodes
 public:
@@ -568,12 +576,12 @@ public:
 		TArray<FAmmoPool> AmmoPools;
 
 	UPROPERTY(Replicated)
-	TArray<int32> CurrentClipPool;
+		TArray<int32> CurrentClipPool;
 	UPROPERTY(Replicated)
-	TArray<int32> RemainingAmmoPool;
+		TArray<int32> RemainingAmmoPool;
 
 	UPROPERTY(VisibleAnywhere, Category = Firemodes)
-	TArray<UWeaponFireType*> Firetypes;
+		TArray<UWeaponFireType*> Firetypes;
 
 	UFUNCTION(BlueprintCallable, Category = Firemode)
 		virtual FWeaponData GetActiveFiremodeData();
@@ -595,10 +603,10 @@ public:
 
 protected:
 	UPROPERTY()
-	TArray<UBaseFiremode*> Firemodes;
+		TArray<UBaseFiremode*> Firemodes;
 
 	UPROPERTY(Replicated)
-	int32 ActiveFiremode;
+		int32 ActiveFiremode;
 
 
 	//Ammo
@@ -632,14 +640,14 @@ public:
 	}
 protected:
 	UPROPERTY(Replicated)
-	float CurrentCoF;
+		float CurrentCoF;
 
 	FVector AdjustByCof(FVector Aim);
 	float RollVerticalRecoil();
 	float RollHorizontalRecoil();
 
 	/*  Play Weapon Effects */
-	public: 
+public:
 
 
 

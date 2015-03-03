@@ -612,7 +612,7 @@ void AEmpires2Character::Use()
 	FHitResult Hit(ForceInit);
 	if (GetWorld()->LineTraceSingle(Hit, StartTrace, EndTrace, COLLISION_PROJECTILE, TraceParams))
 	{
-		IUsable* usable = InterfaceCast<IUsable>(Hit.GetActor());
+		IUsable* usable = Cast<IUsable>(Hit.GetActor());
 		if (usable)
 		{
 			usable->OnUsed(this->Controller);

@@ -116,11 +116,19 @@ public:
 	void ReloadWeapon();
 
 	UFUNCTION(Reliable, Server, WithValidation)
-		void ServerSelectNextWeapon();
+	void ServerSelectNextWeapon();
+	void ServerSelectNextWeapon_Implementation();
+	bool ServerSelectNextWeapon_Validate();
+
 	UFUNCTION(Reliable, Server, WithValidation)
-		void ServerSelectPreviousWeapon();
+	void ServerSelectPreviousWeapon();
+	void ServerSelectPreviousWeapon_Implementation();
+	bool ServerSelectPreviousWeapon_Validate();
+
 	UFUNCTION(Reliable, Server, WithValidation)
 		void ServerSelectLastWeapon();
+	void ServerSelectLastWeapon_Implementation();
+	bool ServerSelectLastWeapon_Validate();
 	
 	/* End Weapon Input Events */
 

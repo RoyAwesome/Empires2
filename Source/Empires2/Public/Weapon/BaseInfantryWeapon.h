@@ -8,7 +8,8 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(HideCategories = (Transform, Animation, Mesh, Tick, Materials, Shape, Physics, Collision, Rendering, PhysicsVolume, Tags, Clothing, Lighting, Activation, Replication, Input, SkeletalMesh, Actor, Optimization))
+
 class EMPIRES2_API ABaseInfantryWeapon : public ABaseEmpiresWeapon
 {
 	GENERATED_BODY()

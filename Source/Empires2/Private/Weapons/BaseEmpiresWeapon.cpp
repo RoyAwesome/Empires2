@@ -564,7 +564,9 @@ void ABaseEmpiresWeapon::Reload()
 		PlayAnimation(ReloadAnim);
 	}
 
-	GetWorld()->GetTimerManager().SetTimer(this, &ABaseEmpiresWeapon::DoReload, ReloadTime, false);
+	FTimerHandle Handle;
+
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &ABaseEmpiresWeapon::DoReload, ReloadTime, false);
 
 	WeaponState = EWeaponState::Weapon_Reloading;
 }
