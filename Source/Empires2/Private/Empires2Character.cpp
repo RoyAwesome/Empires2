@@ -82,7 +82,7 @@ void AEmpires2Character::Tick(float DeltaTime)
 		TraceParams.AddIgnoredActor(this);
 
 		FHitResult Hit(ForceInit);
-		if (GetWorld()->LineTraceSingle(Hit, StartTrace, EndTrace, COLLISION_PROJECTILE, TraceParams))
+		if (GetWorld()->LineTraceSingle(Hit, StartTrace, EndTrace, COLLISION_PROJECTILE, TraceParams) && Hit.GetActor() != nullptr)
 		{
 			IUsable* usable = Cast<IUsable>(Hit.GetActor());
 													 
