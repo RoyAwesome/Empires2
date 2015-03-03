@@ -42,12 +42,14 @@ public:
 
 	/** starts match warmup */	
 	virtual void PostLogin(APlayerController* NewPlayer) override;
+	//Handle player entering the world
 	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode", meta = (FriendlyName = "Post Login"))
 	void BPPostLogin(APlayerController* NewPlayer);
 
 	/** select best spawn point for player */
 	virtual AActor* ChoosePlayerStart(AController* Player) override;
 
+	//Handle spawn point selection
 	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode", meta = (FriendlyName = "Choose Player Start"))
 	AActor* BPChoosePlayerStart(AController* Player);
 
@@ -61,6 +63,7 @@ public:
 	/** prevents friendly fire */
 	virtual float ModifyDamage(float Damage, AActor* DamagedActor, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) const;
 
+	//Modify the amount of damage being dealt to a player.
 	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode", meta = (FriendlyName = "Modify Damage"))
 	float BPModifyDamage(float Damage, AActor* DamagedActor, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) const;
 
@@ -69,12 +72,14 @@ public:
 	/** notify about kills */
 	virtual void Killed(AController* Killer, AController* KilledPlayer, APawn* KilledPawn, const UDamageType* DamageType);
 	
+	//Handle the death of a player
 	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode", meta = (FriendlyName = "Killed"))
 	void BPKilled(AController* Killer, AController* KilledPlayer, APawn* KilledPawn, const UDamageType* DamageType);
 
 	/** can players damage each other? */
 	virtual bool CanDealDamage(class AController* DamageInstigator, class AController* DamagedPlayer) const;
 
+	//Determine if two players can damage eachother
 	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode", meta = (FriendlyName = "Can Deal Damage"))
 		bool BPCanDealDamage(class AController* DamageInstigator, class AController* DamagedPlayer) const;
 
@@ -88,6 +93,7 @@ public:
 	/** called before startmatch */
 	virtual void HandleMatchIsWaitingToStart() override;
 
+	//Handle pre-match setup.  
 	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode", meta = (FriendlyName = "Match is Waiting to Start"))
 	void BPHandleMatchIsWaitingToStart();
 
@@ -95,12 +101,14 @@ public:
 	/** starts new match */
 	virtual void HandleMatchHasStarted() override;
 
+	//Event fired when the match starts and all players spawn in
 	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode", meta = (FriendlyName = "Match Start"))
 	void BPHandleMatchHasStarted();
 
 	/** hides the onscreen hud and restarts the map */
 	virtual void RestartGame() override;
 
+	//Handle restarting the game.  This resets everything back to the start of the match
 	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode", meta = (FriendlyName = "Restart match"))
 	void BPRestartGame();
 
@@ -108,7 +116,8 @@ public:
 	
 	virtual void RespawnPlayer(class AEmpiresPlayerController* Controller);
 
-	UFUNCTION(BlueprintNativeEvent, Category = "Game Mode", meta = (FriendlyName = "Restart match"))
+	//Handle the respawning of a player.  You should not need to implement this unless you are completly redoing the native respawn code
+	UFUNCTION(BlueprintNativeEvent, Category = "Game Mode", meta = (FriendlyName = "Respawn Player"))
 	void BPRespawnPlayer(AEmpiresPlayerController* Controller);
 	void BPRespawnPlayer_Implementation(AEmpiresPlayerController* Controller);
 
