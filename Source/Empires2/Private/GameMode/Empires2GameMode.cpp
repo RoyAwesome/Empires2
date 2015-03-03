@@ -35,6 +35,7 @@ AEmpires2GameMode::AEmpires2GameMode(const class FObjectInitializer & ObjectInit
 
 void AEmpires2GameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
+	BPInitGame(MapName, Options, ErrorMessage);
 	Super::InitGame(MapName, Options, ErrorMessage);
 }
 
@@ -47,14 +48,20 @@ void AEmpires2GameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer); 
 
+	BPPostLogin(NewPlayer);
+
 	//TODO: Get a spawn point for the player
 }
 
 AActor* AEmpires2GameMode::ChoosePlayerStart(AController* Player)
 {
-	return Super::ChoosePlayerStart(Player); 
+	AActor* Spawn = BPChoosePlayerStart(Player);
+	if (Spawn == nullptr)
+	{
+		Spawn = Super::ChoosePlayerStart(Player);
+	}
 
-	//Get the spawn point that this player requested.  
+	return Spawn;
 }
 
 void AEmpires2GameMode::SetFriendlyFire(bool ShouldFriendlyfire)
@@ -75,21 +82,26 @@ UClass* AEmpires2GameMode::GetDefaultPawnClassForController(AController* InContr
 }
 
 float AEmpires2GameMode::ModifyDamage(float Damage, AActor* DamagedActor, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) const
-{
-	return Damage;
+{	
+	//Determine if these two people can deal damage to eachother.  If they can't, change damage to 0 then pass it to Blueprint to modify.
+	if (!CanDealDamage(EventInstigator, DamagedActor->GetInstigatorController()))
+	{
+		Damage = 0;
+	}
 
-	//TODO: Determine if the people are on the same team.  If they are, Prevent that damage.  If not allow it
+
+	Damage = BPModifyDamage(Damage, DamagedActor, DamageEvent, EventInstigator, DamageCauser);
+	return Damage;	
 }
 
 void AEmpires2GameMode::Killed(AController* Killer, AController* KilledPlayer, APawn* KilledPawn, const UDamageType* DamageType)
 {
-
+	BPKilled(Killer, KilledPlayer, KilledPawn, DamageType);
 }
 
-bool AEmpires2GameMode::CanDealDamage(class AEmpiresPlayerState* DamageInstigator, class AEmpiresPlayerState* DamagedPlayer) const
-{
-	//TODO: Friendly Fire? 
-	return true;
+bool AEmpires2GameMode::CanDealDamage(AController* DamageInstigator, AController* DamagedPlayer) const
+{	
+	return true || BPCanDealDamage(DamageInstigator, DamagedPlayer);
 }
 
 bool AEmpires2GameMode::AllowCheats(APlayerController* P)
@@ -114,17 +126,20 @@ void AEmpires2GameMode::DefaultTimer()
 
 void AEmpires2GameMode::HandleMatchIsWaitingToStart()
 {
-
+	Super::HandleMatchIsWaitingToStart();
+	BPHandleMatchIsWaitingToStart();
 }
 
 void AEmpires2GameMode::HandleMatchHasStarted()
 {
 	Super::HandleMatchHasStarted();
+	BPHandleMatchHasStarted();
 }
 
 void AEmpires2GameMode::RestartGame()
 {
 	Super::RestartGame();
+	BPRestartGame();
 }
 
 TSubclassOf<AGameSession> AEmpires2GameMode::GetGameSessionClass() const
@@ -139,6 +154,11 @@ void AEmpires2GameMode::FinishMatch()
 
 void AEmpires2GameMode::RespawnPlayer(AEmpiresPlayerController* Controller)
 {
+	BPRespawnPlayer(Controller);
+}
+
+void AEmpires2GameMode::BPRespawnPlayer_Implementation(AEmpiresPlayerController* Controller)
+{
 	//Remove the player's original pawn
 	AEmpires2Character* PlayerCharacter = Cast<AEmpires2Character>(Controller->GetPawn());
 
@@ -146,14 +166,13 @@ void AEmpires2GameMode::RespawnPlayer(AEmpiresPlayerController* Controller)
 
 
 	//Create a new pawn for the player
-	AEmpiresPlayerStart* StartSpot = Controller->WantedSpawn;
+	AActor* StartSpot = ChoosePlayerStart(Controller);
 	if (StartSpot == nullptr)
 	{
-		StartSpot = Cast<AEmpiresPlayerStart>(ChoosePlayerStart(Controller));
-		if (StartSpot == nullptr) UE_LOG(EmpiresGameplay, Warning, TEXT("Can't find a spawn for player"));
+		UE_LOG(EmpiresGameplay, Warning, TEXT("Can't find a spawn for player"));
 	}
 
-	APawn* Pawn = this->SpawnDefaultPawnFor(Controller, (AActor*) StartSpot);
+	APawn* Pawn = this->SpawnDefaultPawnFor(Controller, StartSpot);
 
 	Controller->Possess(Pawn);
 	Controller->NotifyCharacterSpawned();

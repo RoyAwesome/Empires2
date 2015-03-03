@@ -31,16 +31,26 @@ public:
 
 
 	/** Initialize the game. This is called before actors' PreInitializeComponents. */
+	
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode", meta=(FriendlyName = "Init Game"))
+	void BPInitGame(const FString& MapName, const FString& Options, FString& ErrorMessage);
 
 	/** Accept or reject a player attempting to join the server.  Fails login if you set the ErrorMessage to a non-empty string. */
 	virtual void PreLogin(const FString& Options, const FString& Address, const TSharedPtr<class FUniqueNetId>& UniqueId, FString& ErrorMessage) override;
 
-	/** starts match warmup */
+	/** starts match warmup */	
 	virtual void PostLogin(APlayerController* NewPlayer) override;
+	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode", meta = (FriendlyName = "Post Login"))
+	void BPPostLogin(APlayerController* NewPlayer);
 
 	/** select best spawn point for player */
 	virtual AActor* ChoosePlayerStart(AController* Player) override;
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode", meta = (FriendlyName = "Choose Player Start"))
+	AActor* BPChoosePlayerStart(AController* Player);
+
 
 	/** always pick new random spawn */
 	virtual bool ShouldSpawnAtStartSpot(AController* Player) override;
@@ -51,11 +61,23 @@ public:
 	/** prevents friendly fire */
 	virtual float ModifyDamage(float Damage, AActor* DamagedActor, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) const;
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode", meta = (FriendlyName = "Modify Damage"))
+	float BPModifyDamage(float Damage, AActor* DamagedActor, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) const;
+
+
+
 	/** notify about kills */
 	virtual void Killed(AController* Killer, AController* KilledPlayer, APawn* KilledPawn, const UDamageType* DamageType);
+	
+	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode", meta = (FriendlyName = "Killed"))
+	void BPKilled(AController* Killer, AController* KilledPlayer, APawn* KilledPawn, const UDamageType* DamageType);
 
 	/** can players damage each other? */
-	virtual bool CanDealDamage(class AEmpiresPlayerState* DamageInstigator, class AEmpiresPlayerState* DamagedPlayer) const;
+	virtual bool CanDealDamage(class AController* DamageInstigator, class AController* DamagedPlayer) const;
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode", meta = (FriendlyName = "Can Deal Damage"))
+		bool BPCanDealDamage(class AController* DamageInstigator, class AController* DamagedPlayer) const;
+
 
 	/** always create cheat manager */
 	virtual bool AllowCheats(APlayerController* P) override;
@@ -66,14 +88,29 @@ public:
 	/** called before startmatch */
 	virtual void HandleMatchIsWaitingToStart() override;
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode", meta = (FriendlyName = "Match is Waiting to Start"))
+	void BPHandleMatchIsWaitingToStart();
+
+
 	/** starts new match */
 	virtual void HandleMatchHasStarted() override;
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode", meta = (FriendlyName = "Match Start"))
+	void BPHandleMatchHasStarted();
 
 	/** hides the onscreen hud and restarts the map */
 	virtual void RestartGame() override;
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode", meta = (FriendlyName = "Restart match"))
+	void BPRestartGame();
+
 	/*  */
+	
 	virtual void RespawnPlayer(class AEmpiresPlayerController* Controller);
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Game Mode", meta = (FriendlyName = "Restart match"))
+	void BPRespawnPlayer(AEmpiresPlayerController* Controller);
+	void BPRespawnPlayer_Implementation(AEmpiresPlayerController* Controller);
 
 protected:
 
