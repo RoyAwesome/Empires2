@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Empires2.h"
-#include "Empires2GameMode.h"
+#include "EmpBaseGamemode.h"
 #include "EmpiresPlayerController.h"
 #include "Empires2HUD.h"
 
@@ -35,7 +35,7 @@ void AEmpiresPlayerController::DoRespawn()
 	Character->Respawn();
 
 	//Request from the game mode that we want to respawn
-	AEmpires2GameMode* GameMode = Cast<AEmpires2GameMode>(GetWorld()->GetAuthGameMode());
+	AEmpBaseGamemode* GameMode = Cast<AEmpBaseGamemode>(GetWorld()->GetAuthGameMode());
 
 	GameMode->RespawnPlayer(this);
 	
@@ -178,7 +178,7 @@ void AEmpiresPlayerController::RequestRespawn()
 
 void AEmpiresPlayerController::ServerRequestRespawn_Implementation()
 {
-	AEmpires2GameMode* GameMode = Cast<AEmpires2GameMode>(GetWorld()->GetAuthGameMode());
+	AEmpBaseGamemode* GameMode = Cast<AEmpBaseGamemode>(GetWorld()->GetAuthGameMode());
 	GameMode->RespawnPlayer(this);
 }
 bool AEmpiresPlayerController::ServerRequestRespawn_Validate()
