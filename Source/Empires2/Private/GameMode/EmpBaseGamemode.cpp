@@ -46,7 +46,11 @@ void AEmpBaseGamemode::PostLogin(APlayerController* NewPlayer)
 	BPPostLogin(NewPlayer);
 
 	Super::PostLogin(NewPlayer); 
-	//TODO: Get a spawn point for the player
+	
+	AEmpiresPlayerController* PC = Cast<AEmpiresPlayerController>(NewPlayer);
+	PC->InitialGameJoin();
+
+
 }
 
 AActor* AEmpBaseGamemode::ChoosePlayerStart(AController* Player)

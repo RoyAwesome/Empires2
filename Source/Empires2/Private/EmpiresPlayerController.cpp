@@ -38,7 +38,7 @@ void AEmpiresPlayerController::DoRespawn()
 	AEmpBaseGamemode* GameMode = Cast<AEmpBaseGamemode>(GetWorld()->GetAuthGameMode());
 
 	GameMode->RespawnPlayer(this);
-	
+	BPServerCharacterSpawned();
 }
 
 void AEmpiresPlayerController::NotifyWasHit(AController* InstigatedBy, int32 Damage, const FDamageEvent& DamageEvent)
@@ -63,6 +63,8 @@ void AEmpiresPlayerController::ClientNotifyWasHit_Implementation(APlayerState* I
 		//Notify that we've taken damage
 		Emp2Hud->NotifyTookDamage(RelHitLocation, damage, InstigatatedBy);
 	}
+
+	BPClientCharacterSpawned();
 }
 
 void AEmpiresPlayerController::NotifyLandedHit(APawn* Hit)
@@ -184,6 +186,11 @@ void AEmpiresPlayerController::ServerRequestRespawn_Implementation()
 bool AEmpiresPlayerController::ServerRequestRespawn_Validate()
 {
 	return true;
+}
+
+void AEmpiresPlayerController::InitialGameJoin()
+{
+	BPInitialGameJoin();
 }
 
 

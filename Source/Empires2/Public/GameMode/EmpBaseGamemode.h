@@ -42,8 +42,8 @@ public:
 
 	/** starts match warmup */	
 	virtual void PostLogin(APlayerController* NewPlayer) override;
-	//Handle player entering the world
-	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode", meta = (FriendlyName = "Post Login"))
+	//Handle player entering the world.  Do not call RPCs here
+	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode", meta = (FriendlyName = "Controller Constructed"))
 	void BPPostLogin(APlayerController* NewPlayer);
 
 	/** select best spawn point for player */
@@ -131,18 +131,18 @@ public:
 protected:
 
 	/** score for kill */
-	UPROPERTY(config)
+	UPROPERTY(config, EditDefaultsOnly, Category = GameFlow)
 		int32 KillScore;
 
 	/** scale for self instigated damage */
-	UPROPERTY(config)
+	UPROPERTY(config, EditDefaultsOnly, Category = Damage)
 		float DamageSelfScale;
 
 	/** How long the end match time is before the server travels to the next map */
-	UPROPERTY(config)
+	UPROPERTY(config, EditDefaultsOnly, Category = GameFlow)
 	float EndMatchTime;
 
-	UPROPERTY(config)
+	UPROPERTY(config, EditDefaultsOnly, Category = Damage)
 		bool bAllowFriendlyFire;
 
 	/** Returns game session class to use */
@@ -162,9 +162,10 @@ protected:
 public:
 
 	/** finish current match and lock players */
-	UFUNCTION(exec)
+	UFUNCTION(exec, BlueprintCallable, Category = "Game Mode")
 		void FinishMatch();
 
+	UFUNCTION(BlueprintCallable, Category = "Game Mode")
 	void SetFriendlyFire(bool ShouldFriendlyfire);
 
 

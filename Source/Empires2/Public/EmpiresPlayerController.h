@@ -23,14 +23,22 @@ public:
 	
 	void DoRespawn();
 
-	UPROPERTY()
+
+	UPROPERTY(BlueprintReadWrite, Category="Controller")
 	class AEmpiresPlayerStart* WantedSpawn;
+
+
+
+	virtual void InitialGameJoin();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Empires Player Controller", meta = (FriendlyName = "Initial Game Join"))
+	void BPInitialGameJoin();
+
 
 
 	virtual void NotifyWasHit(AController* InstigatedBy, int32 Damage, const FDamageEvent& DamageEvent);
 
 	UFUNCTION(Client, Unreliable)
-		void ClientNotifyWasHit(APlayerState* InstigatatedBy, int32 damage, FVector RelHitLocation, TSubclassOf<UDamageType> DamageType);
+	void ClientNotifyWasHit(APlayerState* InstigatatedBy, int32 damage, FVector RelHitLocation, TSubclassOf<UDamageType> DamageType);
 	void ClientNotifyWasHit_Implementation(APlayerState* InstigatatedBy, int32 damage, FVector RelHitLocation, TSubclassOf<UDamageType> DamageType);
 
 	virtual void NotifyLandedHit(APawn* Hit);
@@ -60,13 +68,18 @@ public:
 
 	virtual void NotifyCharacterSpawned();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Empires Player Controller", meta=(FriendlyName="Server Character Spawned"))
+	void BPServerCharacterSpawned();
+
 	UFUNCTION(Client, Unreliable)
 	void ClientNotifyCharacterSpawned();
 	void ClientNotifyCharacterSpawned_Implementation();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Empires Player Controller", meta = (FriendlyName = "Client Character Spawned"))
+	void BPClientCharacterSpawned();
+
 	UFUNCTION(BlueprintCallable, Category=GameFlow)
 	void RequestRespawn();
-
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerRequestRespawn();
 	void ServerRequestRespawn_Implementation();
