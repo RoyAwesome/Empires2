@@ -174,9 +174,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	virtual void SpawnInventory();
 
-	UPROPERTY(BlueprintReadWrite, Category = "Inventory")
+	UPROPERTY(Replicated)
 	class UEmpInfantryClass* SelectedClass;
 
+	UFUNCTION(BlueprintCallable, Category = "Inventory", Exec)
+	virtual void SetInfantryClass(UEmpInfantryClass* InfClass, bool RespawnInventory = true);
+
+	protected:
+
+		UFUNCTION(Server, Reliable, WithValidation)
+		void ServerSetInfantryClass(UEmpInfantryClass* InfClass, bool RespawnInventory);
+		void ServerSetInfantryClass_Implementation(UEmpInfantryClass* InfClass, bool RespawnInventory);
+		bool ServerSetInfantryClass_Validate(UEmpInfantryClass* InfClass, bool RespawnInventory);
 
 	////////////// GAME FLOW
 public:
