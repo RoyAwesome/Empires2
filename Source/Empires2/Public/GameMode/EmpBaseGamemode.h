@@ -84,6 +84,13 @@ public:
 		bool BPCanDealDamage(class AController* DamageInstigator, class AController* DamagedPlayer) const;
 
 
+	virtual void NotifyDamageWasDealt(AController* DamageInstigator, AActor* WithWhat, AController* DamagedPlayer, AActor* DamagedActor, float Amount, struct FDamageEvent const& DamageEvent);
+	
+	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode", meta = (FriendlyName = "Damage Was Dealt"))
+		void BPNotifyDamageWasDealt(AController* DamageInstigator, AActor* WithWhat, AController* DamagedPlayer, AActor* DamagedActor, float Amount, struct FDamageEvent const& DamageEvent);
+	
+
+
 	/** always create cheat manager */
 	virtual bool AllowCheats(APlayerController* P) override;
 

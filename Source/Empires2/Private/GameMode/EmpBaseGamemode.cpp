@@ -21,10 +21,7 @@ namespace MatchState
 AEmpBaseGamemode::AEmpBaseGamemode(const class FObjectInitializer & ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	// set default pawn class to our Blueprinted character
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/Blueprints/EmpiresCharacter"));
-	DefaultPawnClass = PlayerPawnClassFinder.Class;
-
+	
 	// use our custom HUD class
 	HUDClass = AEmpires2HUD::StaticClass();
 
@@ -46,10 +43,9 @@ void AEmpBaseGamemode::PreLogin(const FString& Options, const FString& Address, 
 
 void AEmpBaseGamemode::PostLogin(APlayerController* NewPlayer)
 {
-	Super::PostLogin(NewPlayer); 
-
 	BPPostLogin(NewPlayer);
 
+	Super::PostLogin(NewPlayer); 
 	//TODO: Get a spawn point for the player
 }
 
@@ -176,4 +172,9 @@ void AEmpBaseGamemode::BPRespawnPlayer_Implementation(AEmpiresPlayerController* 
 
 	Controller->Possess(Pawn);
 	Controller->NotifyCharacterSpawned();
+}
+
+void AEmpBaseGamemode::NotifyDamageWasDealt(AController* DamageInstigator, AActor* WithWhat, AController* DamagedPlayer, AActor* DamagedActor, float Amount, struct FDamageEvent const& DamageEvent)
+{
+	BPNotifyDamageWasDealt(DamageInstigator, WithWhat, DamagedPlayer, DamagedActor, Amount, DamageEvent);
 }

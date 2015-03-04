@@ -11,6 +11,7 @@
 #include "UnrealNetwork.h"
 #include "EmpInfantryClass.h"
 #include "Usable.h"
+#include "EmpBaseGamemode.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AEmpires2Character
@@ -542,6 +543,14 @@ void AEmpires2Character::Die(AController* Instigator, bool CanRevive)
 
 }
 
+void AEmpires2Character::Ragdoll()
+{
+
+}
+
+
+
+
 void AEmpires2Character::ClientDie()
 {
 	//Remove controls
@@ -569,13 +578,19 @@ void AEmpires2Character::Revive()
 
 float AEmpires2Character::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	float RealDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	if (!GetWorld()->IsServer()) return 0;
+		
+	float RealDamage = Damage;
 
+
+	//Let the GameMode have a chance to modify damage.  This handles things like Friendly Fire.  
+	AEmpBaseGamemode* GameMode = Cast<AEmpBaseGamemode>(GetWorld()->GetAuthGameMode());	
+	if (GameMode) RealDamage = GameMode->ModifyDamage(RealDamage, this, DamageEvent, EventInstigator, DamageCauser);
+
+
+	RealDamage = Super::TakeDamage(RealDamage, DamageEvent, EventInstigator, DamageCauser);
 	if (RealDamage == 0) return 0;
-
-	//TODO: Friendly Fire Y/N?
-
-	//TODO: Resistances
+		
 
 	float Health = GetHealth() - RealDamage;
 
@@ -585,15 +600,15 @@ float AEmpires2Character::TakeDamage(float Damage, struct FDamageEvent const& Da
 	AEmpiresPlayerController* OtherController = Cast<AEmpiresPlayerController>(EventInstigator);
 	OtherController->NotifyLandedHit(this);
 
+	SetHealth(Health);
+
 	if (Health <= 0)
 	{
 		//Die
 		Die(EventInstigator, true); //TODO: Test to see if we can revive
 	}
 
-	SetHealth(Health);
-
-
+	if (GameMode) GameMode->NotifyDamageWasDealt(EventInstigator, DamageCauser, GetController(), this, RealDamage, DamageEvent);
 
 	return RealDamage;
 }

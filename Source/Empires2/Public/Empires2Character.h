@@ -182,6 +182,8 @@ public:
 		virtual void ClientDie(); //Client side death related stuff.
 		virtual void Revive();
 
+		virtual void Ragdoll();
+
 		virtual void SetHealth(float amount);
 		virtual float GetHealth();
 
