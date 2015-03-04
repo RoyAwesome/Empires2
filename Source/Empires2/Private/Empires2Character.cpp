@@ -495,19 +495,25 @@ void AEmpires2Character::SpawnInventory()
 
 	AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
 	if (!playerState) return;
-
-	//Add the primary and secondary weapons
-	int32 DefaultPistol = playerState->DefaultClass->DefaultPistol;
-	ABaseEmpiresWeapon* Pistol = GetWorld()->SpawnActor<ABaseEmpiresWeapon>(playerState->DefaultClass->Pistols[DefaultPistol]);
-	Pistol->SetOwner(this);
-	Inventory->AddItem(EInfantryInventorySlots::Slot_Sidearm, Pistol);
-	Pistol->Equip();
-
-	int32 DefaultPrimary = playerState->DefaultClass->DefaultPrimary;
-	ABaseEmpiresWeapon* Rifle = GetWorld()->SpawnActor<ABaseEmpiresWeapon>(playerState->DefaultClass->Primaries[DefaultPrimary]);
-	Rifle->SetOwner(this);
-	Inventory->AddItem(EInfantryInventorySlots::Slot_Primary, Rifle);
-	Rifle->Equip();
+	
+	if (playerState->DefaultClass->Pistols.Num() > 0)
+	{
+		//Add the primary and secondary weapons
+		int32 DefaultPistol = playerState->DefaultClass->DefaultPistol;
+		ABaseEmpiresWeapon* Pistol = GetWorld()->SpawnActor<ABaseEmpiresWeapon>(playerState->DefaultClass->Pistols[DefaultPistol]);
+		Pistol->SetOwner(this);
+		Inventory->AddItem(EInfantryInventorySlots::Slot_Sidearm, Pistol);
+		Pistol->Equip();
+	}
+	
+	if (playerState->DefaultClass->Primaries.Num() > 0)
+	{
+		int32 DefaultPrimary = playerState->DefaultClass->DefaultPrimary;
+		ABaseEmpiresWeapon* Rifle = GetWorld()->SpawnActor<ABaseEmpiresWeapon>(playerState->DefaultClass->Primaries[DefaultPrimary]);
+		Rifle->SetOwner(this);
+		Inventory->AddItem(EInfantryInventorySlots::Slot_Primary, Rifle);
+		Rifle->Equip();
+	}	
 
 	SwitchToWeapon(EInfantryInventorySlots::Slot_Primary);
 	

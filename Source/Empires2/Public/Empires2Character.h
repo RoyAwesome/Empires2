@@ -170,8 +170,12 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 	// End of APawn interface
 
-protected: 
+public: 
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	virtual void SpawnInventory();
+
+	UPROPERTY(BlueprintReadWrite, Category = "Inventory")
+	class UEmpInfantryClass* SelectedClass;
 
 
 	////////////// GAME FLOW
@@ -218,8 +222,9 @@ protected:
 
 	//////////////////////USE OBJECT
 	public:
+		UFUNCTION(BlueprintCallable, Category = "Use")
 		virtual void Use();
-
+		UFUNCTION(BlueprintCallable, Category = "Use")
 		virtual void StopUse();
 
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Use")
