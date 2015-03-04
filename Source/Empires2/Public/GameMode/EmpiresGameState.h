@@ -18,14 +18,11 @@ public:
 
 	AEmpiresGameState(const class FObjectInitializer & ObjectInitializer);
 
-	UPROPERTY(Replicated)
-	int32 NumTeams;
-
 	UPROPERTY(Replicated, Config, EditAnywhere, BlueprintReadWrite, Category=Server)
 	FString ServerName;
 
 	UPROPERTY(Replicated, Config, EditAnywhere, BlueprintReadWrite, Category = Server)
-		FString ServerMOTD;
+	FString ServerMOTD;
 
 
 

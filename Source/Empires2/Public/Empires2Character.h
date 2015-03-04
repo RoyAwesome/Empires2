@@ -170,9 +170,22 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 	// End of APawn interface
 
-protected: 
+public: 
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	virtual void SpawnInventory();
 
+	UPROPERTY(Replicated)
+	class UEmpInfantryClass* SelectedClass;
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory", Exec)
+	virtual void SetInfantryClass(UEmpInfantryClass* InfClass, bool RespawnInventory = true);
+
+	protected:
+
+		UFUNCTION(Server, Reliable, WithValidation)
+		void ServerSetInfantryClass(UEmpInfantryClass* InfClass, bool RespawnInventory);
+		void ServerSetInfantryClass_Implementation(UEmpInfantryClass* InfClass, bool RespawnInventory);
+		bool ServerSetInfantryClass_Validate(UEmpInfantryClass* InfClass, bool RespawnInventory);
 
 	////////////// GAME FLOW
 public:
@@ -218,8 +231,9 @@ protected:
 
 	//////////////////////USE OBJECT
 	public:
+		UFUNCTION(BlueprintCallable, Category = "Use")
 		virtual void Use();
-
+		UFUNCTION(BlueprintCallable, Category = "Use")
 		virtual void StopUse();
 
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Use")

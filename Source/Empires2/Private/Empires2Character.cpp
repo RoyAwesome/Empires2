@@ -171,6 +171,8 @@ void AEmpires2Character::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > 
 
 	DOREPLIFETIME(AEmpires2Character, bShouldIgnoreInput);
 
+	DOREPLIFETIME(AEmpires2Character, SelectedClass);
+
 		
 }
 
@@ -489,29 +491,61 @@ void AEmpires2Character::SpawnInventory()
 	{
 		return;
 	}
+	if (SelectedClass == nullptr) return;
 
 	//Clear the inventory
 	Inventory->ClearInventory();
 
 	AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
 	if (!playerState) return;
+	
 
 	//Add the primary and secondary weapons
-	int32 DefaultPistol = playerState->DefaultClass->DefaultPistol;
-	ABaseEmpiresWeapon* Pistol = GetWorld()->SpawnActor<ABaseEmpiresWeapon>(playerState->DefaultClass->Pistols[DefaultPistol]);
-	Pistol->SetOwner(this);
-	Inventory->AddItem(EInfantryInventorySlots::Slot_Sidearm, Pistol);
-	Pistol->Equip();
-
-	int32 DefaultPrimary = playerState->DefaultClass->DefaultPrimary;
-	ABaseEmpiresWeapon* Rifle = GetWorld()->SpawnActor<ABaseEmpiresWeapon>(playerState->DefaultClass->Primaries[DefaultPrimary]);
-	Rifle->SetOwner(this);
-	Inventory->AddItem(EInfantryInventorySlots::Slot_Primary, Rifle);
-	Rifle->Equip();
+	if (SelectedClass->Pistols.Num() > 0)
+	{
+		
+		int32 DefaultPistol = SelectedClass->DefaultPistol;
+		ABaseEmpiresWeapon* Pistol = GetWorld()->SpawnActor<ABaseEmpiresWeapon>(SelectedClass->Pistols[DefaultPistol]);
+		PickupWeapon(EInfantryInventorySlots::Slot_Sidearm, Pistol);		
+		Pistol->Equip();
+	}
+	
+	if (SelectedClass->Primaries.Num() > 0)
+	{
+		int32 DefaultPrimary = SelectedClass->DefaultPrimary;
+		ABaseEmpiresWeapon* Rifle = GetWorld()->SpawnActor<ABaseEmpiresWeapon>(SelectedClass->Primaries[DefaultPrimary]);
+		PickupWeapon(EInfantryInventorySlots::Slot_Primary, Rifle);		
+		Rifle->Equip();
+	}	
 
 	SwitchToWeapon(EInfantryInventorySlots::Slot_Primary);
 	
 }
+
+void AEmpires2Character::SetInfantryClass(UEmpInfantryClass* InfClass, bool RespawnInventory /*= true*/)
+{
+	if (Role < ROLE_Authority)
+	{
+		ServerSetInfantryClass(InfClass, RespawnInventory);
+		return;
+	}
+
+	SelectedClass = InfClass;
+
+	if (RespawnInventory) SpawnInventory();
+}
+
+void AEmpires2Character::ServerSetInfantryClass_Implementation(UEmpInfantryClass* InfClass, bool RespawnInventory)
+{
+	SetInfantryClass(InfClass, RespawnInventory);
+}
+
+bool AEmpires2Character::ServerSetInfantryClass_Validate(UEmpInfantryClass* InfClass, bool RespawnInventory)
+{
+	return true;
+}
+
+
 
 //Destroy this character so that we can spawn a new character for him later.  
 void AEmpires2Character::Respawn()
@@ -689,4 +723,7 @@ void AEmpires2Character::StopUse()
 		UsingObject = nullptr;
 	}
 }
+
+
+
 
