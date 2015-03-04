@@ -16,7 +16,6 @@ void AEmpiresGameState::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > &
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION(AEmpiresGameState, NumTeams, COND_InitialOnly);
 	DOREPLIFETIME_CONDITION(AEmpiresGameState, ServerName, COND_InitialOnly);
 	DOREPLIFETIME_CONDITION(AEmpiresGameState, ServerMOTD, COND_InitialOnly);
 		
