@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Empires2.h"
-#include "InfantryClass.h"
+#include "EmpInfantryClass.h"
 
 
 
-UInfantryClass::UInfantryClass(const class FObjectInitializer & ObjectInitializer)
+UEmpInfantryClass::UEmpInfantryClass(const class FObjectInitializer & ObjectInitializer)
 	:Super(ObjectInitializer)
 {
 	DefaultPistol = 0;

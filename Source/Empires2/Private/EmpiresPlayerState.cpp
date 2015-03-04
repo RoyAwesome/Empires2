@@ -4,7 +4,7 @@
 #include "EmpiresPlayerState.h"
 #include "UnrealNetwork.h"
 #include "Engine/ActorChannel.h"
-#include "InfantryClass.h"
+#include "EmpInfantryClass.h"
 #include "BaseInfantryWeapon.h"
 
 AEmpiresPlayerState::AEmpiresPlayerState(const FObjectInitializer & ObjectInitializer)
@@ -29,7 +29,7 @@ void AEmpiresPlayerState::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >
 }
 
 
-void AEmpiresPlayerState::SelectClass(TAssetPtr<UInfantryClass> Class)
+void AEmpiresPlayerState::SelectClass(TAssetPtr<UEmpInfantryClass> Class)
 {
 	if (Class.IsNull()) return;
 
