@@ -9,7 +9,7 @@
 #include "Engine/ActorChannel.h"
 #include "Animation/AnimInstance.h"
 #include "UnrealNetwork.h"
-#include "InfantryClass.h"
+#include "EmpInfantryClass.h"
 #include "Usable.h"
 
 //////////////////////////////////////////////////////////////////////////

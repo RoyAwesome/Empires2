@@ -3,20 +3,20 @@
 #pragma once
 
 #include "Engine/DataAsset.h"
-#include "InfantryClass.generated.h"
+#include "EmpInfantryClass.generated.h"
 
 
 /**
  *
  */
 UCLASS()
-class EMPIRES2_API UInfantryClass : public UDataAsset
+class EMPIRES2_API UEmpInfantryClass : public UDataAsset
 {
 	GENERATED_BODY()
 
 public:
 		
-	UInfantryClass(const class FObjectInitializer & ObjectInitializer);
+	UEmpInfantryClass(const class FObjectInitializer & ObjectInitializer);
 
 	/* List of all possible Pistols that can be selected */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Items")

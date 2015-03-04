@@ -6,7 +6,7 @@
 #include "EmpiresPlayerState.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class EMPIRES2_API AEmpiresPlayerState : public APlayerState
@@ -21,12 +21,12 @@ public:
 
 
 
-	
+
 	UPROPERTY(EditDefaultsOnly, Category = Class)
-	TAssetPtr<class UInfantryClass> DefaultClass;
+	class UEmpInfantryClass* DefaultClass;
 
 	UPROPERTY(Replicated)
-	TAssetPtr<UInfantryClass> RequestedClass;	
+	UEmpInfantryClass* RequestedClass;
 
 	int32 RequestedPistol;
 	int32 RequestedPrimary;
@@ -40,7 +40,7 @@ public:
 
 public:
 	/* Class Selection */
-	virtual void SelectClass(TAssetPtr<UInfantryClass> Class);
+	virtual void SelectClass(TAssetPtr<UEmpInfantryClass> Class);
 
 	//TODO: RequestClassChange
 
