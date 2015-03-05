@@ -8,7 +8,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class EMPIRES2_API UEmpTeam : public UDataAsset
 {
 	GENERATED_BODY()

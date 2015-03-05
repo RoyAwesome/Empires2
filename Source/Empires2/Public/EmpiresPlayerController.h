@@ -28,9 +28,9 @@ public:
 	class AEmpiresPlayerStart* WantedSpawn;
 
 
-
+	UFUNCTION(BlueprintCallable, Category = "Empires Player Controller")
 	virtual void InitialGameJoin();
-	UFUNCTION(BlueprintImplementableEvent, Category = "Empires Player Controller", meta = (FriendlyName = "Initial Game Join"))
+	UFUNCTION(BlueprintImplementableEvent, Category = "Empires Player Controller", meta = (FriendlyName = "On Initial Game Join"))
 	void BPInitialGameJoin();
 
 

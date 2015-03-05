@@ -161,8 +161,7 @@ void AEmpBaseGamemode::BPRespawnPlayer_Implementation(AEmpiresPlayerController* 
 {
 	//Remove the player's original pawn
 	AEmpires2Character* PlayerCharacter = Cast<AEmpires2Character>(Controller->GetPawn());
-
-	PlayerCharacter->Respawn();
+	if(PlayerCharacter) PlayerCharacter->Respawn();
 
 
 	//Create a new pawn for the player
@@ -181,4 +180,9 @@ void AEmpBaseGamemode::BPRespawnPlayer_Implementation(AEmpiresPlayerController* 
 void AEmpBaseGamemode::NotifyDamageWasDealt(AController* DamageInstigator, AActor* WithWhat, AController* DamagedPlayer, AActor* DamagedActor, float Amount, struct FDamageEvent const& DamageEvent)
 {
 	BPNotifyDamageWasDealt(DamageInstigator, WithWhat, DamagedPlayer, DamagedActor, Amount, DamageEvent);
+}
+
+bool AEmpBaseGamemode::CanRespawnPlayer_Implementation(APlayerController* Controller)
+{
+	return true;
 }

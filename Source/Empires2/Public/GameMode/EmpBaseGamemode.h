@@ -119,8 +119,14 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode", meta = (FriendlyName = "Restart match"))
 	void BPRestartGame();
 
-	/*  */
 	
+	UFUNCTION(BlueprintNativeEvent, Category = "Game Mode", meta = (FriendlyName = "Can Respawn Player"))
+	bool CanRespawnPlayer(APlayerController* Controller);
+	bool CanRespawnPlayer_Implementation(APlayerController* Controller);
+	
+
+
+	/*  */	
 	virtual void RespawnPlayer(class AEmpiresPlayerController* Controller);
 
 	//Handle the respawning of a player.  You should not need to implement this unless you are completly redoing the native respawn code
