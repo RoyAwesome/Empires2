@@ -14,6 +14,8 @@ AEmpiresPlayerController::AEmpiresPlayerController(const class FObjectInitialize
 
 bool AEmpiresPlayerController::CanRespawn()
 {
+	if (GetPawn() == NULL) return true;
+
 	AEmpires2Character* Character = Cast<AEmpires2Character>(GetPawn());
 
 	if (!Character->bIsDead) return false;
@@ -32,7 +34,7 @@ void AEmpiresPlayerController::DoRespawn()
 	UnPossess(); //Unposses our character
 
 	//Destroy it
-	Character->Respawn();
+	if(Character) Character->Respawn();
 
 	//Request from the game mode that we want to respawn
 	AEmpBaseGamemode* GameMode = Cast<AEmpBaseGamemode>(GetWorld()->GetAuthGameMode());
@@ -176,12 +178,16 @@ void AEmpiresPlayerController::RequestRespawn()
 	{
 		ServerRequestRespawn();
 	}
+	else
+	{
+		DoRespawn();
+	}
 }
 
 void AEmpiresPlayerController::ServerRequestRespawn_Implementation()
 {
-	AEmpBaseGamemode* GameMode = Cast<AEmpBaseGamemode>(GetWorld()->GetAuthGameMode());
-	GameMode->RespawnPlayer(this);
+	DoRespawn();
+
 }
 bool AEmpiresPlayerController::ServerRequestRespawn_Validate()
 {
