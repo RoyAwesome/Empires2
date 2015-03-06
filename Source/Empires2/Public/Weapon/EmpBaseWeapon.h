@@ -365,7 +365,7 @@ public:
 		VerticalRecoilMax = .15f;
 
 		HorizontalRecoilMin = 0.25;
-		HorizontalRecoilMin = 0.275;
+		HorizontalRecoilMax = 0.275;
 
 		RightRecoils = true;
 		LeftRecoils = false;
