@@ -23,15 +23,13 @@ void UInstantFireType::EmitShot(FVector Origin, FRotator Direction)
 
 	FHitResult Hit;
 
-	GetWorld()->LineTraceSingle(Hit, Origin, EndPosition, COLLISION_PROJECTILE, TraceParams);
-
-	
-	AEmpires2Character* Character = Cast<AEmpires2Character>(Hit.GetActor());
-	if (Character)
+	if (GetWorld()->LineTraceSingle(Hit, Origin, EndPosition, COLLISION_PROJECTILE, TraceParams))
 	{
-		GetWeapon()->DealDamage(Character);
+		GetWeapon()->OnBulletHit(Hit);
 	}
 
+	
+	
 }
 
 

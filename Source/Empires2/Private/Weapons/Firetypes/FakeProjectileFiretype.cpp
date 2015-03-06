@@ -62,13 +62,10 @@ void UFakeProjectileFiretype::SimulateShot(FFakeProjectile& Projectile, float ti
 
 	if (GetWorld()->LineTraceSingle(Hit, Projectile.CurrentPosition, EndPos, COLLISION_PROJECTILE, TraceParams))
 	{
-		AEmpires2Character* Character = Cast<AEmpires2Character>(Hit.GetActor());
-		if (Character)
-		{
-			GetWeapon()->DealDamage(Character);
-			
-		}
+		//Inform the weapon that we hit a target
+		GetWeapon()->OnBulletHit(Hit);
 
+		//Stop simulating this bullet
 		Projectile.bSimulating = false;
 		if (CVarDisplayFakeProjectileTraces.GetValueOnGameThread())
 		{

@@ -734,3 +734,14 @@ void ABaseEmpiresWeapon::OnRep_WeaponState()
 	
 }
 
+void ABaseEmpiresWeapon::OnBulletHit(const FHitResult& Hit)
+{
+	AEmpires2Character* Character = Cast<AEmpires2Character>(Hit.GetActor());
+	if (Character)
+	{
+		DealDamage(Character);
+	}
+
+	BPOnBulletHit(Hit);
+}
+

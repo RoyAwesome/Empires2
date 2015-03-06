@@ -649,6 +649,12 @@ protected:
 	/*  Play Weapon Effects */
 public:
 
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+		virtual void OnBulletHit(const FHitResult& Hit);
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Weapon")
+		void BPOnBulletHit(const FHitResult& Hit);
+	
+	
 
 };
