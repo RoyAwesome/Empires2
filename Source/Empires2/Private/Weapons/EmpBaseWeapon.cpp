@@ -4,7 +4,7 @@
 #include "Empires2Character.h"
 #include "BaseEmpiresProjectile.h"
 #include "BaseFiremode.h"
-#include "BaseEmpiresWeapon.h"
+#include "EmpBaseWeapon.h"
 #include "UnrealNetwork.h"
 #include "WeaponFireType.h"
 #include "SkeletalMeshTypes.h"
@@ -14,10 +14,9 @@ static TAutoConsoleVariable<int32> CVarDisplayCofTraces(TEXT("emp.DesignDisplayC
 	
 
 
-ABaseEmpiresWeapon::ABaseEmpiresWeapon(const class FObjectInitializer & ObjectInitializer)
+AEmpBaseWeapon::AEmpBaseWeapon(const class FObjectInitializer & ObjectInitializer)
 	: Super(ObjectInitializer)
-{
-
+{		
 	GunOffset = FVector(100.0f, 30.0f, 10.0f);
 	ActiveFiremode = 0;
 	bReplicates = true;
@@ -40,7 +39,7 @@ ABaseEmpiresWeapon::ABaseEmpiresWeapon(const class FObjectInitializer & ObjectIn
 
 //////////////////////GENERAL
 
-void ABaseEmpiresWeapon::PostInitProperties()
+void AEmpBaseWeapon::PostInitProperties()
 {
 	Super::PostInitProperties();
 
@@ -74,26 +73,26 @@ void ABaseEmpiresWeapon::PostInitProperties()
 
 }
 
-void ABaseEmpiresWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+void AEmpBaseWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ABaseEmpiresWeapon, CurrentCoF);
-	DOREPLIFETIME(ABaseEmpiresWeapon, ActiveFiremode);
-	DOREPLIFETIME(ABaseEmpiresWeapon, ShotsFired);
-	DOREPLIFETIME(ABaseEmpiresWeapon, OwningCharacter);
-	DOREPLIFETIME(ABaseEmpiresWeapon, WeaponState);
+	DOREPLIFETIME(AEmpBaseWeapon, CurrentCoF);
+	DOREPLIFETIME(AEmpBaseWeapon, ActiveFiremode);
+	DOREPLIFETIME(AEmpBaseWeapon, ShotsFired);
+	DOREPLIFETIME(AEmpBaseWeapon, OwningCharacter);
+	DOREPLIFETIME(AEmpBaseWeapon, WeaponState);
 }
 
 
-void ABaseEmpiresWeapon::SetOwner(AEmpires2Character* Owner)
+void AEmpBaseWeapon::SetOwner(AEmpires2Character* Owner)
 {
 	Super::SetOwner(Owner);
 
 	OwningCharacter = Owner;
 }
 
-void ABaseEmpiresWeapon::PlaySound(USoundBase* Sound)
+void AEmpBaseWeapon::PlaySound(USoundBase* Sound)
 {
 	// try and play the sound if specified
 	if (Sound != nullptr)
@@ -102,7 +101,7 @@ void ABaseEmpiresWeapon::PlaySound(USoundBase* Sound)
 	}
 }
 
-void ABaseEmpiresWeapon::PlayAnimation(UAnimMontage* Animation)
+void AEmpBaseWeapon::PlayAnimation(UAnimMontage* Animation)
 {
 	// try and play a animation
 	if (Animation != nullptr)
@@ -117,7 +116,7 @@ void ABaseEmpiresWeapon::PlayAnimation(UAnimMontage* Animation)
 }
 
 
-void ABaseEmpiresWeapon::Tick(float DeltaSeconds)
+void AEmpBaseWeapon::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
@@ -133,7 +132,7 @@ void ABaseEmpiresWeapon::Tick(float DeltaSeconds)
 
 
 //////////////////////////EQUIPPING
-void ABaseEmpiresWeapon::Equip()
+void AEmpBaseWeapon::Equip()
 {
 	check(OwningCharacter);
 
@@ -154,7 +153,7 @@ void ABaseEmpiresWeapon::Equip()
 	RegisterAllComponents();
 	WeaponState = EWeaponState::Weapon_NotSelected; //TODO: Play the equipping sound/goto equipping state
 }
-void ABaseEmpiresWeapon::Unequip()
+void AEmpBaseWeapon::Unequip()
 {
 	this->DetachRootComponentFromParent();
 
@@ -162,7 +161,7 @@ void ABaseEmpiresWeapon::Unequip()
 }
 
 
-void ABaseEmpiresWeapon::DrawWeapon()
+void AEmpBaseWeapon::DrawWeapon()
 {
 	//Todo: Play the equip animation and make the state drawing here
 	WeaponState = EWeaponState::Weapon_Idle;
@@ -175,7 +174,7 @@ void ABaseEmpiresWeapon::DrawWeapon()
 	}
 }
 
-void ABaseEmpiresWeapon::PutAwayWeapon()
+void AEmpBaseWeapon::PutAwayWeapon()
 {
 	this->Mesh1P->SetVisibility(false);
 	this->Mesh3P->SetVisibility(false);
@@ -187,14 +186,14 @@ void ABaseEmpiresWeapon::PutAwayWeapon()
 	}
 }
 
-void ABaseEmpiresWeapon::NotifyPutAway_Implementation()
+void AEmpBaseWeapon::NotifyPutAway_Implementation()
 {
 	this->Mesh1P->SetVisibility(false);
 	this->Mesh3P->SetVisibility(false);
 }
 
 
-void ABaseEmpiresWeapon::NotifyDrawn_Implementation()
+void AEmpBaseWeapon::NotifyDrawn_Implementation()
 {
 	Mesh1P->SetVisibility(true);
 	Mesh3P->SetVisibility(true);
@@ -207,7 +206,7 @@ void ABaseEmpiresWeapon::NotifyDrawn_Implementation()
 
 /////////////////////FIRE CONTROL
 
-bool ABaseEmpiresWeapon::CanFire()
+bool AEmpBaseWeapon::CanFire()
 {
 	UBaseFiremode* firemode = GetActiveFiremode();
 	if (firemode == nullptr) return false; //No active firemode
@@ -220,7 +219,7 @@ bool ABaseEmpiresWeapon::CanFire()
 	return true;
 }
 
-void ABaseEmpiresWeapon::BeginFire()
+void AEmpBaseWeapon::BeginFire()
 {
 	if (!CanFire()) return; //Don't Fire if we can't fire
 
@@ -245,19 +244,19 @@ void ABaseEmpiresWeapon::BeginFire()
 }
 
 
-void ABaseEmpiresWeapon::ServerStartFire_Implementation()
+void AEmpBaseWeapon::ServerStartFire_Implementation()
 {
 	BeginFire();
 }
 
 
-bool ABaseEmpiresWeapon::ServerStartFire_Validate()
+bool AEmpBaseWeapon::ServerStartFire_Validate()
 {
 	return true;
 }
 
 
-void ABaseEmpiresWeapon::EndFire()
+void AEmpBaseWeapon::EndFire()
 {
 	//If we are the client, send a server RPC to fire our weapon
 	if (Role < ROLE_Authority)
@@ -274,18 +273,18 @@ void ABaseEmpiresWeapon::EndFire()
 }
 
 
-void ABaseEmpiresWeapon::ServerEndFire_Implementation()
+void AEmpBaseWeapon::ServerEndFire_Implementation()
 {
 	EndFire();
 }
 
-bool ABaseEmpiresWeapon::ServerEndFire_Validate()
+bool AEmpBaseWeapon::ServerEndFire_Validate()
 {
 	return true;
 }
 
 
-void ABaseEmpiresWeapon::FireShot()
+void AEmpBaseWeapon::FireShot()
 {
 	check(OwningCharacter);
 
@@ -344,7 +343,7 @@ void ABaseEmpiresWeapon::FireShot()
 }
 
 //Emits a simulated bullet.  This does not play any effects.
-void ABaseEmpiresWeapon::EmitShot(FVector StartPoint, FRotator Direction)
+void AEmpBaseWeapon::EmitShot(FVector StartPoint, FRotator Direction)
 {
 
 	UWeaponFireType* CurrentFiretype = GetCurrentFiretype();
@@ -359,7 +358,7 @@ void ABaseEmpiresWeapon::EmitShot(FVector StartPoint, FRotator Direction)
 	CurrentFiretype->EmitShot(StartPoint, Direction);
 }
 
-void ABaseEmpiresWeapon::NotifyClientShotFired_Implementation(FVector StartPoint, FRotator Direction)
+void AEmpBaseWeapon::NotifyClientShotFired_Implementation(FVector StartPoint, FRotator Direction)
 {
 
 	if (OwningCharacter->Role == ROLE_AutonomousProxy) return; //If we are locally controlled, we've already played the effect and simulated the shot
@@ -374,7 +373,7 @@ void ABaseEmpiresWeapon::NotifyClientShotFired_Implementation(FVector StartPoint
 
 
 
-void ABaseEmpiresWeapon::ClientPlayWeaponEffect(FVector StartPoint, FRotator Direction)
+void AEmpBaseWeapon::ClientPlayWeaponEffect(FVector StartPoint, FRotator Direction)
 {
 	//Spawn the muzzleflash effect
 	FWeaponAnimationSet AnimSet = GetActiveWeaponAnimationSet();
@@ -414,17 +413,17 @@ void ABaseEmpiresWeapon::ClientPlayWeaponEffect(FVector StartPoint, FRotator Dir
 
 
 
-void ABaseEmpiresWeapon::ServerFireShot_Implementation()
+void AEmpBaseWeapon::ServerFireShot_Implementation()
 {
 	FireShot();
 }
 
-bool ABaseEmpiresWeapon::ServerFireShot_Validate()
+bool AEmpBaseWeapon::ServerFireShot_Validate()
 {
 	return true;
 }
 
-FVector ABaseEmpiresWeapon::GetFireDirection()
+FVector AEmpBaseWeapon::GetFireDirection()
 {
 	FVector Vec;
 	FRotator Rot;
@@ -433,32 +432,32 @@ FVector ABaseEmpiresWeapon::GetFireDirection()
 }
 
 ///////////////////////////////////// FIREMODES
-FWeaponData ABaseEmpiresWeapon::GetActiveFiremodeData()
+FWeaponData AEmpBaseWeapon::GetActiveFiremodeData()
 {
 
 	return FiremodeData[ActiveFiremode];
 }
 
 
-UBaseFiremode* ABaseEmpiresWeapon::GetActiveFiremode()
+UBaseFiremode* AEmpBaseWeapon::GetActiveFiremode()
 {
 	return Firemodes[ActiveFiremode];
 }
 
 
-FAmmoPool ABaseEmpiresWeapon::GetCurrentAmmoPool()
+FAmmoPool AEmpBaseWeapon::GetCurrentAmmoPool()
 {
 	return AmmoPools[FiremodeData[ActiveFiremode].AmmoPoolIndex];
 }
 
-UWeaponFireType* ABaseEmpiresWeapon::GetCurrentFiretype()
+UWeaponFireType* AEmpBaseWeapon::GetCurrentFiretype()
 {
 	return Firetypes[FiremodeData[ActiveFiremode].AmmoPoolIndex];
 }
 
 
 
-void ABaseEmpiresWeapon::NextFiremode()
+void AEmpBaseWeapon::NextFiremode()
 {
 	if (GetActiveFiremode()->IsFiring()) return; //Don't change modes if we are shooting
 	if (Firemodes.Num() == 1) return; //Don't change firemode if we only have one firemode
@@ -474,7 +473,7 @@ void ABaseEmpiresWeapon::NextFiremode()
 	}
 }
 
-UBaseFiremode* ABaseEmpiresWeapon::GetFiremode(int32 Firemode)
+UBaseFiremode* AEmpBaseWeapon::GetFiremode(int32 Firemode)
 {
 	if (Firemode == CurrentFiremode)
 	{
@@ -487,7 +486,7 @@ UBaseFiremode* ABaseEmpiresWeapon::GetFiremode(int32 Firemode)
 	}
 }
 
-FWeaponData ABaseEmpiresWeapon::GetFiremodeData(int32 Firemode)
+FWeaponData AEmpBaseWeapon::GetFiremodeData(int32 Firemode)
 {
 	if (Firemode == CurrentFiremode)
 	{
@@ -502,7 +501,7 @@ FWeaponData ABaseEmpiresWeapon::GetFiremodeData(int32 Firemode)
 
 ////////////////////////////////// AMMO
 
-FAmmoPool ABaseEmpiresWeapon::GetAmmoPool(int32 FromAmmoPool)
+FAmmoPool AEmpBaseWeapon::GetAmmoPool(int32 FromAmmoPool)
 {
 	if (FromAmmoPool == CurrentAmmopool)
 	{
@@ -515,27 +514,27 @@ FAmmoPool ABaseEmpiresWeapon::GetAmmoPool(int32 FromAmmoPool)
 	}
 }
 
-void ABaseEmpiresWeapon::ConsumeAmmo(int32 HowMuch, int32 FromAmmoPool)
+void AEmpBaseWeapon::ConsumeAmmo(int32 HowMuch, int32 FromAmmoPool)
 {
 	int32 AmmoPoolidx = FromAmmoPool == CurrentAmmopool ? GetActiveFiremodeData().AmmoPoolIndex : FromAmmoPool;
 
 	CurrentClipPool[AmmoPoolidx] -= HowMuch;
 }
 
-int32 ABaseEmpiresWeapon::GetAmmoInClip(int32 FromAmmoPool)
+int32 AEmpBaseWeapon::GetAmmoInClip(int32 FromAmmoPool)
 {
 	int32 AmmoPoolidx = FromAmmoPool == CurrentAmmopool ? GetActiveFiremodeData().AmmoPoolIndex : FromAmmoPool;
 
 	return CurrentClipPool[AmmoPoolidx];
 }
 
-int32 ABaseEmpiresWeapon::GetTotalAmmo(int32 FromAmmoPool)
+int32 AEmpBaseWeapon::GetTotalAmmo(int32 FromAmmoPool)
 {
 	int32 AmmoPoolidx = FromAmmoPool == CurrentAmmopool ? GetActiveFiremodeData().AmmoPoolIndex : FromAmmoPool;
 	return RemainingAmmoPool[AmmoPoolidx];
 }
 
-void ABaseEmpiresWeapon::AddAmmo(int32 Ammount, int32 ToAmmoPool)
+void AEmpBaseWeapon::AddAmmo(int32 Ammount, int32 ToAmmoPool)
 {
 	int32 AmmoPoolidx = ToAmmoPool == CurrentAmmopool ? GetActiveFiremodeData().AmmoPoolIndex : ToAmmoPool;
 	FAmmoPool AmmoPool = GetAmmoPool(ToAmmoPool);
@@ -549,7 +548,7 @@ void ABaseEmpiresWeapon::AddAmmo(int32 Ammount, int32 ToAmmoPool)
 	}
 }
 
-void ABaseEmpiresWeapon::Reload()
+void AEmpBaseWeapon::Reload()
 {
 	if (GetTotalAmmo() <= 0) return; //We don't have any ammo to reload
 
@@ -566,12 +565,12 @@ void ABaseEmpiresWeapon::Reload()
 
 	FTimerHandle Handle;
 
-	GetWorld()->GetTimerManager().SetTimer(Handle, this, &ABaseEmpiresWeapon::DoReload, ReloadTime, false);
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AEmpBaseWeapon::DoReload, ReloadTime, false);
 
 	WeaponState = EWeaponState::Weapon_Reloading;
 }
 
-void ABaseEmpiresWeapon::DoReload()
+void AEmpBaseWeapon::DoReload()
 {
 	SCREENLOG(TEXT("Ending Reload"));
 
@@ -597,7 +596,7 @@ void ABaseEmpiresWeapon::DoReload()
 	
 }
 
-FVector ABaseEmpiresWeapon::AdjustByCof(FVector Aim)
+FVector AEmpBaseWeapon::AdjustByCof(FVector Aim)
 {
 	//Get the current cone of fire
 
@@ -641,7 +640,7 @@ FVector ABaseEmpiresWeapon::AdjustByCof(FVector Aim)
 	return FMath::VRandCone(Aim, FMath::DegreesToRadians(AdjustedBloom / 2));
 
 }
-float ABaseEmpiresWeapon::RollVerticalRecoil()
+float AEmpBaseWeapon::RollVerticalRecoil()
 {
 
 	FWeaponRecoilData recoilData = GetCurrentRecoilData();
@@ -661,7 +660,7 @@ float ABaseEmpiresWeapon::RollVerticalRecoil()
 
 	return recoilVal * recoilMultiplier;
 }
-float ABaseEmpiresWeapon::RollHorizontalRecoil()
+float AEmpBaseWeapon::RollHorizontalRecoil()
 {
 	
 
@@ -712,12 +711,12 @@ float ABaseEmpiresWeapon::RollHorizontalRecoil()
 
 /////////////////////////REPLICATION
 
-void  ABaseEmpiresWeapon::OnRep_Reload()
+void  AEmpBaseWeapon::OnRep_Reload()
 {
 	//TODO: Simulate Weaponing
 }
 
-void ABaseEmpiresWeapon::DealDamage(AEmpires2Character* Target)
+void AEmpBaseWeapon::DealDamage(AEmpires2Character* Target)
 {
 	float damage = GetAmmoPool().Damage;
 
@@ -729,12 +728,12 @@ void ABaseEmpiresWeapon::DealDamage(AEmpires2Character* Target)
 }
 
 
-void ABaseEmpiresWeapon::OnRep_WeaponState()
+void AEmpBaseWeapon::OnRep_WeaponState()
 {
 	
 }
 
-void ABaseEmpiresWeapon::OnBulletHit(const FHitResult& Hit)
+void AEmpBaseWeapon::OnBulletHit(const FHitResult& Hit)
 {
 	AEmpires2Character* Character = Cast<AEmpires2Character>(Hit.GetActor());
 	if (Character)

@@ -3,7 +3,7 @@
 #include "Empires2.h"
 #include "Empires2Character.h"
 #include "BulletProjectile.h"
-#include "BaseInfantryWeapon.h"
+#include "EmpBaseInfantryWeapon.h"
 #include "EmpiresPlayerState.h"
 #include "BaseEmpiresInventory.h"
 #include "Engine/ActorChannel.h"
@@ -278,7 +278,7 @@ void AEmpires2Character::BeginFire()
 {
 	if (bShouldIgnoreInput) return;
 
-	ABaseInfantryWeapon* Weap = GetActiveWeapon();
+	AEmpBaseInfantryWeapon* Weap = GetActiveWeapon();
 	if (Weap == nullptr) return; //No weapon? Don't bother firing
 
 	bIsFiring = true;
@@ -291,7 +291,7 @@ void AEmpires2Character::EndFire()
 
 	if (!bIsFiring) return; //If we aren't firing our weapon, don't bother ending
 
-	ABaseInfantryWeapon* Weapon = GetActiveWeapon();
+	AEmpBaseInfantryWeapon* Weapon = GetActiveWeapon();
 	check(Weapon); //If the weapon goes null while we are firing... uh, crash
 
 	Weapon->EndFire();
@@ -300,13 +300,13 @@ void AEmpires2Character::EndFire()
 
 ////////////////////////////////////////////WEAPONS
 
-ABaseInfantryWeapon* AEmpires2Character::GetActiveWeapon()
+AEmpBaseInfantryWeapon* AEmpires2Character::GetActiveWeapon()
 {
-	ABaseEmpiresWeapon* Weap = Inventory->GetItemInSlot((EInfantryInventorySlots::Type)SelectedWeapon);
-	return Cast<ABaseInfantryWeapon>(Weap);	
+	AEmpBaseWeapon* Weap = Inventory->GetItemInSlot((EInfantryInventorySlots::Type)SelectedWeapon);
+	return Cast<AEmpBaseInfantryWeapon>(Weap);	
 }
 
-void AEmpires2Character::DrawWeapon(ABaseInfantryWeapon* Weapon)
+void AEmpires2Character::DrawWeapon(AEmpBaseInfantryWeapon* Weapon)
 {
 	
 
@@ -336,7 +336,7 @@ void AEmpires2Character::SwitchToWeapon(EInfantryInventorySlots::Type Weapon)
 		GetActiveWeapon()->PutAwayWeapon();
 	}
 	
-	ABaseInfantryWeapon* Weap = Cast<ABaseInfantryWeapon>(Inventory->GetItemInSlot(Weapon));
+	AEmpBaseInfantryWeapon* Weap = Cast<AEmpBaseInfantryWeapon>(Inventory->GetItemInSlot(Weapon));
 
 	if (Weap == nullptr)
 	{
@@ -361,7 +361,7 @@ void AEmpires2Character::SwitchToWeapon(EInfantryInventorySlots::Type Weapon)
 
 void AEmpires2Character::RefreshHeldWeapon()
 {
-	ABaseInfantryWeapon* Weap = Cast<ABaseInfantryWeapon>(Inventory->GetItemInSlot(SelectedWeapon));
+	AEmpBaseInfantryWeapon* Weap = Cast<AEmpBaseInfantryWeapon>(Inventory->GetItemInSlot(SelectedWeapon));
 	DrawWeapon(Weap);
 }
 
@@ -430,7 +430,7 @@ void AEmpires2Character::ChangeFiremode()
 {
 	if (bShouldIgnoreInput) return;
 	
-	ABaseInfantryWeapon* Weapon = GetActiveWeapon();
+	AEmpBaseInfantryWeapon* Weapon = GetActiveWeapon();
 	if (Weapon == nullptr) return; //No weapon? Don't bother changing firemode
 
 	Weapon->NextFiremode();
@@ -440,7 +440,7 @@ void AEmpires2Character::ReloadWeapon()
 {
 	if (bShouldIgnoreInput) return;
 
-	ABaseInfantryWeapon* Weapon = GetActiveWeapon();
+	AEmpBaseInfantryWeapon* Weapon = GetActiveWeapon();
 	if (Weapon == nullptr) return; //No weapon? Don't bother reloading
 
 	Weapon->Reload();
@@ -474,7 +474,7 @@ bool AEmpires2Character::ServerSelectLastWeapon_Validate()
 	return true;
 }
 
-void AEmpires2Character::PickupWeapon(EInfantryInventorySlots::Type Slot, ABaseEmpiresWeapon* Weapon)
+void AEmpires2Character::PickupWeapon(EInfantryInventorySlots::Type Slot, AEmpBaseWeapon* Weapon)
 {
 	if (Role < ROLE_Authority) return; //Only the server can pick up a weapon
 	if (Weapon == nullptr) return;
@@ -505,7 +505,7 @@ void AEmpires2Character::SpawnInventory()
 	{
 		
 		int32 DefaultPistol = SelectedClass->DefaultPistol;
-		ABaseEmpiresWeapon* Pistol = GetWorld()->SpawnActor<ABaseEmpiresWeapon>(SelectedClass->Pistols[DefaultPistol]);
+		AEmpBaseWeapon* Pistol = GetWorld()->SpawnActor<AEmpBaseWeapon>(SelectedClass->Pistols[DefaultPistol]);
 		PickupWeapon(EInfantryInventorySlots::Slot_Sidearm, Pistol);		
 		Pistol->Equip();
 	}
@@ -513,7 +513,7 @@ void AEmpires2Character::SpawnInventory()
 	if (SelectedClass->Primaries.Num() > 0)
 	{
 		int32 DefaultPrimary = SelectedClass->DefaultPrimary;
-		ABaseEmpiresWeapon* Rifle = GetWorld()->SpawnActor<ABaseEmpiresWeapon>(SelectedClass->Primaries[DefaultPrimary]);
+		AEmpBaseWeapon* Rifle = GetWorld()->SpawnActor<AEmpBaseWeapon>(SelectedClass->Primaries[DefaultPrimary]);
 		PickupWeapon(EInfantryInventorySlots::Slot_Primary, Rifle);		
 		Rifle->Equip();
 	}	

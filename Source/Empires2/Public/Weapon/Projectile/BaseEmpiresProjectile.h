@@ -17,7 +17,7 @@ public:
 	ABaseEmpiresProjectile(const class FObjectInitializer & ObjectInitializer);
 
 
-	class ABaseEmpiresWeapon* OwningWeapon;
+	class AEmpBaseWeapon* OwningWeapon;
 
 	/** called when projectile hits something */
 	UFUNCTION()

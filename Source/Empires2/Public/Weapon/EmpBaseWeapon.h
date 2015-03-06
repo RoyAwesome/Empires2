@@ -4,7 +4,7 @@
 
 #include "Engine.h"
 #include "GameFramework/Actor.h"
-#include "BaseEmpiresWeapon.generated.h"
+#include "EmpBaseWeapon.generated.h"
 
 const int32 CurrentAmmopool = -1;
 const int32 CurrentFiremode = -1;
@@ -416,13 +416,13 @@ public:
 /**
  * Base Weapon
  */
-UCLASS(HideCategories = (Transform, Animation, Mesh, Tick, Materials, Shape, Physics, Collision, Rendering, PhysicsVolume, Tags, Clothing, Lighting, Activation, Replication, Input, SkeletalMesh, Actor, Optimization))
-class EMPIRES2_API ABaseEmpiresWeapon : public AActor
+UCLASS()
+class EMPIRES2_API AEmpBaseWeapon : public AActor
 {
 	GENERATED_BODY()
 		//GENERAL
 public:
-	ABaseEmpiresWeapon(const class FObjectInitializer & ObjectInitializer);
+	AEmpBaseWeapon(const class FObjectInitializer & ObjectInitializer);
 
 
 	virtual void PostInitProperties() override;

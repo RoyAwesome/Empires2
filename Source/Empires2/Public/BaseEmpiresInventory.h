@@ -42,13 +42,13 @@ public:
 
 
 	UPROPERTY(VisibleAnywhere, Category = General, ReplicatedUsing=OnRep_Pistol)
-	class ABaseEmpiresWeapon* Pistol;
+	class AEmpBaseWeapon* Pistol;
 	UPROPERTY(VisibleAnywhere, Category = General, ReplicatedUsing = OnRep_Primary)
-	ABaseEmpiresWeapon* Primary;
+	AEmpBaseWeapon* Primary;
 	UPROPERTY(VisibleAnywhere, Category = General, ReplicatedUsing = OnRep_Tertiary)
-	ABaseEmpiresWeapon* Tertiary;
+	AEmpBaseWeapon* Tertiary;
 	UPROPERTY(VisibleAnywhere, Category = General, ReplicatedUsing = OnRep_Special)
-	ABaseEmpiresWeapon* Special;
+	AEmpBaseWeapon* Special;
 
 	UFUNCTION()
 	void OnRep_Pistol();
@@ -63,9 +63,9 @@ public:
 
 	virtual void ClearInventory();
 
-	virtual void AddItem(EInfantryInventorySlots::Type Slot, ABaseEmpiresWeapon* Item);
+	virtual void AddItem(EInfantryInventorySlots::Type Slot, AEmpBaseWeapon* Item);
 
-	virtual ABaseEmpiresWeapon* GetItemInSlot(EInfantryInventorySlots::Type Slot);
+	virtual AEmpBaseWeapon* GetItemInSlot(EInfantryInventorySlots::Type Slot);
 
 	virtual int32 GetInventorySize()
 	{

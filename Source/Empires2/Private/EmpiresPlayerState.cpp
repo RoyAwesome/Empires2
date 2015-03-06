@@ -5,7 +5,7 @@
 #include "UnrealNetwork.h"
 #include "Engine/ActorChannel.h"
 #include "EmpInfantryClass.h"
-#include "BaseInfantryWeapon.h"
+#include "EmpBaseInfantryWeapon.h"
 
 AEmpiresPlayerState::AEmpiresPlayerState(const FObjectInitializer & ObjectInitializer)
 	: Super(ObjectInitializer)

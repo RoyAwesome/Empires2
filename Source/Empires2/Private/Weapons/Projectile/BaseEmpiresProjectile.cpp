@@ -2,7 +2,7 @@
 
 #include "Empires2.h"
 #include "BaseEmpiresProjectile.h"
-#include "BaseEmpiresWeapon.h"
+#include "EmpBaseWeapon.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
 

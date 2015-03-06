@@ -20,13 +20,13 @@ public:
 
 	/* List of all possible Pistols that can be selected */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Items")
-		TArray<TSubclassOf<class ABaseInfantryWeapon>> Pistols;
+		TArray<TSubclassOf<class AEmpBaseInfantryWeapon>> Pistols;
 	/* List of all possible Primary Weapons that can be selected */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Items")
-		TArray<TSubclassOf<ABaseInfantryWeapon>> Primaries;
+		TArray<TSubclassOf<AEmpBaseInfantryWeapon>> Primaries;
 	/* List of all grenades that can be selected */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Items")
-		TArray<TSubclassOf<ABaseInfantryWeapon>> Tertiaries;
+		TArray<TSubclassOf<AEmpBaseInfantryWeapon>> Tertiaries;
 	/* List of all possible Active Abilities that can be used*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Items")
 		TArray<TSubclassOf<class ABaseActiveAbility>> ActiveAbilities;

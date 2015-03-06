@@ -25,5 +25,5 @@ public:
 	virtual void EmitShot(FVector Origin, FRotator Direction);
 
 	virtual class UWorld* GetWorld() const override;
-	virtual class ABaseEmpiresWeapon* GetWeapon() const;
+	virtual class AEmpBaseWeapon* GetWeapon() const;
 };

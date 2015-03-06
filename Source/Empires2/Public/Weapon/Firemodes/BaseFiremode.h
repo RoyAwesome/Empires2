@@ -22,7 +22,7 @@ public:
 	virtual UWorld* GetWorld() const override;
 
 	UFUNCTION(BlueprintCallable, Category = Firemode)
-		virtual ABaseEmpiresWeapon* GetWeapon();
+		virtual AEmpBaseWeapon* GetWeapon();
 protected:
 
 

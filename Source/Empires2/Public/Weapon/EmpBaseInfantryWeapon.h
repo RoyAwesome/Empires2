@@ -2,21 +2,20 @@
 
 #pragma once
 
-#include "BaseEmpiresWeapon.h"
-#include "BaseInfantryWeapon.generated.h"
+#include "EmpBaseWeapon.h"
+#include "EmpBaseInfantryWeapon.generated.h"
 
 /**
  * 
  */
-UCLASS(HideCategories = (Transform, Animation, Mesh, Tick, Materials, Shape, Physics, Collision, Rendering, PhysicsVolume, Tags, Clothing, Lighting, Activation, Replication, Input, SkeletalMesh, Actor, Optimization))
-
-class EMPIRES2_API ABaseInfantryWeapon : public ABaseEmpiresWeapon
+UCLASS()
+class EMPIRES2_API AEmpBaseInfantryWeapon : public AEmpBaseWeapon
 {
 	GENERATED_BODY()
 
 public:
 
-	ABaseInfantryWeapon(const class FObjectInitializer & ObjectInitializer);
+	AEmpBaseInfantryWeapon(const class FObjectInitializer & ObjectInitializer);
 
 	/** AnimMontage to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Display)

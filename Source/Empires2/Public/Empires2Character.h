@@ -102,11 +102,11 @@ public:
 	void EndFire();
 
 	/* Switching Weapons */
-	void DrawWeapon(class ABaseInfantryWeapon* Weapon);
+	void DrawWeapon(class AEmpBaseInfantryWeapon* Weapon);
 	void SwitchToWeapon(EInfantryInventorySlots::Type Weapon);
 
 	UFUNCTION(BlueprintCallable, Category = Weapon)
-	ABaseInfantryWeapon* GetActiveWeapon();
+	AEmpBaseInfantryWeapon* GetActiveWeapon();
 
 	/* Weapon Input Events */
 	void SelectNextWeapon();	
@@ -134,7 +134,7 @@ public:
 
 	
 
-	void PickupWeapon(EInfantryInventorySlots::Type Slot, class ABaseEmpiresWeapon* Weapon);
+	void PickupWeapon(EInfantryInventorySlots::Type Slot, class AEmpBaseWeapon* Weapon);
 
 	UFUNCTION()
 	void OnRep_SelectedWeapon();

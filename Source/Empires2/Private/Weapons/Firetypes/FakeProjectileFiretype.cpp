@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Empires2.h"
-#include "BaseEmpiresWeapon.h"
+#include "EmpBaseWeapon.h"
 #include "FakeProjectileFiretype.h"
 
 const FVector Gravity = FVector(0, 0, -981);

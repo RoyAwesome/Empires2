@@ -3,7 +3,7 @@
 #include "Empires2.h"
 #include "BaseEmpiresInventory.h"
 #include "Net/UnrealNetwork.h"
-#include "BaseEmpiresWeapon.h"
+#include "EmpBaseWeapon.h"
 
 
 
@@ -54,7 +54,7 @@ void UBaseEmpiresInventory::ClearInventory()
 	}
 }
 
-void UBaseEmpiresInventory::AddItem(EInfantryInventorySlots::Type Slot, ABaseEmpiresWeapon* Item)
+void UBaseEmpiresInventory::AddItem(EInfantryInventorySlots::Type Slot, AEmpBaseWeapon* Item)
 {
 	switch (Slot)
 	{
@@ -77,7 +77,7 @@ void UBaseEmpiresInventory::AddItem(EInfantryInventorySlots::Type Slot, ABaseEmp
 	}
 }
 
-ABaseEmpiresWeapon* UBaseEmpiresInventory::GetItemInSlot(EInfantryInventorySlots::Type Slot)
+AEmpBaseWeapon* UBaseEmpiresInventory::GetItemInSlot(EInfantryInventorySlots::Type Slot)
 {
 	switch (Slot)
 	{
