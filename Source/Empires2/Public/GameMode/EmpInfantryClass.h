@@ -6,31 +6,6 @@
 #include "EmpInfantryClass.generated.h"
 
 
-USTRUCT()
-struct FEmpClassLoadout
-{
-	GENERATED_USTRUCT_BODY()
-public:
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Loadout")
-	class UEmpInfantryClass* LoadoutClass;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Loadout")
-	uint32 SelectedPistol;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Loadout")
-	uint32 SelectedPrimary;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Loadout")
-	uint32 SelectedTertiary;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Loadout")
-	uint32 SelectedActive;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Loadout")
-	TArray<uint32> SelectedPassives;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Loadout")
-	FText LoadoutName;
-
-};
 
 /**
  *
@@ -89,5 +64,54 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Defaults")
 	int32 NumPassives;
 
+
+};
+
+
+USTRUCT(BlueprintType)
+struct FEmpClassLoadout
+{
+	GENERATED_USTRUCT_BODY()
+public:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Loadout")
+	UEmpInfantryClass* LoadoutClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Loadout")
+		int32 SelectedPistol;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Loadout")
+		int32 SelectedPrimary;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Loadout")
+		int32 SelectedTertiary;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Loadout")
+		int32 SelectedActive;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Loadout")
+		TArray<int32> SelectedPassives;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Loadout")
+		FText LoadoutName;
+
+
+	FEmpClassLoadout()
+		: SelectedPistol(-1)
+		, SelectedPrimary(-1)
+		, SelectedTertiary(-1)
+		, SelectedActive(-1)
+	{
+		SelectedPassives.AddUninitialized(4);
+		LoadoutName = FText::FromString(TEXT("Custom Loadout"));
+	}
+
+	FEmpClassLoadout(UEmpInfantryClass* LoadoutClass)
+		: LoadoutClass(LoadoutClass)
+		, SelectedPistol(LoadoutClass->DefaultPistol)
+		, SelectedPrimary(LoadoutClass->DefaultPrimary)
+		, SelectedTertiary(LoadoutClass->DefaultTertiary)
+		, SelectedActive(LoadoutClass->DefaultActiveAbility)
+	{
+		SelectedPassives.AddUninitialized(LoadoutClass->NumPassives);
+		LoadoutName = FText::Format(NSLOCTEXT("Loadout", "Loadout Format", "Custom {0} Loadout"), LoadoutClass->UIName);
+	}
 
 };

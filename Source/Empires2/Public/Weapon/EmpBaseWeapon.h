@@ -416,7 +416,7 @@ public:
 /**
  * Base Weapon
  */
-UCLASS()
+UCLASS(BlueprintType)
 class EMPIRES2_API AEmpBaseWeapon : public AActor
 {
 	GENERATED_BODY()
