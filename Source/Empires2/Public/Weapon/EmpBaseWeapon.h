@@ -485,6 +485,18 @@ public:
 	virtual void Equip();
 	virtual void Unequip();
 
+	UFUNCTION(Client, Reliable, WithValidation)
+	void ClientEquip();
+	//void ClientEquip_Implementation();
+	//bool ClientEquip_Validation();
+
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+	void MulticastEquip();
+	//void MulticastEquip_Implementation();
+	//void MulticastEquip_Validation();
+
+	//void ClientUnequip();
+
 	virtual void DrawWeapon();
 	virtual void PutAwayWeapon();
 

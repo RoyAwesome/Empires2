@@ -135,24 +135,60 @@ void AEmpBaseWeapon::Tick(float DeltaSeconds)
 void AEmpBaseWeapon::Equip()
 {
 	check(OwningCharacter);
+		
 
+	MulticastEquip();
+	ClientEquip();
+
+	
+	
+	WeaponState = EWeaponState::Weapon_NotSelected; //TODO: Play the equipping sound/goto equipping state
+}
+
+void AEmpBaseWeapon::ClientEquip_Implementation()
+{
 	Mesh1P->SetVisibility(false);
 	Mesh3P->SetVisibility(false);
 
-	//Get the socket
-	if (OwningCharacter->Role == ROLE_AutonomousProxy)
-	{
-		Mesh1P->AttachTo(OwningCharacter->Get1PMesh(), OwningCharacter->GetWeaponAttachSocket(), EAttachLocation::SnapToTarget, true);
-		//this->AttachRootComponentTo(OwningCharacter->Get1PMesh(), OwningCharacter->GetWeaponAttachSocket(), EAttachLocation::SnapToTarget, true);
-	}
-	else
-	{
-		this->AttachRootComponentTo(OwningCharacter->GetMesh(), OwningCharacter->GetWeaponAttachSocket());
-	}
-	
+
+	Mesh1P->AttachTo(OwningCharacter->Get1PMesh(), OwningCharacter->GetWeaponAttachSocket(), EAttachLocation::SnapToTarget, true);
+	//Mesh1P->AttachTo(OwningCharacter->Get1PMesh());
+	//this->AttachRootComponentTo(OwningCharacter->Get1PMesh(), OwningCharacter->GetWeaponAttachSocket(), EAttachLocation::SnapToTarget, true);
+
+	Mesh1P->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::AlwaysTickPose;
+	Mesh1P->LastRenderTime = GetWorld()->TimeSeconds;
+	Mesh1P->bRecentlyRendered = true;
+
 	RegisterAllComponents();
-	WeaponState = EWeaponState::Weapon_NotSelected; //TODO: Play the equipping sound/goto equipping state
 }
+
+bool AEmpBaseWeapon::ClientEquip_Validate()
+{
+	return true;
+}
+
+void AEmpBaseWeapon::MulticastEquip_Implementation()
+{
+	Mesh1P->SetVisibility(false);
+	Mesh3P->SetVisibility(false);
+
+	this->AttachRootComponentTo(OwningCharacter->GetMesh(), OwningCharacter->GetWeaponAttachSocket());
+
+	RegisterAllComponents();
+}
+
+
+bool AEmpBaseWeapon::MulticastEquip_Validate()
+{
+	return true;
+}
+
+
+
+
+
+
+
 void AEmpBaseWeapon::Unequip()
 {
 	this->DetachRootComponentFromParent();
@@ -743,4 +779,3 @@ void AEmpBaseWeapon::OnBulletHit(const FHitResult& Hit)
 
 	BPOnBulletHit(Hit);
 }
-
