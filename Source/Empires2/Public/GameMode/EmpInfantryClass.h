@@ -6,6 +6,32 @@
 #include "EmpInfantryClass.generated.h"
 
 
+USTRUCT()
+struct FEmpClassLoadout
+{
+	GENERATED_USTRUCT_BODY()
+public:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Loadout")
+	class UEmpInfantryClass* LoadoutClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Loadout")
+	uint32 SelectedPistol;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Loadout")
+	uint32 SelectedPrimary;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Loadout")
+	uint32 SelectedTertiary;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Loadout")
+	uint32 SelectedActive;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Loadout")
+	TArray<uint32> SelectedPassives;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Loadout")
+	FText LoadoutName;
+
+};
+
 /**
  *
  */
@@ -41,6 +67,14 @@ public:
 	/* What order should this class be on the list. If multiple classes share the same value, then it sorts alphabetically */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GUI)
 	int32 SortOrder;
+
+	/* The name of this class on the UI */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GUI)
+	FText UIName;
+
+	/* The description of this class on the UI */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GUI)
+	FText UIDescription;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Defaults")
 	int32 DefaultPistol;
