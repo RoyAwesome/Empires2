@@ -7,67 +7,6 @@
 
 
 
-/**
- *
- */
-UCLASS(BlueprintType)
-class EMPIRES2_API UEmpInfantryClass : public UDataAsset
-{
-	GENERATED_BODY()
-
-public:
-		
-	UEmpInfantryClass(const class FObjectInitializer & ObjectInitializer);
-
-	/* List of all possible Pistols that can be selected */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Items")
-		TArray<TSubclassOf<class AEmpBaseInfantryWeapon>> Pistols;
-	/* List of all possible Primary Weapons that can be selected */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Items")
-		TArray<TSubclassOf<AEmpBaseInfantryWeapon>> Primaries;
-	/* List of all grenades that can be selected */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Items")
-		TArray<TSubclassOf<AEmpBaseInfantryWeapon>> Tertiaries;
-	/* List of all possible Active Abilities that can be used*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Items")
-		TArray<TSubclassOf<class ABaseActiveAbility>> ActiveAbilities;
-	/* List of possible active abilities that this class can select  */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Items")
-		TArray<TSubclassOf<class ABasePassiveAbility>> PassiveAbilities;
-
-	/* Whether or not this class shows up on the UI as an option.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=GUI)
-	bool bIsOnGUI;
-
-	/* What order should this class be on the list. If multiple classes share the same value, then it sorts alphabetically */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GUI)
-	int32 SortOrder;
-
-	/* The name of this class on the UI */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GUI)
-	FText UIName;
-
-	/* The description of this class on the UI */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GUI)
-	FText UIDescription;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Defaults")
-	int32 DefaultPistol;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Defaults")
-	int32 DefaultPrimary;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Defaults")
-	int32 DefaultTertiary;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Defaults")
-	int32 DefaultActiveAbility;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Defaults")
-	int32 NumPassives;
-
-
-};
-
-
 USTRUCT(BlueprintType)
 struct FEmpClassLoadout
 {
@@ -75,7 +14,7 @@ struct FEmpClassLoadout
 public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Loadout")
-	UEmpInfantryClass* LoadoutClass;
+	class UEmpInfantryClass* LoadoutClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Loadout")
 		int32 SelectedPistol;
@@ -103,15 +42,71 @@ public:
 		LoadoutName = FText::FromString(TEXT("Custom Loadout"));
 	}
 
-	FEmpClassLoadout(UEmpInfantryClass* LoadoutClass)
-		: LoadoutClass(LoadoutClass)
-		, SelectedPistol(LoadoutClass->DefaultPistol)
-		, SelectedPrimary(LoadoutClass->DefaultPrimary)
-		, SelectedTertiary(LoadoutClass->DefaultTertiary)
-		, SelectedActive(LoadoutClass->DefaultActiveAbility)
-	{
-		SelectedPassives.AddUninitialized(LoadoutClass->NumPassives);
-		LoadoutName = FText::Format(NSLOCTEXT("Loadout", "Loadout Format", "Custom {0} Loadout"), LoadoutClass->UIName);
-	}
+	FEmpClassLoadout(class UEmpInfantryClass* LoadoutClass);
+
 
 };
+
+
+
+/**
+ *
+ */
+UCLASS(BlueprintType)
+class EMPIRES2_API UEmpInfantryClass : public UDataAsset
+{
+	GENERATED_BODY()
+
+public:
+
+	UEmpInfantryClass(const class FObjectInitializer & ObjectInitializer);
+
+	/* List of all possible Pistols that can be selected */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Items")
+		TArray<TSubclassOf<class AEmpBaseInfantryWeapon>> Pistols;
+	/* List of all possible Primary Weapons that can be selected */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Items")
+		TArray<TSubclassOf<AEmpBaseInfantryWeapon>> Primaries;
+	/* List of all grenades that can be selected */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Items")
+		TArray<TSubclassOf<AEmpBaseInfantryWeapon>> Tertiaries;
+	/* List of all possible Active Abilities that can be used*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Items")
+		TArray<TSubclassOf<class ABaseActiveAbility>> ActiveAbilities;
+	/* List of possible active abilities that this class can select  */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Items")
+		TArray<TSubclassOf<class ABasePassiveAbility>> PassiveAbilities;
+
+	/* Whether or not this class shows up on the UI as an option.*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GUI)
+		bool bIsOnGUI;
+
+	/* What order should this class be on the list. If multiple classes share the same value, then it sorts alphabetically */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GUI)
+		int32 SortOrder;
+
+	/* The name of this class on the UI */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GUI)
+		FText UIName;
+
+	/* The description of this class on the UI */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GUI)
+		FText UIDescription;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Defaults")
+		int32 DefaultPistol;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Defaults")
+		int32 DefaultPrimary;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Defaults")
+		int32 DefaultTertiary;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Defaults")
+		int32 DefaultActiveAbility;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Defaults")
+		int32 NumPassives;
+
+	UFUNCTION(BlueprintPure, Category = Loadout)
+		FEmpClassLoadout GetDefaultLoadout();
+};
+

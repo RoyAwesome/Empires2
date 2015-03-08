@@ -17,3 +17,20 @@ UEmpInfantryClass::UEmpInfantryClass(const class FObjectInitializer & ObjectInit
 
 	bIsOnGUI = true;
 }
+
+FEmpClassLoadout UEmpInfantryClass::GetDefaultLoadout()
+{
+	return FEmpClassLoadout(this);
+}
+
+FEmpClassLoadout::FEmpClassLoadout(UEmpInfantryClass* LoadoutClass)
+	: LoadoutClass(LoadoutClass)
+	, SelectedPistol(LoadoutClass->DefaultPistol)
+	, SelectedPrimary(LoadoutClass->DefaultPrimary)
+	, SelectedTertiary(LoadoutClass->DefaultTertiary)
+	, SelectedActive(LoadoutClass->DefaultActiveAbility)
+{
+	SelectedPassives.AddUninitialized(LoadoutClass->NumPassives);
+	LoadoutName = FText::Format(NSLOCTEXT("Loadout", "Loadout Format", "Custom {0} Loadout"), LoadoutClass->UIName);
+}
+

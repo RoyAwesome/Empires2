@@ -3,12 +3,13 @@
 #include "GameFramework/Character.h"
 #include "BaseEmpiresInventory.h"
 #include "EmpiresPlayerState.h"
+#include "EmpInfantryClass.h"
 #include "Empires2Character.generated.h"
 
 
 
 
-UCLASS(config=Game)
+UCLASS(config = Game)
 class AEmpires2Character : public ACharacter
 {
 	GENERATED_BODY()
@@ -30,15 +31,15 @@ protected:
 
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
-	float BaseTurnRate;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+		float BaseTurnRate;
 
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
-	float BaseLookUpRate;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+		float BaseLookUpRate;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Weapon)
-	FVector WeaponRelativeOffset;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+		FVector WeaponRelativeOffset;
 
 public:
 
@@ -66,7 +67,7 @@ protected:
 	void BeginPlay() override;
 	void PossessedBy(AController * NewController) override;
 	void PostInitProperties() override;
-		
+
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
 
@@ -93,7 +94,7 @@ protected:
 	}
 
 	UPROPERTY(Replicated)
-	bool bShouldIgnoreInput;
+		bool bShouldIgnoreInput;
 
 	//WEAPONS
 public:
@@ -106,22 +107,22 @@ public:
 	void SwitchToWeapon(EInfantryInventorySlots::Type Weapon);
 
 	UFUNCTION(BlueprintCallable, Category = Weapon)
-	AEmpBaseInfantryWeapon* GetActiveWeapon();
+		AEmpBaseInfantryWeapon* GetActiveWeapon();
 
 	/* Weapon Input Events */
-	void SelectNextWeapon();	
+	void SelectNextWeapon();
 	void SelectPreviousWeapon();
 	void SelectLastWeapon();
 	void ChangeFiremode();
 	void ReloadWeapon();
 
 	UFUNCTION(Reliable, Server, WithValidation)
-	void ServerSelectNextWeapon();
+		void ServerSelectNextWeapon();
 	void ServerSelectNextWeapon_Implementation();
 	bool ServerSelectNextWeapon_Validate();
 
 	UFUNCTION(Reliable, Server, WithValidation)
-	void ServerSelectPreviousWeapon();
+		void ServerSelectPreviousWeapon();
 	void ServerSelectPreviousWeapon_Implementation();
 	bool ServerSelectPreviousWeapon_Validate();
 
@@ -129,118 +130,110 @@ public:
 		void ServerSelectLastWeapon();
 	void ServerSelectLastWeapon_Implementation();
 	bool ServerSelectLastWeapon_Validate();
-	
+
 	/* End Weapon Input Events */
 
-	
+
 
 	void PickupWeapon(EInfantryInventorySlots::Type Slot, class AEmpBaseWeapon* Weapon);
 
 	UFUNCTION()
-	void OnRep_SelectedWeapon();
+		void OnRep_SelectedWeapon();
 
 	void RefreshHeldWeapon();
 
 	FName GetWeaponAttachSocket();
 
 protected:
-	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = OnRep_SelectedWeapon, Category=Inventory)
-	TEnumAsByte<EInfantryInventorySlots::Type> SelectedWeapon;
+	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = OnRep_SelectedWeapon, Category = Inventory)
+		TEnumAsByte<EInfantryInventorySlots::Type> SelectedWeapon;
 	UPROPERTY(VisibleAnywhere, Replicated, Category = Inventory)
-	TEnumAsByte<EInfantryInventorySlots::Type> LastSelectedWeapon;
+		TEnumAsByte<EInfantryInventorySlots::Type> LastSelectedWeapon;
 
 	UPROPERTY(EditDefaultsOnly, Category = Inventory)
-	FName WeaponAttachSocket;
+		FName WeaponAttachSocket;
 
 	UPROPERTY()
-	bool bIsFiring;
+		bool bIsFiring;
 
-	UBaseEmpiresInventory* GetInventory() const
+	FORCEINLINE UBaseEmpiresInventory* GetInventory() const
 	{
 		return Inventory;
 	}
 
 private:
-	UPROPERTY(VisibleAnywhere, Replicated, Category=General)
+	UPROPERTY(VisibleAnywhere, Replicated, Category = General)
 	class UBaseEmpiresInventory* Inventory;
-		
+
 
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 	// End of APawn interface
 
-public: 
+public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	virtual void SpawnInventory();
+		virtual void SpawnInventory();
 
-	UPROPERTY(Replicated)
-	class UEmpInfantryClass* SelectedClass;
+	
 
-	UFUNCTION(BlueprintCallable, Category = "Inventory", Exec)
-	virtual void SetInfantryClass(UEmpInfantryClass* InfClass, bool RespawnInventory = true);
 
-	protected:
-
-		UFUNCTION(Server, Reliable, WithValidation)
-		void ServerSetInfantryClass(UEmpInfantryClass* InfClass, bool RespawnInventory);
-		void ServerSetInfantryClass_Implementation(UEmpInfantryClass* InfClass, bool RespawnInventory);
-		bool ServerSetInfantryClass_Validate(UEmpInfantryClass* InfClass, bool RespawnInventory);
+	virtual void SetInfantryLoadout(struct FEmpClassLoadout& Loadout);
 
 	////////////// GAME FLOW
 public:
 
-		virtual void Respawn();
-		virtual void Die(AController* Instigator, bool CanRevive);
-		virtual void ClientDie(); //Client side death related stuff.
-		virtual void Revive();
+	virtual void Respawn();
+	virtual void Die(AController* Instigator, bool CanRevive);
+	virtual void ClientDie(); //Client side death related stuff.
+	virtual void Revive();
 
-		virtual void Ragdoll();
+	virtual void Ragdoll();
 
-		virtual void SetHealth(float amount);
-		virtual float GetHealth();
+	virtual void SetHealth(float amount);
+	virtual float GetHealth();
 
-		virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
-		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=GameFlow, Replicated)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = GameFlow, Replicated)
 		bool bIsDead;
-		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = GameFlow, Replicated)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = GameFlow, Replicated)
 		bool bCanRevive;
-		
-		UPROPERTY(Replicated)
+
+	UPROPERTY(Replicated)
 		float LastReviveTime;
 
-		UPROPERTY(Replicated)
-			float LastDeathTime;
+	UPROPERTY(Replicated)
+		float LastDeathTime;
 
 
 
 protected:
-	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category=GameFlow)
-	float Health;
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = GameFlow)
+		float Health;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameFlow)
-	float MaxHealth;
-	
+		float MaxHealth;
+
 	/* How much of MaxHealth do you revive with */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameFlow)
-	float RevivePercent;
+		float RevivePercent;
 
 	/* If you die within this amount of time since your last revive, you cannot revive */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=GameFlow)
-	float DisableReviveTime;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GameFlow)
+		float DisableReviveTime;
 
 	//////////////////////USE OBJECT
-	public:
-		UFUNCTION(BlueprintCallable, Category = "Use")
+public:
+	UFUNCTION(BlueprintCallable, Category = "Use")
 		virtual void Use();
-		UFUNCTION(BlueprintCallable, Category = "Use")
+	UFUNCTION(BlueprintCallable, Category = "Use")
 		virtual void StopUse();
 
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Use")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Use")
 		int32 UseInteractDistance;
-	protected:
-		class AActor* UseFocus;
+protected:
+	class AActor* UseFocus;
 
-		AActor* UsingObject;
+	AActor* UsingObject;
 };
 

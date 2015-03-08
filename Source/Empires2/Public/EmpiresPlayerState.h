@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/PlayerState.h"
+#include "EmpInfantryClass.h"
 #include "EmpiresPlayerState.generated.h"
 
 /**
@@ -28,15 +29,9 @@ public:
 	UPROPERTY(Replicated)
 	UEmpInfantryClass* RequestedClass;
 
-	int32 RequestedPistol;
-	int32 RequestedPrimary;
-	int32 RequestedTertiary;
-	int32 RequestedActive;
-
-	int32 RequestedPassive1;
-	int32 RequestedPassive2;
-	int32 RequestedPassive3;
-	int32 RequestedPassive4;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Class)
+	struct FEmpClassLoadout RequestedLoadout;
+	
 
 public:
 	/* Class Selection */

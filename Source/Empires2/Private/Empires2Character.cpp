@@ -16,8 +16,10 @@
 //////////////////////////////////////////////////////////////////////////
 // AEmpires2Character
 
+FEmpClassLoadout StaticLoadout;
+
 AEmpires2Character::AEmpires2Character(const class FObjectInitializer & ObjectInitializer)
-	: Super(ObjectInitializer)
+	: Super(ObjectInitializer)	
 {
 	this->bAlwaysRelevant = true;
 	this->bReplicates = true;
@@ -61,8 +63,7 @@ AEmpires2Character::AEmpires2Character(const class FObjectInitializer & ObjectIn
 	UseInteractDistance = 200;
 
 	PrimaryActorTick.bCanEverTick = true;
-
-	
+			
 }
 
 void AEmpires2Character::Tick(float DeltaTime)
@@ -134,18 +135,22 @@ void AEmpires2Character::Tick(float DeltaTime)
 void AEmpires2Character::BeginPlay()
 {	
 	Super::BeginPlay();
-		
+
+	
 }
 
 void AEmpires2Character::PossessedBy(AController * NewController)
 {
 	Super::PossessedBy(NewController);
 
+	
 	if (Role == ROLE_Authority && Controller)
-	{	
-		SpawnInventory();	
-	}
+	{
+		FTimerHandle timer;
+		GetWorld()->GetTimerManager().SetTimer(timer, this, &AEmpires2Character::SpawnInventory, 1, false);
 
+		//SpawnInventory();
+	}	
 }
 
 void AEmpires2Character::PostInitProperties()
@@ -171,7 +176,6 @@ void AEmpires2Character::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > 
 
 	DOREPLIFETIME(AEmpires2Character, bShouldIgnoreInput);
 
-	DOREPLIFETIME(AEmpires2Character, SelectedClass);
 
 		
 }
@@ -491,59 +495,66 @@ void AEmpires2Character::SpawnInventory()
 	{
 		return;
 	}
-	if (SelectedClass == nullptr) return;
+
+	AEmpiresPlayerState* PlayerState = Cast <AEmpiresPlayerState>(GetController()->PlayerState);
+
+	FEmpClassLoadout& Loadout = PlayerState->RequestedLoadout;
+
+	//if (SelectedClass == nullptr) return;
+
+	if (Loadout.LoadoutClass == nullptr)
+	{
+		SCREENLOG(TEXT("Error, No class bound to loadout.  Cannot set class/loadout"));
+		return;
+	}
 
 	//Clear the inventory
 	Inventory->ClearInventory();
+		
 
-	AEmpiresPlayerState* playerState = GetEmpiresPlayerState();
-	if (!playerState) return;
-	
+	UEmpInfantryClass* WantedClass = Loadout.LoadoutClass;
 
 	//Add the primary and secondary weapons
-	if (SelectedClass->Pistols.Num() > 0)
+	if (WantedClass->Pistols.Num() > 0)
 	{
 		
-		int32 DefaultPistol = SelectedClass->DefaultPistol;
-		AEmpBaseWeapon* Pistol = GetWorld()->SpawnActor<AEmpBaseWeapon>(SelectedClass->Pistols[DefaultPistol]);
+		int32 SelectedPistol = Loadout.SelectedPistol;
+		AEmpBaseWeapon* Pistol = GetWorld()->SpawnActor<AEmpBaseWeapon>(WantedClass->Pistols[SelectedPistol]);
 		PickupWeapon(EInfantryInventorySlots::Slot_Sidearm, Pistol);		
 		Pistol->Equip();
 	}
 	
-	if (SelectedClass->Primaries.Num() > 0)
+	if (WantedClass->Primaries.Num() > 0)
 	{
-		int32 DefaultPrimary = SelectedClass->DefaultPrimary;
-		AEmpBaseWeapon* Rifle = GetWorld()->SpawnActor<AEmpBaseWeapon>(SelectedClass->Primaries[DefaultPrimary]);
+		int32 SelectedPrimary = Loadout.SelectedPrimary;
+		AEmpBaseWeapon* Rifle = GetWorld()->SpawnActor<AEmpBaseWeapon>(WantedClass->Primaries[SelectedPrimary]);
 		PickupWeapon(EInfantryInventorySlots::Slot_Primary, Rifle);		
 		Rifle->Equip();
 	}	
+
+	if (WantedClass->Tertiaries.Num() > 0)
+	{
+		int32 SelectedTeriary = Loadout.SelectedTertiary;
+		AEmpBaseWeapon* Tert = GetWorld()->SpawnActor<AEmpBaseWeapon>(WantedClass->Tertiaries[SelectedTeriary]);
+		PickupWeapon(EInfantryInventorySlots::Slot_Tertiary, Tert);
+		Tert->Equip();
+	}
 
 	SwitchToWeapon(EInfantryInventorySlots::Slot_Primary);
 	
 }
 
-void AEmpires2Character::SetInfantryClass(UEmpInfantryClass* InfClass, bool RespawnInventory /*= true*/)
+void AEmpires2Character::SetInfantryLoadout(struct FEmpClassLoadout& Loadout)
 {
 	if (Role < ROLE_Authority)
 	{
-		ServerSetInfantryClass(InfClass, RespawnInventory);
-		return;
+		return; //TODO: send this to the server
 	}
-
-	SelectedClass = InfClass;
-
-	if (RespawnInventory) SpawnInventory();
+	AEmpiresPlayerState* PlayerState = Cast <AEmpiresPlayerState>(GetController()->PlayerState);
+	PlayerState->RequestedLoadout = Loadout;
 }
 
-void AEmpires2Character::ServerSetInfantryClass_Implementation(UEmpInfantryClass* InfClass, bool RespawnInventory)
-{
-	SetInfantryClass(InfClass, RespawnInventory);
-}
 
-bool AEmpires2Character::ServerSetInfantryClass_Validate(UEmpInfantryClass* InfClass, bool RespawnInventory)
-{
-	return true;
-}
 
 
 
@@ -723,7 +734,5 @@ void AEmpires2Character::StopUse()
 		UsingObject = nullptr;
 	}
 }
-
-
 
 
