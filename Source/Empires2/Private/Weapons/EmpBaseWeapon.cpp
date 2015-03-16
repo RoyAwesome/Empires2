@@ -599,6 +599,13 @@ void AEmpBaseWeapon::Reload()
 		PlayAnimation(ReloadAnim);
 	}
 
+	if (ReloadTime == 0)
+	{
+		SCREENLOG(TEXT("Warning: Reload time was 0.  Instantly reloading"));
+		DoReload();
+		return;
+	}
+
 	FTimerHandle Handle;
 
 	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AEmpBaseWeapon::DoReload, ReloadTime, false);
