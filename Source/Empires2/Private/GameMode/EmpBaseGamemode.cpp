@@ -186,3 +186,8 @@ bool AEmpBaseGamemode::CanRespawnPlayer_Implementation(APlayerController* Contro
 {
 	return true;
 }
+
+float AEmpBaseGamemode::BPModifyDamage_Implementation(float Damage, AActor* DamagedActor, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) const
+{
+	return Damage;
+}

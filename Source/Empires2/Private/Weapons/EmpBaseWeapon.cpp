@@ -258,12 +258,7 @@ bool AEmpBaseWeapon::CanFire()
 void AEmpBaseWeapon::BeginFire()
 {
 	if (!CanFire()) return; //Don't Fire if we can't fire
-
-	if (Role < ROLE_Authority)
-	{
-		ServerStartFire();
-	}
-
+		
 	if (GetAmmoInClip() <= 0) //If we are out of ammo, attempt to reload
 	{
 		Reload();
@@ -280,26 +275,14 @@ void AEmpBaseWeapon::BeginFire()
 }
 
 
-void AEmpBaseWeapon::ServerStartFire_Implementation()
-{
-	BeginFire();
-}
 
 
-bool AEmpBaseWeapon::ServerStartFire_Validate()
-{
-	return true;
-}
 
 
 void AEmpBaseWeapon::EndFire()
 {
 	//If we are the client, send a server RPC to fire our weapon
-	if (Role < ROLE_Authority)
-	{
-		ServerEndFire();
-	}
-
+	
 	if (WeaponState != EWeaponState::Weapon_Firing) return; //Don't need to EndFire if we aren't firing.
 	UBaseFiremode* firemode = GetActiveFiremode();
 	check(firemode);
@@ -309,26 +292,10 @@ void AEmpBaseWeapon::EndFire()
 }
 
 
-void AEmpBaseWeapon::ServerEndFire_Implementation()
-{
-	EndFire();
-}
-
-bool AEmpBaseWeapon::ServerEndFire_Validate()
-{
-	return true;
-}
-
-
 void AEmpBaseWeapon::FireShot()
 {
 	check(OwningCharacter);
-
-	if (Role < ROLE_Authority)
-	{
-		ServerFireShot();
-	}
-
+		
 	//Get the current firemode's projectile
 	FAmmoPool ammoPool = GetCurrentAmmoPool();
 				
@@ -346,27 +313,26 @@ void AEmpBaseWeapon::FireShot()
 	}
 	FRotator ConeAdjustedAngle = CofDirection.Rotation();
 
+	
 	EmitShot(SpawnLocation, ConeAdjustedAngle);
+	
 		
 	ConsumeAmmo(GetActiveFiremodeData().AmmoConsumedPerShot);
 	ShotsFired++;
 
-	if (OwningCharacter->IsLocallyControlled())
-	{
-		PlaySound(GetActiveWeaponAnimationSet().FireSound);
-		PlayAnimation(GetActiveWeaponAnimationSet().FireAnimation);
+	PlaySound(GetActiveWeaponAnimationSet().FireSound);
+	PlayAnimation(GetActiveWeaponAnimationSet().FireAnimation);
 
-		//Recoil the shot
-		OwningCharacter->AddControllerPitchInput(-RollVerticalRecoil());
-		OwningCharacter->AddControllerYawInput(RollHorizontalRecoil());
+	ClientPlayWeaponEffect(SpawnLocation, ConeAdjustedAngle);
 
-		ClientPlayWeaponEffect(SpawnLocation, ConeAdjustedAngle);
+	
+	//Recoil the shot
+	OwningCharacter->AddControllerPitchInput(-RollVerticalRecoil());
+	OwningCharacter->AddControllerYawInput(RollHorizontalRecoil());		
 
-	}
-	if (Role == ROLE_Authority)
-	{
-		NotifyClientShotFired(SpawnLocation, ConeAdjustedAngle);
-	}
+	NotifyServerShot(SpawnLocation, ConeAdjustedAngle);
+	
+	
 
 
 	//If we are out of ammo, stop firing and reload
@@ -377,6 +343,20 @@ void AEmpBaseWeapon::FireShot()
 	}
 
 }
+
+void AEmpBaseWeapon::NotifyServerShot_Implementation(FVector StartPoint, FRotator direction)
+{
+	//Multicast that a shot was fired
+	NotifyClientShotFired(StartPoint, direction);
+
+	//TODO: Record the shot so we can verify later when damage was dealt as well as verify refire rate.
+}
+
+bool AEmpBaseWeapon::NotifyServerShot_Validate(FVector StartPoint, FRotator direction)
+{
+	return true;
+}
+
 
 //Emits a simulated bullet.  This does not play any effects.
 void AEmpBaseWeapon::EmitShot(FVector StartPoint, FRotator Direction)
@@ -397,7 +377,7 @@ void AEmpBaseWeapon::EmitShot(FVector StartPoint, FRotator Direction)
 void AEmpBaseWeapon::NotifyClientShotFired_Implementation(FVector StartPoint, FRotator Direction)
 {
 
-	if (OwningCharacter->Role == ROLE_AutonomousProxy) return; //If we are locally controlled, we've already played the effect and simulated the shot
+	if (OwningCharacter->IsLocallyControlled()) return; //If we are locally controlled, we've already played the effect and simulated the shot
 
 	//Play the effect
 	ClientPlayWeaponEffect(StartPoint, Direction);
@@ -420,7 +400,7 @@ void AEmpBaseWeapon::ClientPlayWeaponEffect(FVector StartPoint, FRotator Directi
 		if (OwningCharacter->IsLocallyControlled())
 		{
 			Component = Mesh1P;
-		}
+		}		
 
 		UGameplayStatics::SpawnEmitterAttached(AnimSet.MuzzleFlash,
 			Component,
@@ -444,19 +424,6 @@ void AEmpBaseWeapon::ClientPlayWeaponEffect(FVector StartPoint, FRotator Directi
 		}
 		UGameplayStatics::SpawnEmitterAtLocation(this, AnimSet.BulletEffect, SpawnLocation);
 	}
-}
-
-
-
-
-void AEmpBaseWeapon::ServerFireShot_Implementation()
-{
-	FireShot();
-}
-
-bool AEmpBaseWeapon::ServerFireShot_Validate()
-{
-	return true;
 }
 
 FVector AEmpBaseWeapon::GetFireDirection()
@@ -778,11 +745,26 @@ void AEmpBaseWeapon::OnRep_WeaponState()
 
 void AEmpBaseWeapon::OnBulletHit(const FHitResult& Hit)
 {
+	//TODO: Report this to the server
+
 	AEmpires2Character* Character = Cast<AEmpires2Character>(Hit.GetActor());
 	if (Character)
 	{
-		DealDamage(Character);
+		if(OwningCharacter->IsLocallyControlled()) NotifyServerHitTarget(Character); //Only report to server if we own the character
+		
 	}
 
 	BPOnBulletHit(Hit);
+}
+
+void AEmpBaseWeapon::NotifyServerHitTarget_Implementation(AEmpires2Character* Character)
+{
+	//TODO: Validate the shot
+
+	DealDamage(Character);
+}
+
+bool AEmpBaseWeapon::NotifyServerHitTarget_Validate(AEmpires2Character* Character)
+{
+	return true;
 }

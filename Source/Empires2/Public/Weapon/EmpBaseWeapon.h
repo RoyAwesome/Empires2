@@ -74,10 +74,7 @@ public:
 		int32 RecoilDataIndex;
 
 
-	//Damage
-	UPROPERTY(EditDefaultsOnly, Category = Damage)
-		int32 Damage;
-	//TODO: Damage Type
+	
 
 	FWeaponData()
 	{
@@ -88,7 +85,6 @@ public:
 		FirstShotFireDelay = 0;
 		RoundsPerShot = 1;
 
-		Damage = 100;
 	}
 
 };
@@ -519,32 +515,17 @@ public:
 	/*Called when the weapon is to fire a single bullet/projectile*/
 	virtual void FireShot();
 
-
-	///////// Serverside Input
 	UFUNCTION(Reliable, Server, WithValidation)
-	void ServerStartFire();
-	void ServerStartFire_Implementation();
-	bool ServerStartFire_Validate();
-
-
-	UFUNCTION(Reliable, Server, WithValidation)
-	void ServerEndFire();
-	void ServerEndFire_Implementation();
-	bool ServerEndFire_Validate();
-
-	UFUNCTION(Reliable, Server, WithValidation)
-		void ServerFireShot();
-	void ServerFireShot_Implementation();
-	bool ServerFireShot_Validate();
+	void NotifyServerShot(FVector StartPoint, FRotator direction);
+	void NotifyServerShot_Implementation(FVector StartPoint, FRotator direction);
+	bool NotifyServerShot_Validate(FVector StartPoint, FRotator direction);
+	
 
 
 
 	UFUNCTION()
 		void OnRep_Reload();
-
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Projectile)
-		FEmpDamageInfo DamageInfo; //TODO: Remove this, Let Ammo Pool Decide
+		
 
 	FVector GetFireDirection();
 
@@ -646,7 +627,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Firemodes)
 		TArray<FWeaponRecoilData> RecoilData;
 
-	FWeaponRecoilData GetCurrentRecoilData()
+	FORCEINLINE FWeaponRecoilData GetCurrentRecoilData()
 	{
 		return RecoilData[GetActiveFiremodeData().RecoilDataIndex];
 	}
@@ -661,12 +642,20 @@ protected:
 	/*  Play Weapon Effects */
 public:
 
+
+	///HIT TARGET
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 		virtual void OnBulletHit(const FHitResult& Hit);
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Weapon")
+	UFUNCTION(BlueprintImplementableEvent, Category = "Weapon", BlueprintCosmetic)
 		void BPOnBulletHit(const FHitResult& Hit);
 	
-	
+	UFUNCTION(Server, Reliable, WithValidation)
+	void NotifyServerHitTarget(class AEmpires2Character* Character);
+	void NotifyServerHitTarget_Implementation(class AEmpires2Character* Character);
+	bool NotifyServerHitTarget_Validate(class AEmpires2Character* Character);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintAuthorityOnly, Category = "Weapon")
+	void BPOnUnitHit(class AEmpires2Character* Character);
 
 };

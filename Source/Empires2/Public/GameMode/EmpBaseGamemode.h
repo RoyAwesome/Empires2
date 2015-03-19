@@ -64,8 +64,9 @@ public:
 	virtual float ModifyDamage(float Damage, AActor* DamagedActor, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) const;
 
 	//Modify the amount of damage being dealt to a player.
-	UFUNCTION(BlueprintImplementableEvent, Category = "Game Mode", meta = (FriendlyName = "Modify Damage"))
+	UFUNCTION(BlueprintNativeEvent, Category = "Game Mode", meta = (FriendlyName = "Modify Damage"))
 	float BPModifyDamage(float Damage, AActor* DamagedActor, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) const;
+	float BPModifyDamage_Implementation(float Damage, AActor* DamagedActor, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) const;
 
 
 
